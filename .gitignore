@@ -1,14 +1,79 @@
-bin/
-*.class
+# ==============================================================================
+# 1. Cơ sở dữ liệu cục bộ (H2 Database & Logs) - TUYỆT ĐỐI CHẶN ĐỂ TRÁNH LỖI LOCK DB
+# ==============================================================================
+*.mv.db
+*.trace.db
+odauday.mv.db
+odauday.trace.db
+*.db
+*.sqlite
+
+# ==============================================================================
+# 2. Frontend (Node / Vite / React / TypeScript)
+# ==============================================================================
 node_modules/
-.DS_Store
-*.log
 dist/
+dist-ssr/
 build/
-target/
-.gradle/
-.idea/
-.vscode/
-*.iml
+*.local
+
+# Cache của package managers
+.npm/
+.yarn/
+*.tsbuildinfo
+.eslintcache
+
+# File cấu hình môi trường chứa secret
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ==============================================================================
+# 3. Backend (Java / Spring Boot / Maven / Gradle)
+# ==============================================================================
+# Thư mục build output của Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Thư mục build output của Gradle (nếu dùng)
+.gradle/
+build/
+
+# Log files
+*.log
+logs/
+
+# ==============================================================================
+# 4. IDEs & Editors cấu hình cá nhân (IntelliJ IDEA, VS Code, Eclipse)
+# ==============================================================================
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# OS generated files (macOS / Windows)
+.DS_Store
+Thumbs.db
+desktop.ini

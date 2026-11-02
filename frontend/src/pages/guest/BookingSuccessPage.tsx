@@ -52,7 +52,7 @@ export default function BookingSuccessPage() {
                 </div>
 
                 <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 700, color: '#1E293B' }}>
-                    Thanh toán thành công (PAID)!
+                    Thanh toán thành công!
                 </h3>
                 <p style={{ margin: '0 0 1.5rem', fontSize: '0.92rem', color: '#64748B', lineHeight: 1.5 }}>
                     Đơn #{booking?.code || code} đã hoàn tất{' '}
@@ -109,7 +109,7 @@ export default function BookingSuccessPage() {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
                         <span style={{ color: '#64748B' }}>Trạng thái:</span>
-                        <strong style={{ color: '#15803D' }}>PAID (Đã khóa)</strong>
+                        <strong style={{ color: '#15803D' }}>PAID</strong>
                     </div>
 
                     <hr style={{ border: 'none', borderTop: '1px dashed #CBD5E1', margin: '0.85rem 0' }} />
