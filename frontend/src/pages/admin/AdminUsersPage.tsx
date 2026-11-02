@@ -1,13 +1,8 @@
-// UC-10: Admin User Management & RBAC Page (Standardized Components)
+// Admin Users Page: User Management & RBAC Role-Based Access Control (TypeScript)
 import React, { useState } from 'react';
 import { useStore } from '../../contexts/StoreContext';
 import {
-  Breadcrumb,
-  Button,
   Card,
-  InputField,
-  SelectField,
-  Modal,
   StatCard,
   Badge,
   Table,
@@ -16,6 +11,10 @@ import {
   TableRow,
   TableHeaderCell,
   TableCell,
+  Button,
+  InputField,
+  SelectField,
+  Modal,
   EmptyState,
 } from '../../components';
 import {
@@ -101,264 +100,321 @@ export default function AdminUsersPage() {
     }
   };
 
-  const activeCount = users.filter(u => u.status === 'ACTIVE').length;
-  const lockedCount = users.filter(u => u.status === 'LOCKED').length;
-
-  const filteredUsers = users.filter(u => {
+  const filteredUsers = users.filter((u) => {
+    const kwLower = kw.toLowerCase().trim();
     const matchKw =
-      !kw ||
-      u.fullName.toLowerCase().includes(kw.toLowerCase()) ||
-      u.username.toLowerCase().includes(kw.toLowerCase()) ||
-      (u.email || '').toLowerCase().includes(kw.toLowerCase());
+      !kwLower ||
+      u.username.toLowerCase().includes(kwLower) ||
+      u.fullName.toLowerCase().includes(kwLower) ||
+      u.email.toLowerCase().includes(kwLower) ||
+      u.phone.includes(kwLower);
+
     const matchRole = roleFilter === 'ALL' || u.role === roleFilter;
     const matchStatus = statusFilter === 'ALL' || u.status === statusFilter;
+
     return matchKw && matchRole && matchStatus;
   });
 
-  return (
-    <div style={{ maxWidth: 1240, margin: '2rem auto', padding: '0 1.5rem' }}>
-      <Breadcrumb
-        items={[
-          { label: 'Admin Console', to: '/admin/users' },
-          { label: 'Quản lý tài khoản & RBAC' },
-        ]}
-      />
+  const activeCount = users.filter((u) => u.status === 'ACTIVE').length;
+  const lockedCount = users.filter((u) => u.status === 'LOCKED').length;
+  const hostCount = users.filter((u) => u.role === 'HOST').length;
+  const guestCount = users.filter((u) => u.role === 'GUEST').length;
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', margin: '1rem 0 2rem' }}>
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#1E293B' }}>
-            Quản lý tài khoản &amp; Phân quyền RBAC
+          <h1 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#0F172A' }}>
+            Quản lý Người dùng &amp; Phân quyền (UC-10 / RBAC)
           </h1>
-          <p style={{ margin: 0, color: '#64748B', fontSize: '0.95rem' }}>
-            Kiểm soát tài khoản, thay đổi quyền hạn và khóa người dùng vi phạm. Bảo đảm quy tắc an toàn ASSUM-01.
+          <p style={{ margin: 0, color: '#64748B', fontSize: '0.92rem' }}>
+            Kiểm soát tài khoản toàn hệ thống, khóa/mở khóa tức thì và phân bổ quyền hạn vai trò (Role-Based Access Control).
           </p>
         </div>
-        <Button variant="primary" icon={<PersonPlusFill />} onClick={() => setShowAddForm(true)}>
-          Tạo tài khoản nội bộ
+
+        <Button
+          variant="primary"
+          onClick={() => setShowAddForm(true)}
+          style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)' }}
+        >
+          <PersonPlusFill /> Thêm người dùng mới
         </Button>
       </div>
 
-      {/* Standard KPI Metric Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+      {/* 4 Stat Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
         <StatCard
-          label="Tổng số tài khoản"
+          label="Tổng số người dùng"
           value={`${users.length} tài khoản`}
-          sublabel="Toàn bộ thành viên trong CSDL"
-          accent="brand"
-          icon={<PeopleFill />}
+          description="Được đăng ký trên hệ thống"
+          variant="highlight"
         />
         <StatCard
-          label="Đang hoạt động bình thường"
-          value={`${activeCount} tài khoản`}
-          sublabel="Trạng thái ACTIVE"
-          accent="ok"
-          icon={<CheckCircleFill />}
+          label="Tài khoản hoạt động"
+          value={`${activeCount} người`}
+          description="Đang hoạt động bình thường"
+          trend="Độ tin cậy 100%"
+          trendDirection="up"
         />
         <StatCard
-          label="Đang bị khóa truy cập"
+          label="Chủ nhà đối tác (HOST)"
+          value={`${hostCount} đối tác`}
+          description="Sở hữu chỗ ở &amp; phòng cho thuê"
+          trendDirection="up"
+        />
+        <StatCard
+          label="Tài khoản bị khóa"
           value={`${lockedCount} tài khoản`}
-          sublabel="Tài khoản vi phạm quy chuẩn (LOCKED)"
-          accent="danger"
-          icon={<ExclamationOctagonFill />}
+          description="Đang bị chặn truy cập đăng nhập"
+          trendDirection="neutral"
         />
       </div>
 
-      {/* Filter Controls Card */}
-      <Card style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
+      {/* Main Table Card */}
+      <Card
+        title={
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
+            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: '#0F172A' }}>
+              Danh sách tài khoản người dùng ({filteredUsers.length} kết quả)
+            </span>
+          </div>
+        }
+      >
+        {/* Filters */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '0.85rem', marginBottom: '1.25rem' }}>
           <InputField
-            label="Tìm kiếm người dùng"
-            id="user-kw"
-            icon={<Search />}
+            placeholder="Tìm theo tên đăng nhập, họ tên, email hoặc SĐT..."
             value={kw}
-            onChange={e => setKw(e.target.value)}
-            placeholder="Tìm theo họ tên, username, email..."
+            onChange={(e) => setKw(e.target.value)}
           />
+
           <SelectField
-            label="Phân quyền (Role)"
-            id="user-role"
-            icon={<ShieldLock />}
             value={roleFilter}
-            onChange={e => setRoleFilter(e.target.value)}
+            onChange={(e) => setRoleFilter(e.target.value)}
             options={[
               { value: 'ALL', label: 'Tất cả vai trò' },
-              { value: 'ADMIN', label: 'ADMIN (Quản trị viên)' },
-              { value: 'HOST', label: 'HOST (Đối tác chủ nhà)' },
-              { value: 'GUEST', label: 'GUEST (Khách lưu trú)' },
+              { value: 'ADMIN', label: 'Quản trị viên (ADMIN)' },
+              { value: 'HOST', label: 'Chủ nhà (HOST)' },
+              { value: 'GUEST', label: 'Khách thuê (GUEST)' },
             ]}
           />
+
           <SelectField
-            label="Trạng thái hoạt động"
-            id="user-status"
             value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value)}
+            onChange={(e) => setStatusFilter(e.target.value)}
             options={[
               { value: 'ALL', label: 'Tất cả trạng thái' },
-              { value: 'ACTIVE', label: 'ACTIVE (Đang hoạt động)' },
-              { value: 'LOCKED', label: 'LOCKED (Đang bị khóa)' },
+              { value: 'ACTIVE', label: 'Hoạt động (ACTIVE)' },
+              { value: 'LOCKED', label: 'Đang khóa (LOCKED)' },
             ]}
           />
         </div>
-      </Card>
 
-      {/* Standard Table Card */}
-      <Card
-        title={`Danh sách người dùng (${filteredUsers.length})`}
-        headerRight={
-          <Badge variant="success" dot icon={<ShieldCheck />}>
-            Chuẩn RBAC
-          </Badge>
-        }
-      >
         {filteredUsers.length === 0 ? (
           <EmptyState
-            compact
-            icon={<PeopleFill />}
-            title="Không tìm thấy người dùng phù hợp"
-            description="Hãy thử thay đổi từ khóa hoặc bộ lọc trạng thái để xem thêm kết quả."
+            title="Không tìm thấy người dùng nào"
+            description="Hãy thử thay đổi từ khóa tìm kiếm hoặc chọn lọc trạng thái/vai trò khác."
           />
         ) : (
-          <Table hover>
+          <Table>
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Thành viên</TableHeaderCell>
-                <TableHeaderCell>Tên đăng nhập</TableHeaderCell>
-                <TableHeaderCell>Số điện thoại</TableHeaderCell>
-                <TableHeaderCell>Vai trò RBAC</TableHeaderCell>
-                <TableHeaderCell>Trạng thái</TableHeaderCell>
-                <TableHeaderCell align="right">Thao tác</TableHeaderCell>
+                <TableHeaderCell>NGƯỜI DÙNG</TableHeaderCell>
+                <TableHeaderCell>VAI TRÒ (ROLE)</TableHeaderCell>
+                <TableHeaderCell>SỐ ĐIỆN THOẠI</TableHeaderCell>
+                <TableHeaderCell>EMAIL</TableHeaderCell>
+                <TableHeaderCell>TRẠNG THÁI</TableHeaderCell>
+                <TableHeaderCell align="right">THAO TÁC / QUYỀN HẠN</TableHeaderCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredUsers.map(u => (
-                <TableRow key={u.id}>
-                  <TableCell>
-                    <strong style={{ display: 'block', color: '#1E293B' }}>{u.fullName}</strong>
-                    <span style={{ fontSize: '0.8rem', color: '#64748B' }}>{u.email}</span>
-                  </TableCell>
-                  <TableCell>
-                    <code style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: 4, fontSize: '0.88rem' }}>
-                      {u.username}
-                    </code>
-                  </TableCell>
-                  <TableCell>{u.phone}</TableCell>
-                  <TableCell>
-                    <select
-                      value={u.role}
-                      onChange={e => handleChangeRole(u, e.target.value as any)}
-                      style={{
-                        padding: '0.35rem 0.65rem',
-                        fontSize: '0.85rem',
-                        fontWeight: 600,
-                        borderRadius: 6,
-                        border: '1px solid #CBD5E1',
-                        background: '#ffffff',
-                      }}
-                    >
-                      <option value="ADMIN">ADMIN</option>
-                      <option value="HOST">HOST</option>
-                      <option value="GUEST">GUEST</option>
-                    </select>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={u.status === 'ACTIVE' ? 'active' : 'danger'} dot>
-                      {u.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Button
-                      size="xs"
-                      variant={u.status === 'ACTIVE' ? 'outline' : 'primary'}
-                      icon={u.status === 'ACTIVE' ? <LockFill /> : <UnlockFill />}
-                      style={u.status === 'ACTIVE' ? { color: '#DC2626', borderColor: '#FECACA' } : {}}
-                      onClick={() => handleToggleStatus(u)}
-                    >
-                      {u.status === 'ACTIVE' ? 'Khóa tài khoản' : 'Mở khóa'}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {filteredUsers.map((u) => {
+                const isLocked = u.status === 'LOCKED';
+                const isSuperAdmin = u.username === 'admin';
+                return (
+                  <TableRow key={u.id}>
+                    <TableCell>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div
+                          style={{
+                            width: 38,
+                            height: 38,
+                            borderRadius: '50%',
+                            background:
+                              u.role === 'ADMIN'
+                                ? 'linear-gradient(135deg, #FF385C 0%, #D70466 100%)'
+                                : u.role === 'HOST'
+                                ? 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)'
+                                : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                            color: '#FFFFFF',
+                            fontWeight: 700,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '0.95rem',
+                          }}
+                        >
+                          {u.fullName.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 700, color: '#0F172A', fontSize: '0.92rem' }}>{u.fullName}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'monospace' }}>
+                            @{u.username}
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      {u.role === 'ADMIN' ? (
+                        <Badge variant="danger">ADMIN</Badge>
+                      ) : u.role === 'HOST' ? (
+                        <Badge variant="info">HOST</Badge>
+                      ) : (
+                        <Badge variant="success">GUEST</Badge>
+                      )}
+                    </TableCell>
+
+                    <TableCell>
+                      <span style={{ fontSize: '0.88rem', color: '#334155' }}>{u.phone}</span>
+                    </TableCell>
+
+                    <TableCell>
+                      <span style={{ fontSize: '0.88rem', color: '#334155' }}>{u.email}</span>
+                    </TableCell>
+
+                    <TableCell>
+                      {isLocked ? (
+                        <Badge variant="danger">Đang khóa</Badge>
+                      ) : (
+                        <Badge variant="success">Hoạt động</Badge>
+                      )}
+                    </TableCell>
+
+                    <TableCell align="right">
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.45rem', alignItems: 'center' }}>
+                        {/* Role Selector */}
+                        <select
+                          value={u.role}
+                          disabled={isSuperAdmin}
+                          onChange={(e) => handleChangeRole(u, e.target.value as any)}
+                          style={{
+                            fontSize: '0.78rem',
+                            fontWeight: 600,
+                            borderRadius: 6,
+                            border: '1px solid #CBD5E1',
+                            padding: '0.25rem 0.5rem',
+                            background: isSuperAdmin ? '#F1F5F9' : '#FFFFFF',
+                            cursor: isSuperAdmin ? 'not-allowed' : 'pointer',
+                          }}
+                        >
+                          <option value="GUEST">GUEST (Khách)</option>
+                          <option value="HOST">HOST (Chủ nhà)</option>
+                          <option value="ADMIN">ADMIN (Quản trị)</option>
+                        </select>
+
+                        {/* Lock / Unlock Toggle Button */}
+                        <Button
+                          variant={isLocked ? 'outline' : 'outline'}
+                          size="xs"
+                          disabled={isSuperAdmin}
+                          onClick={() => handleToggleStatus(u)}
+                          style={{
+                            color: isLocked ? '#10B981' : '#B91C1C',
+                            borderColor: isLocked ? '#10B981' : '#FCA5A5',
+                          }}
+                        >
+                          {isLocked ? <UnlockFill /> : <LockFill />}
+                          <span>{isLocked ? 'Mở khóa' : 'Khóa'}</span>
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         )}
       </Card>
 
-      {/* Standard Modal for Add User */}
-      <Modal
-        isOpen={showAddForm}
-        onClose={() => setShowAddForm(false)}
-        title="Thêm tài khoản người dùng mới"
-        subtitle="Khởi tạo tài khoản nội bộ và thiết lập quyền truy cập hệ thống"
-        size="md"
-        footer={
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', width: '100%' }}>
-            <Button variant="outline" onClick={() => setShowAddForm(false)}>
-              Hủy
-            </Button>
-            <Button variant="primary" onClick={handleAddUser as any}>
-              Tạo tài khoản
-            </Button>
-          </div>
-        }
-      >
-        <form onSubmit={handleAddUser}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+      {/* Modal: Add New User */}
+      {showAddForm && (
+        <Modal
+          isOpen={showAddForm}
+          onClose={() => setShowAddForm(false)}
+          title="Tạo mới tài khoản người dùng (Admin User Creation)"
+          size="md"
+        >
+          <form onSubmit={handleAddUser} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <InputField
-              label="Họ và tên"
+              label="Họ và tên đầy đủ"
               required
               value={newFullName}
-              onChange={e => setNewFullName(e.target.value)}
-              placeholder="Ví dụ: Hoàng Đức Minh"
+              onChange={(e) => setNewFullName(e.target.value)}
+              placeholder="VD: Hoàng Văn Hưng"
             />
-            <InputField
-              label="Tên đăng nhập"
-              required
-              value={newUsername}
-              onChange={e => setNewUsername(e.target.value)}
-              placeholder="Ví dụ: minh.hoang"
-            />
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-            <InputField
-              label="Số điện thoại"
-              required
-              value={newPhone}
-              onChange={e => setNewPhone(e.target.value)}
-              placeholder="0912345678"
-            />
-            <InputField
-              label="Email liên hệ"
-              type="email"
-              required
-              value={newEmail}
-              onChange={e => setNewEmail(e.target.value)}
-              placeholder="minh@odauday.vn"
-            />
-          </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+              <InputField
+                label="Tên đăng nhập"
+                required
+                value={newUsername}
+                onChange={(e) => setNewUsername(e.target.value)}
+                placeholder="hung.hoang"
+              />
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <InputField
-              label="Mật khẩu ban đầu"
-              type="password"
-              required
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-            />
+              <InputField
+                label="Mật khẩu khởi tạo"
+                type="password"
+                required
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="123"
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+              <InputField
+                label="Số điện thoại"
+                required
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value)}
+                placeholder="0912345678"
+              />
+
+              <InputField
+                label="Email liên hệ"
+                type="email"
+                required
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="hung@gmail.com"
+              />
+            </div>
+
             <SelectField
-              label="Phân quyền (RBAC)"
-              required
+              label="Vai trò ban đầu"
               value={newRole}
-              onChange={e => setNewRole(e.target.value as any)}
+              onChange={(e) => setNewRole(e.target.value as any)}
               options={[
-                { value: 'GUEST', label: 'GUEST (Khách thuê homestay)' },
-                { value: 'HOST', label: 'HOST (Đối tác chủ nhà)' },
+                { value: 'GUEST', label: 'GUEST (Khách thuê đặt phòng)' },
+                { value: 'HOST', label: 'HOST (Chủ nhà đăng tin homestay)' },
                 { value: 'ADMIN', label: 'ADMIN (Quản trị viên hệ thống)' },
               ]}
             />
-          </div>
-        </form>
-      </Modal>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.65rem', marginTop: '0.5rem' }}>
+              <Button variant="secondary" type="button" onClick={() => setShowAddForm(false)}>
+                Hủy bỏ
+              </Button>
+              <Button variant="primary" type="submit" style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)' }}>
+                Xác nhận tạo tài khoản
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 }

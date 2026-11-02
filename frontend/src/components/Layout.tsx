@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useStore } from '../contexts/StoreContext';
 import { ROLES } from '../constants';
 import {
-  HouseDoorFill,
+  HouseDoorFill, Speedometer2,
   Search,
   Globe,
   List,
@@ -67,18 +67,6 @@ export function Header() {
     setMenuOpen(false);
     addToast('Đã đăng xuất tài khoản', 'info');
     navigate('/');
-  };
-
-  const handleRoleSwitch = (role: string) => {
-    switchRole(role);
-    setMenuOpen(false);
-    addToast(`Đã chuyển sang vai trò: ${role.toUpperCase()}`, 'success');
-  };
-
-  const handleResetData = () => {
-    resetStore();
-    setMenuOpen(false);
-    addToast('Đã khôi phục dữ liệu mẫu ban đầu', 'success');
   };
 
   return (
@@ -452,30 +440,6 @@ export function Header() {
                     Trung tâm trợ giúp
                   </a>
                   <div className="dropdown-divider" />
-                  <div className="dropdown-section-title">Đăng nhập nhanh thử nghiệm</div>
-                  <div style={{ display: 'flex', gap: '0.25rem', padding: '0.25rem 1rem 0.5rem', flexWrap: 'wrap' }}>
-                    <button
-                      type="button"
-                      className="btn btn-xs btn-outline"
-                      onClick={() => handleRoleSwitch('guest')}
-                    >
-                      Khách
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-xs btn-outline"
-                      onClick={() => handleRoleSwitch('host')}
-                    >
-                      Chủ nhà
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-xs btn-outline"
-                      onClick={() => handleRoleSwitch('admin')}
-                    >
-                      Admin
-                    </button>
-                  </div>
                 </>
               )}
             </div>

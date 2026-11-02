@@ -1912,3 +1912,45 @@ textarea::placeholder {
   font-size: 0.8rem;
   font-weight: 500;
 }
+
+/* ── Admin Portal Styling ─────────────────────────────────────────────────── */
+.admin-root {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.admin-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.admin-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+@media (max-width: 992px) {
+  .admin-mobile-toggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  .admin-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    z-index: 1050;
+  }
+  .admin-sidebar.open {
+    transform: translateX(0) !important;
+  }
+}

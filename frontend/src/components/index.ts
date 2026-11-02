@@ -12,3 +12,4 @@ export * from './EmptyState';
 export * from './Table';
 export * from './UI';
 export * from './Layout';
+export * from './AdminLayout';

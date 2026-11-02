@@ -1,6 +1,6 @@
 // ODauDay Stay — ODDStore: Client-side Business Logic Engine (TypeScript)
 import { STORAGE_KEY, USER_KEY, formatVND } from './constants';
-import { INITIAL_DATA, InitialDataState, User, Property, Room, RoomBlock, Booking, Review } from './data';
+import { INITIAL_DATA, InitialDataState, User, Property, Room, RoomBlock, Booking, Review, Promotion, AuditLog } from './data';
 
 function loadData(): InitialDataState {
   try {
@@ -519,6 +519,146 @@ export const ODDStore = {
     saveData(data);
     return { success: true };
   },
+
+  // ── Admin Management Features ──────────────────────────────────────────
+  getAllProperties(): Property[] {
+    const data = loadData();
+    return data.properties;
+  },
+
+  togglePropertyStatus(id: number): { success: boolean; newStatus?: 'ACTIVE' | 'LOCKED' } {
+    const data = loadData();
+    const idx = data.properties.findIndex(p => p.id === id);
+    if (idx === -1) return { success: false };
+    const cur = data.properties[idx].status || 'ACTIVE';
+    const nextStatus = cur === 'ACTIVE' ? 'LOCKED' : 'ACTIVE';
+    data.properties[idx].status = nextStatus;
+    
+    // Add audit log
+    this.addAuditLog({
+      action: 'TOGGLE_PROPERTY',
+      target: data.properties[idx].name,
+      details: nextStatus === 'LOCKED' ? 'Tạm khóa cơ sở lưu trú' : 'Mở khóa cơ sở lưu trú hoạt động',
+      performedBy: getCurrentUser()?.username || 'admin',
+    });
+
+    saveData(data);
+    return { success: true, newStatus: nextStatus };
+  },
+
+  adminCancelBooking(code: string, reason: string): { success: boolean; message?: string } {
+    const data = loadData();
+    const idx = data.bookings.findIndex(b => b.code === code);
+    if (idx === -1) return { success: false, message: 'Không tìm thấy đơn đặt phòng.' };
+    data.bookings[idx].status = 'CANCELLED';
+
+    // Add audit log
+    this.addAuditLog({
+      action: 'CANCEL_BOOKING',
+      target: code,
+      details: `Admin can thiệp hủy đơn: ${reason}`,
+      performedBy: getCurrentUser()?.username || 'admin',
+    });
+
+    saveData(data);
+    return { success: true };
+  },
+
+  getPromotions(): Promotion[] {
+    const data = loadData();
+    return data.promotions || [];
+  },
+
+  addPromotion(promo: Partial<Promotion>): { success: boolean; promotion?: Promotion; message?: string } {
+    const data = loadData();
+    if (!data.promotions) data.promotions = [];
+    const code = (promo.code || '').trim().toUpperCase();
+    if (!code) return { success: false, message: 'Mã giảm giá không được để trống.' };
+    if (data.promotions.some(p => p.code === code)) {
+      return { success: false, message: 'Mã giảm giá này đã tồn tại trên hệ thống.' };
+    }
+
+    const newPromo: Promotion = {
+      id: data.promotions.length + 1,
+      code,
+      type: promo.type || 'PERCENT',
+      value: Number(promo.value) || 10,
+      maxDiscount: promo.maxDiscount ? Number(promo.maxDiscount) : undefined,
+      minOrder: Number(promo.minOrder) || 0,
+      usageLimit: Number(promo.usageLimit) || 100,
+      usedCount: 0,
+      validFrom: promo.validFrom || new Date().toISOString().slice(0, 10),
+      validTo: promo.validTo || '2027-12-31',
+      status: 'ACTIVE',
+      hostUsername: promo.hostUsername,
+    };
+
+    data.promotions.push(newPromo);
+
+    this.addAuditLog({
+      action: 'CREATE_PROMO',
+      target: code,
+      details: `Tạo mới mã giảm giá ${code} (${newPromo.type === 'PERCENT' ? newPromo.value + '%' : formatVND(newPromo.value)})`,
+      performedBy: getCurrentUser()?.username || 'admin',
+    });
+
+    saveData(data);
+    return { success: true, promotion: newPromo };
+  },
+
+  togglePromotion(id: number): { success: boolean; newStatus?: 'ACTIVE' | 'INACTIVE' } {
+    const data = loadData();
+    if (!data.promotions) data.promotions = [];
+    const idx = data.promotions.findIndex(p => p.id === id);
+    if (idx === -1) return { success: false };
+    const cur = data.promotions[idx].status;
+    const nextStatus = cur === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    data.promotions[idx].status = nextStatus;
+    saveData(data);
+    return { success: true, newStatus: nextStatus };
+  },
+
+  deletePromotion(id: number): { success: boolean } {
+    const data = loadData();
+    if (!data.promotions) return { success: true };
+    const p = data.promotions.find(item => item.id === id);
+    data.promotions = data.promotions.filter(item => item.id !== id);
+
+    if (p) {
+      this.addAuditLog({
+        action: 'DELETE_PROMO',
+        target: p.code,
+        details: `Xóa mã giảm giá ${p.code}`,
+        performedBy: getCurrentUser()?.username || 'admin',
+      });
+    }
+
+    saveData(data);
+    return { success: true };
+  },
+
+  getAuditLogs(): AuditLog[] {
+    const data = loadData();
+    return (data.auditLogs || []).slice().reverse();
+  },
+
+  addAuditLog(entry: { action: AuditLog['action']; target: string; details: string; performedBy?: string }): void {
+    const data = loadData();
+    if (!data.auditLogs) data.auditLogs = [];
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const timeStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    data.auditLogs.push({
+      id: data.auditLogs.length + 1,
+      action: entry.action,
+      target: entry.target,
+      details: entry.details,
+      performedBy: entry.performedBy || getCurrentUser()?.username || 'admin',
+      timestamp: timeStr,
+    });
+    saveData(data);
+  },
+
 };
 
 export default ODDStore;

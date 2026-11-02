@@ -26,6 +26,7 @@ export interface Property {
   image: string;
   badge?: string;
   amenities: string[];
+  status?: 'ACTIVE' | 'LOCKED';
 }
 
 export interface Room {
@@ -83,6 +84,30 @@ export interface Review {
   date: string;
 }
 
+export interface Promotion {
+  id: number;
+  code: string;
+  type: 'PERCENT' | 'FIXED';
+  value: number;
+  maxDiscount?: number;
+  minOrder: number;
+  usageLimit: number;
+  usedCount: number;
+  validFrom: string;
+  validTo: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  hostUsername?: string;
+}
+
+export interface AuditLog {
+  id: number;
+  action: 'LOCK' | 'UNLOCK' | 'CHANGE_ROLE' | 'CANCEL_BOOKING' | 'TOGGLE_PROPERTY' | 'CREATE_PROMO' | 'DELETE_PROMO';
+  target: string;
+  details: string;
+  performedBy: string;
+  timestamp: string;
+}
+
 export interface InitialDataState {
   users: User[];
   properties: Property[];
@@ -90,6 +115,8 @@ export interface InitialDataState {
   roomBlocks: RoomBlock[];
   bookings: Booking[];
   reviews: Review[];
+  promotions?: Promotion[];
+  auditLogs?: AuditLog[];
 }
 
 export const INITIAL_DATA: InitialDataState = {
@@ -133,5 +160,17 @@ export const INITIAL_DATA: InitialDataState = {
   ],
   reviews: [
     { id: 1, bookingCode: 'ODD-DEMO-0001', propertyId: 1, guestUsername: 'guest.demo', guestName: 'Khách thuê Demo', rating: 5, comment: 'Phòng sạch sẽ, không gian thoáng đãng mát mẻ, chủ nhà hỗ trợ check-in rất nhanh chóng và nhiệt tình. Vị trí đi bộ ra hồ Tây rất gần!', date: '13/01/2027' },
+  ],
+  promotions: [
+    { id: 1, code: 'ODAUDAY10', type: 'PERCENT', value: 10, maxDiscount: 200000, minOrder: 500000, usageLimit: 100, usedCount: 18, validFrom: '2026-01-01', validTo: '2027-12-31', status: 'ACTIVE' },
+    { id: 2, code: 'CHAOHE2027', type: 'FIXED', value: 150000, minOrder: 1000000, usageLimit: 50, usedCount: 12, validFrom: '2027-05-01', validTo: '2027-08-31', status: 'ACTIVE' },
+    { id: 3, code: 'VIPTRAVEL', type: 'PERCENT', value: 20, maxDiscount: 500000, minOrder: 2000000, usageLimit: 30, usedCount: 30, validFrom: '2027-01-01', validTo: '2027-06-30', status: 'INACTIVE' },
+    { id: 4, code: 'WELCOME50K', type: 'FIXED', value: 50000, minOrder: 300000, usageLimit: 200, usedCount: 45, validFrom: '2026-01-01', validTo: '2027-12-31', status: 'ACTIVE' },
+  ],
+  auditLogs: [
+    { id: 1, action: 'LOCK', target: 'minh.pham', details: 'Khóa tài khoản do vi phạm chính sách tiếp đón khách', performedBy: 'admin', timestamp: '2027-01-15 14:30:22' },
+    { id: 2, action: 'CHANGE_ROLE', target: 'host.demo', details: 'Phê duyệt nâng cấp vai trò từ GUEST sang HOST', performedBy: 'admin', timestamp: '2027-01-10 09:15:00' },
+    { id: 3, action: 'CREATE_PROMO', target: 'CHAOHE2027', details: 'Phát hành chiến dịch voucher mùa hè toàn sàn', performedBy: 'admin', timestamp: '2027-01-05 11:20:45' },
+    { id: 4, action: 'TOGGLE_PROPERTY', target: 'ODauDay Stay Hồ Tây', details: 'Kiểm duyệt chất lượng và xác thực cơ sở lưu trú đạt chuẩn', performedBy: 'admin', timestamp: '2027-01-02 16:45:10' },
   ],
 };
