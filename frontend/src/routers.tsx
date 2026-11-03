@@ -33,55 +33,55 @@ import AdminPromotionsPage from './pages/admin/AdminPromotionsPage';
 import AdminAuditLogsPage from './pages/admin/AdminAuditLogsPage';
 
 export function AppRoutes() {
-  return (
-    <Routes>
-      {/* ── Client / Guest Routes (/client and root /) ────────────────────── */}
-      <Route path="/" element={<HomePage />} />
-      <Route path="/client" element={<HomePage />} />
-      <Route path="/client/search" element={<SearchResultsPage />} />
-      <Route path="/client/property/:id" element={<PropertyDetailPage />} />
-      <Route path="/client/booking-quote" element={<BookingQuotePage />} />
-      <Route path="/client/booking-success" element={<BookingSuccessPage />} />
-      <Route path="/client/my-bookings" element={<MyBookingsPage />} />
-      <Route path="/client/my-bookings/:code" element={<MyBookingDetailPage />} />
-      <Route path="/client/review" element={<ReviewFormPage />} />
-      <Route path="/client/login" element={<LoginPage />} />
-      <Route path="/client/register" element={<RegisterPage />} />
+      return (
+          <Routes>
+                {/* ── Client / Guest Routes (/client and root /) ────────────────────── */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/client" element={<HomePage />} />
+                <Route path="/client/search" element={<SearchResultsPage />} />
+                <Route path="/client/property/:id" element={<PropertyDetailPage />} />
+                <Route path="/client/booking-quote" element={<BookingQuotePage />} />
+                <Route path="/client/booking-success" element={<BookingSuccessPage />} />
+                <Route path="/client/my-bookings" element={<MyBookingsPage />} />
+                <Route path="/client/my-bookings/:code" element={<MyBookingDetailPage />} />
+                <Route path="/client/review" element={<ReviewFormPage />} />
+                <Route path="/client/login" element={<LoginPage />} />
+                <Route path="/client/register" element={<RegisterPage />} />
 
-      {/* Root shortcuts for client */}
-      <Route path="/search" element={<SearchResultsPage />} />
-      <Route path="/property/:id" element={<PropertyDetailPage />} />
-      <Route path="/booking-quote" element={<BookingQuotePage />} />
-      <Route path="/booking-success" element={<BookingSuccessPage />} />
-      <Route path="/my-bookings" element={<MyBookingsPage />} />
-      <Route path="/my-bookings/:code" element={<MyBookingDetailPage />} />
-      <Route path="/review" element={<ReviewFormPage />} />
+                {/* Root shortcuts for client */}
+                <Route path="/search" element={<SearchResultsPage />} />
+                <Route path="/property/:id" element={<PropertyDetailPage />} />
+                <Route path="/booking-quote" element={<BookingQuotePage />} />
+                <Route path="/booking-success" element={<BookingSuccessPage />} />
+                <Route path="/my-bookings" element={<MyBookingsPage />} />
+                <Route path="/my-bookings/:code" element={<MyBookingDetailPage />} />
+                <Route path="/review" element={<ReviewFormPage />} />
 
-      {/* Auth Routes */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+                {/* Auth Routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
 
-      {/* Host Routes */}
-      <Route path="/host/properties" element={<HostPropertiesPage />} />
-      <Route path="/host/rooms" element={<HostRoomsPage />} />
-      <Route path="/host/roomblock" element={<HostRoomBlockPage />} />
-      <Route path="/host/bookings" element={<HostBookingsPage />} />
-      <Route path="/host/bookings/:code" element={<HostBookingDetailPage />} />
-      <Route path="/host/revenue" element={<HostRevenuePage />} />
+                {/* Host Routes */}
+                <Route path="/host/properties" element={<HostPropertiesPage />} />
+                <Route path="/host/rooms" element={<HostRoomsPage />} />
+                <Route path="/host/roomblock" element={<HostRoomBlockPage />} />
+                <Route path="/host/bookings" element={<HostBookingsPage />} />
+                <Route path="/host/bookings/:code" element={<HostBookingDetailPage />} />
+                <Route path="/host/revenue" element={<HostRevenuePage />} />
 
-      {/* ── Admin Management Routes (/admin) ─────────────────────────────── */}
-      <Route path="/admin" element={<AdminDashboardPage />} />
-      <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-      <Route path="/admin/users" element={<AdminUsersPage />} />
-      <Route path="/admin/properties" element={<AdminPropertiesPage />} />
-      <Route path="/admin/bookings" element={<AdminBookingsPage />} />
-      <Route path="/admin/promotions" element={<AdminPromotionsPage />} />
-      <Route path="/admin/audit-logs" element={<AdminAuditLogsPage />} />
+                {/* ── Admin Management Routes (/admin) ─────────────────────────────── */}
+                <Route path="/admin" element={<AdminDashboardPage />} />
+                <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+                <Route path="/admin/users" element={<AdminUsersPage />} />
+                <Route path="/admin/properties" element={<AdminPropertiesPage />} />
+                <Route path="/admin/bookings" element={<AdminBookingsPage />} />
+                <Route path="/admin/promotions" element={<AdminPromotionsPage />} />
+                <Route path="/admin/audit-logs" element={<AdminAuditLogsPage />} />
 
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  );
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+      );
 }
 
 export default AppRoutes;

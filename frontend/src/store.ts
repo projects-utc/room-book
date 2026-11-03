@@ -81,8 +81,8 @@ export const ODDStore = {
     const user = data.users.find(u => {
       const uname = u.username.toLowerCase();
       return (
-        uname === inputName ||
-        ((uname === 'admin' || uname === 'admin.demo') && (inputName === 'admin' || inputName === 'admin.demo'))
+          uname === inputName ||
+          ((uname === 'admin' || uname === 'admin.demo') && (inputName === 'admin' || inputName === 'admin.demo'))
       );
     });
 
@@ -146,11 +146,11 @@ export const ODDStore = {
     const maxP = typeof maxPrice === 'number' ? maxPrice : parseInt(String(maxPrice || ''), 10) || Infinity;
     const results = data.properties.filter(p => {
       const matchKw =
-        !kwLower ||
-        p.name.toLowerCase().includes(kwLower) ||
-        p.address.toLowerCase().includes(kwLower) ||
-        p.city.toLowerCase().includes(kwLower) ||
-        (p.area || '').toLowerCase().includes(kwLower);
+          !kwLower ||
+          p.name.toLowerCase().includes(kwLower) ||
+          p.address.toLowerCase().includes(kwLower) ||
+          p.city.toLowerCase().includes(kwLower) ||
+          (p.area || '').toLowerCase().includes(kwLower);
       const matchType = type === 'Tất cả' || type === 'Tất cả chỗ ở' || p.type.toLowerCase().includes(type.toLowerCase());
       return matchKw && matchType && p.priceMin <= maxP;
     });
@@ -185,6 +185,8 @@ export const ODDStore = {
     if (dOut <= dIn) {
       return { success: false, code: 'INVALID_DATES', message: 'Ngày trả phòng phải sau ngày nhận phòng!' };
     }
+
+    // Đã khôi phục phép toán nhân chia
     const nights = Math.max(1, Math.round((dOut.getTime() - dIn.getTime()) / (1000 * 60 * 60 * 24)));
     const guests = parseInt(String(guestsCount || 2), 10);
 
@@ -533,7 +535,7 @@ export const ODDStore = {
     const cur = data.properties[idx].status || 'ACTIVE';
     const nextStatus = cur === 'ACTIVE' ? 'LOCKED' : 'ACTIVE';
     data.properties[idx].status = nextStatus;
-    
+
     // Add audit log
     this.addAuditLog({
       action: 'TOGGLE_PROPERTY',
@@ -658,7 +660,6 @@ export const ODDStore = {
     });
     saveData(data);
   },
-
 };
 
 export default ODDStore;

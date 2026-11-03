@@ -1,8 +1,13 @@
-// Admin Users Page: User Management & RBAC Role-Based Access Control (TypeScript)
+// UC-10: Admin User Management & RBAC Page (Standardized Components)
 import React, { useState } from 'react';
 import { useStore } from '../../contexts/StoreContext';
 import {
+  Breadcrumb,
+  Button,
   Card,
+  InputField,
+  SelectField,
+  Modal,
   StatCard,
   Badge,
   Table,
@@ -11,10 +16,6 @@ import {
   TableRow,
   TableHeaderCell,
   TableCell,
-  Button,
-  InputField,
-  SelectField,
-  Modal,
   EmptyState,
 } from '../../components';
 import {
@@ -100,14 +101,15 @@ export default function AdminUsersPage() {
     }
   };
 
+  // Lọc dữ liệu kết hợp của nhóm và bạn
   const filteredUsers = users.filter((u) => {
     const kwLower = kw.toLowerCase().trim();
     const matchKw =
-      !kwLower ||
-      u.username.toLowerCase().includes(kwLower) ||
-      u.fullName.toLowerCase().includes(kwLower) ||
-      u.email.toLowerCase().includes(kwLower) ||
-      u.phone.includes(kwLower);
+        !kwLower ||
+        u.username.toLowerCase().includes(kwLower) ||
+        u.fullName.toLowerCase().includes(kwLower) ||
+        u.email.toLowerCase().includes(kwLower) ||
+        u.phone.includes(kwLower);
 
     const matchRole = roleFilter === 'ALL' || u.role === roleFilter;
     const matchStatus = statusFilter === 'ALL' || u.status === statusFilter;
@@ -115,306 +117,309 @@ export default function AdminUsersPage() {
     return matchKw && matchRole && matchStatus;
   });
 
-  const activeCount = users.filter((u) => u.status === 'ACTIVE').length;
-  const lockedCount = users.filter((u) => u.status === 'LOCKED').length;
+  const activeCount = users.filter(u => u.status === 'ACTIVE').length;
+  const lockedCount = users.filter(u => u.status === 'LOCKED').length;
   const hostCount = users.filter((u) => u.role === 'HOST').length;
-  const guestCount = users.filter((u) => u.role === 'GUEST').length;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#0F172A' }}>
-            Quản lý Người dùng &amp; Phân quyền (UC-10 / RBAC)
-          </h1>
-          <p style={{ margin: 0, color: '#64748B', fontSize: '0.92rem' }}>
-            Kiểm soát tài khoản toàn hệ thống, khóa/mở khóa tức thì và phân bổ quyền hạn vai trò (Role-Based Access Control).
-          </p>
-        </div>
+      <div style={{ maxWidth: 1240, margin: '2rem auto', padding: '0 1.5rem' }}>
+        <Breadcrumb
+            items={[
+              { label: 'Admin Console', to: '/admin/users' },
+              { label: 'Quản lý tài khoản & RBAC' },
+            ]}
+        />
 
-        <Button
-          variant="primary"
-          onClick={() => setShowAddForm(true)}
-          style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)' }}
-        >
-          <PersonPlusFill /> Thêm người dùng mới
-        </Button>
-      </div>
-
-      {/* 4 Stat Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
-        <StatCard
-          label="Tổng số người dùng"
-          value={`${users.length} tài khoản`}
-          description="Được đăng ký trên hệ thống"
-          variant="highlight"
-        />
-        <StatCard
-          label="Tài khoản hoạt động"
-          value={`${activeCount} người`}
-          description="Đang hoạt động bình thường"
-          trend="Độ tin cậy 100%"
-          trendDirection="up"
-        />
-        <StatCard
-          label="Chủ nhà đối tác (HOST)"
-          value={`${hostCount} đối tác`}
-          description="Sở hữu chỗ ở &amp; phòng cho thuê"
-          trendDirection="up"
-        />
-        <StatCard
-          label="Tài khoản bị khóa"
-          value={`${lockedCount} tài khoản`}
-          description="Đang bị chặn truy cập đăng nhập"
-          trendDirection="neutral"
-        />
-      </div>
-
-      {/* Main Table Card */}
-      <Card
-        title={
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
-            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: '#0F172A' }}>
-              Danh sách tài khoản người dùng ({filteredUsers.length} kết quả)
-            </span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', margin: '1rem 0 2rem' }}>
+          <div>
+            <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#1E293B' }}>
+              Quản lý tài khoản &amp; Phân quyền RBAC
+            </h1>
+            <p style={{ margin: 0, color: '#64748B', fontSize: '0.95rem' }}>
+              Kiểm soát tài khoản, thay đổi quyền hạn và khóa người dùng vi phạm. Bảo đảm quy tắc an toàn ASSUM-01.
+            </p>
           </div>
-        }
-      >
-        {/* Filters */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '0.85rem', marginBottom: '1.25rem' }}>
-          <InputField
-            placeholder="Tìm theo tên đăng nhập, họ tên, email hoặc SĐT..."
-            value={kw}
-            onChange={(e) => setKw(e.target.value)}
-          />
+          <Button variant="primary" icon={<PersonPlusFill />} onClick={() => setShowAddForm(true)} style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)', border: 'none' }}>
+            Tạo tài khoản nội bộ
+          </Button>
+        </div>
 
-          <SelectField
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-            options={[
-              { value: 'ALL', label: 'Tất cả vai trò' },
-              { value: 'ADMIN', label: 'Quản trị viên (ADMIN)' },
-              { value: 'HOST', label: 'Chủ nhà (HOST)' },
-              { value: 'GUEST', label: 'Khách thuê (GUEST)' },
-            ]}
+        {/* Standard KPI Metric Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+          <StatCard
+              label="Tổng số tài khoản"
+              value={`${users.length} tài khoản`}
+              sublabel="Toàn bộ thành viên trong CSDL"
+              accent="brand"
+              icon={<PeopleFill />}
           />
-
-          <SelectField
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            options={[
-              { value: 'ALL', label: 'Tất cả trạng thái' },
-              { value: 'ACTIVE', label: 'Hoạt động (ACTIVE)' },
-              { value: 'LOCKED', label: 'Đang khóa (LOCKED)' },
-            ]}
+          <StatCard
+              label="Chủ nhà đối tác (HOST)"
+              value={`${hostCount} đối tác`}
+              sublabel="Sở hữu chỗ ở & phòng cho thuê"
+              accent="info"
+              icon={<PeopleFill />}
+          />
+          <StatCard
+              label="Đang hoạt động bình thường"
+              value={`${activeCount} tài khoản`}
+              sublabel="Trạng thái ACTIVE"
+              accent="ok"
+              icon={<CheckCircleFill />}
+          />
+          <StatCard
+              label="Đang bị khóa truy cập"
+              value={`${lockedCount} tài khoản`}
+              sublabel="Tài khoản vi phạm quy chuẩn (LOCKED)"
+              accent="danger"
+              icon={<ExclamationOctagonFill />}
           />
         </div>
 
-        {filteredUsers.length === 0 ? (
-          <EmptyState
-            title="Không tìm thấy người dùng nào"
-            description="Hãy thử thay đổi từ khóa tìm kiếm hoặc chọn lọc trạng thái/vai trò khác."
-          />
-        ) : (
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeaderCell>NGƯỜI DÙNG</TableHeaderCell>
-                <TableHeaderCell>VAI TRÒ (ROLE)</TableHeaderCell>
-                <TableHeaderCell>SỐ ĐIỆN THOẠI</TableHeaderCell>
-                <TableHeaderCell>EMAIL</TableHeaderCell>
-                <TableHeaderCell>TRẠNG THÁI</TableHeaderCell>
-                <TableHeaderCell align="right">THAO TÁC / QUYỀN HẠN</TableHeaderCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredUsers.map((u) => {
-                const isLocked = u.status === 'LOCKED';
-                const isSuperAdmin = u.username === 'admin';
-                return (
-                  <TableRow key={u.id}>
-                    <TableCell>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <div
-                          style={{
-                            width: 38,
-                            height: 38,
-                            borderRadius: '50%',
-                            background:
-                              u.role === 'ADMIN'
-                                ? 'linear-gradient(135deg, #FF385C 0%, #D70466 100%)'
-                                : u.role === 'HOST'
-                                ? 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)'
-                                : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                            color: '#FFFFFF',
-                            fontWeight: 700,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '0.95rem',
-                          }}
-                        >
-                          {u.fullName.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <div style={{ fontWeight: 700, color: '#0F172A', fontSize: '0.92rem' }}>{u.fullName}</div>
-                          <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'monospace' }}>
-                            @{u.username}
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-
-                    <TableCell>
-                      {u.role === 'ADMIN' ? (
-                        <Badge variant="danger">ADMIN</Badge>
-                      ) : u.role === 'HOST' ? (
-                        <Badge variant="info">HOST</Badge>
-                      ) : (
-                        <Badge variant="success">GUEST</Badge>
-                      )}
-                    </TableCell>
-
-                    <TableCell>
-                      <span style={{ fontSize: '0.88rem', color: '#334155' }}>{u.phone}</span>
-                    </TableCell>
-
-                    <TableCell>
-                      <span style={{ fontSize: '0.88rem', color: '#334155' }}>{u.email}</span>
-                    </TableCell>
-
-                    <TableCell>
-                      {isLocked ? (
-                        <Badge variant="danger">Đang khóa</Badge>
-                      ) : (
-                        <Badge variant="success">Hoạt động</Badge>
-                      )}
-                    </TableCell>
-
-                    <TableCell align="right">
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.45rem', alignItems: 'center' }}>
-                        {/* Role Selector */}
-                        <select
-                          value={u.role}
-                          disabled={isSuperAdmin}
-                          onChange={(e) => handleChangeRole(u, e.target.value as any)}
-                          style={{
-                            fontSize: '0.78rem',
-                            fontWeight: 600,
-                            borderRadius: 6,
-                            border: '1px solid #CBD5E1',
-                            padding: '0.25rem 0.5rem',
-                            background: isSuperAdmin ? '#F1F5F9' : '#FFFFFF',
-                            cursor: isSuperAdmin ? 'not-allowed' : 'pointer',
-                          }}
-                        >
-                          <option value="GUEST">GUEST (Khách)</option>
-                          <option value="HOST">HOST (Chủ nhà)</option>
-                          <option value="ADMIN">ADMIN (Quản trị)</option>
-                        </select>
-
-                        {/* Lock / Unlock Toggle Button */}
-                        <Button
-                          variant={isLocked ? 'outline' : 'outline'}
-                          size="xs"
-                          disabled={isSuperAdmin}
-                          onClick={() => handleToggleStatus(u)}
-                          style={{
-                            color: isLocked ? '#10B981' : '#B91C1C',
-                            borderColor: isLocked ? '#10B981' : '#FCA5A5',
-                          }}
-                        >
-                          {isLocked ? <UnlockFill /> : <LockFill />}
-                          <span>{isLocked ? 'Mở khóa' : 'Khóa'}</span>
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        )}
-      </Card>
-
-      {/* Modal: Add New User */}
-      {showAddForm && (
-        <Modal
-          isOpen={showAddForm}
-          onClose={() => setShowAddForm(false)}
-          title="Tạo mới tài khoản người dùng (Admin User Creation)"
-          size="md"
-        >
-          <form onSubmit={handleAddUser} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {/* Filter Controls Card */}
+        <Card style={{ marginBottom: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
             <InputField
-              label="Họ và tên đầy đủ"
-              required
-              value={newFullName}
-              onChange={(e) => setNewFullName(e.target.value)}
-              placeholder="VD: Hoàng Văn Hưng"
+                label="Tìm kiếm người dùng"
+                id="user-kw"
+                icon={<Search />}
+                value={kw}
+                onChange={e => setKw(e.target.value)}
+                placeholder="Tìm theo họ tên, username, email..."
             />
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
-              <InputField
-                label="Tên đăng nhập"
-                required
-                value={newUsername}
-                onChange={(e) => setNewUsername(e.target.value)}
-                placeholder="hung.hoang"
-              />
-
-              <InputField
-                label="Mật khẩu khởi tạo"
-                type="password"
-                required
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="123"
-              />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
-              <InputField
-                label="Số điện thoại"
-                required
-                value={newPhone}
-                onChange={(e) => setNewPhone(e.target.value)}
-                placeholder="0912345678"
-              />
-
-              <InputField
-                label="Email liên hệ"
-                type="email"
-                required
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
-                placeholder="hung@gmail.com"
-              />
-            </div>
-
             <SelectField
-              label="Vai trò ban đầu"
-              value={newRole}
-              onChange={(e) => setNewRole(e.target.value as any)}
-              options={[
-                { value: 'GUEST', label: 'GUEST (Khách thuê đặt phòng)' },
-                { value: 'HOST', label: 'HOST (Chủ nhà đăng tin homestay)' },
-                { value: 'ADMIN', label: 'ADMIN (Quản trị viên hệ thống)' },
-              ]}
+                label="Phân quyền (Role)"
+                id="user-role"
+                icon={<ShieldLock />}
+                value={roleFilter}
+                onChange={e => setRoleFilter(e.target.value)}
+                options={[
+                  { value: 'ALL', label: 'Tất cả vai trò' },
+                  { value: 'ADMIN', label: 'ADMIN (Quản trị viên)' },
+                  { value: 'HOST', label: 'HOST (Đối tác chủ nhà)' },
+                  { value: 'GUEST', label: 'GUEST (Khách lưu trú)' },
+                ]}
             />
+            <SelectField
+                label="Trạng thái hoạt động"
+                id="user-status"
+                value={statusFilter}
+                onChange={e => setStatusFilter(e.target.value)}
+                options={[
+                  { value: 'ALL', label: 'Tất cả trạng thái' },
+                  { value: 'ACTIVE', label: 'ACTIVE (Đang hoạt động)' },
+                  { value: 'LOCKED', label: 'LOCKED (Đang bị khóa)' },
+                ]}
+            />
+          </div>
+        </Card>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.65rem', marginTop: '0.5rem' }}>
-              <Button variant="secondary" type="button" onClick={() => setShowAddForm(false)}>
-                Hủy bỏ
-              </Button>
-              <Button variant="primary" type="submit" style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)' }}>
-                Xác nhận tạo tài khoản
-              </Button>
+        {/* Standard Table Card với giao diện hiển thị của nhóm */}
+        <Card
+            title={`Danh sách người dùng (${filteredUsers.length})`}
+            headerRight={
+              <Badge variant="success" dot icon={<ShieldCheck />}>
+                Chuẩn RBAC
+              </Badge>
+            }
+        >
+          {filteredUsers.length === 0 ? (
+              <EmptyState
+                  compact
+                  icon={<PeopleFill />}
+                  title="Không tìm thấy người dùng phù hợp"
+                  description="Hãy thử thay đổi từ khóa hoặc bộ lọc trạng thái để xem thêm kết quả."
+              />
+          ) : (
+              <Table hover>
+                <TableHead>
+                  <TableRow>
+                    <TableHeaderCell>THÀNH VIÊN</TableHeaderCell>
+                    <TableHeaderCell>VAI TRÒ (ROLE)</TableHeaderCell>
+                    <TableHeaderCell>SỐ ĐIỆN THOẠI</TableHeaderCell>
+                    <TableHeaderCell>EMAIL</TableHeaderCell>
+                    <TableHeaderCell>TRẠNG THÁI</TableHeaderCell>
+                    <TableHeaderCell align="right">THAO TÁC</TableHeaderCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredUsers.map(u => {
+                    const isLocked = u.status === 'LOCKED';
+                    const isSuperAdmin = u.username === 'admin';
+                    return (
+                        <TableRow key={u.id}>
+                          <TableCell>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                              <div
+                                  style={{
+                                    width: 38,
+                                    height: 38,
+                                    borderRadius: '50%',
+                                    background:
+                                        u.role === 'ADMIN'
+                                            ? 'linear-gradient(135deg, #FF385C 0%, #D70466 100%)'
+                                            : u.role === 'HOST'
+                                                ? 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)'
+                                                : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                                    color: '#FFFFFF',
+                                    fontWeight: 700,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '0.95rem',
+                                  }}
+                              >
+                                {u.fullName.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <div style={{ fontWeight: 700, color: '#0F172A', fontSize: '0.92rem' }}>{u.fullName}</div>
+                                <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'monospace' }}>
+                                  @{u.username}
+                                </div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {u.role === 'ADMIN' ? (
+                                <Badge variant="danger">ADMIN</Badge>
+                            ) : u.role === 'HOST' ? (
+                                <Badge variant="info">HOST</Badge>
+                            ) : (
+                                <Badge variant="success">GUEST</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <span style={{ fontSize: '0.88rem', color: '#334155' }}>{u.phone}</span>
+                          </TableCell>
+                          <TableCell>
+                            <span style={{ fontSize: '0.88rem', color: '#334155' }}>{u.email}</span>
+                          </TableCell>
+                          <TableCell>
+                            {isLocked ? (
+                                <Badge variant="danger">Đang khóa</Badge>
+                            ) : (
+                                <Badge variant="success">Hoạt động</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell align="right">
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.45rem', alignItems: 'center' }}>
+                              <select
+                                  value={u.role}
+                                  disabled={isSuperAdmin}
+                                  onChange={e => handleChangeRole(u, e.target.value as any)}
+                                  style={{
+                                    padding: '0.35rem 0.65rem',
+                                    fontSize: '0.78rem',
+                                    fontWeight: 600,
+                                    borderRadius: 6,
+                                    border: '1px solid #CBD5E1',
+                                    background: isSuperAdmin ? '#F1F5F9' : '#ffffff',
+                                    cursor: isSuperAdmin ? 'not-allowed' : 'pointer',
+                                  }}
+                              >
+                                <option value="ADMIN">ADMIN</option>
+                                <option value="HOST">HOST</option>
+                                <option value="GUEST">GUEST</option>
+                              </select>
+                              <Button
+                                  size="xs"
+                                  variant={isLocked ? 'outline' : 'outline'}
+                                  icon={isLocked ? <UnlockFill /> : <LockFill />}
+                                  disabled={isSuperAdmin}
+                                  style={{
+                                    color: isLocked ? '#10B981' : '#DC2626',
+                                    borderColor: isLocked ? '#10B981' : '#FECACA',
+                                  }}
+                                  onClick={() => handleToggleStatus(u)}
+                              >
+                                {isLocked ? 'Mở khóa' : 'Khóa'}
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+          )}
+        </Card>
+
+        {/* Standard Modal for Add User */}
+        <Modal
+            isOpen={showAddForm}
+            onClose={() => setShowAddForm(false)}
+            title="Thêm tài khoản người dùng mới"
+            subtitle="Khởi tạo tài khoản nội bộ và thiết lập quyền truy cập hệ thống"
+            size="md"
+            footer={
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', width: '100%' }}>
+                <Button variant="outline" onClick={() => setShowAddForm(false)}>
+                  Hủy
+                </Button>
+                <Button variant="primary" onClick={handleAddUser as any} style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)', border: 'none' }}>
+                  Tạo tài khoản
+                </Button>
+              </div>
+            }
+        >
+          <form onSubmit={handleAddUser}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <InputField
+                  label="Họ và tên"
+                  required
+                  value={newFullName}
+                  onChange={e => setNewFullName(e.target.value)}
+                  placeholder="Ví dụ: Hoàng Đức Minh"
+              />
+              <InputField
+                  label="Tên đăng nhập"
+                  required
+                  value={newUsername}
+                  onChange={e => setNewUsername(e.target.value)}
+                  placeholder="Ví dụ: minh.hoang"
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <InputField
+                  label="Số điện thoại"
+                  required
+                  value={newPhone}
+                  onChange={e => setNewPhone(e.target.value)}
+                  placeholder="0912345678"
+              />
+              <InputField
+                  label="Email liên hệ"
+                  type="email"
+                  required
+                  value={newEmail}
+                  onChange={e => setNewEmail(e.target.value)}
+                  placeholder="minh@odauday.vn"
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <InputField
+                  label="Mật khẩu ban đầu"
+                  type="password"
+                  required
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+              />
+              <SelectField
+                  label="Phân quyền (RBAC)"
+                  required
+                  value={newRole}
+                  onChange={e => setNewRole(e.target.value as any)}
+                  options={[
+                    { value: 'GUEST', label: 'GUEST (Khách thuê homestay)' },
+                    { value: 'HOST', label: 'HOST (Đối tác chủ nhà)' },
+                    { value: 'ADMIN', label: 'ADMIN (Quản trị viên hệ thống)' },
+                  ]}
+              />
             </div>
           </form>
         </Modal>
-      )}
-    </div>
+      </div>
   );
 }

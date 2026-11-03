@@ -1563,10 +1563,10 @@ textarea::placeholder {
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    135deg,
-    rgba(15, 23, 42, 0.78) 0%,
-    rgba(24, 24, 27, 0.62) 45%,
-    rgba(225, 29, 72, 0.40) 100%
+          135deg,
+          rgba(15, 23, 42, 0.78) 0%,
+          rgba(24, 24, 27, 0.62) 45%,
+          rgba(225, 29, 72, 0.40) 100%
   );
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -1598,19 +1598,19 @@ textarea::placeholder {
   -webkit-backdrop-filter: blur(28px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 24px;
-  box-shadow: 
-    0 25px 60px -15px rgba(0, 0, 0, 0.35),
-    0 0 45px rgba(255, 56, 92, 0.12),
-    inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  box-shadow:
+          0 25px 60px -15px rgba(0, 0, 0, 0.35),
+          0 0 45px rgba(255, 56, 92, 0.12),
+          inset 0 1px 1px rgba(255, 255, 255, 0.9);
   padding: 2.25rem 2.25rem;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .auth-glass-panel:hover {
-  box-shadow: 
-    0 30px 70px -12px rgba(0, 0, 0, 0.40),
-    0 0 50px rgba(255, 56, 92, 0.18),
-    inset 0 1px 1px rgba(255, 255, 255, 1);
+  box-shadow:
+          0 30px 70px -12px rgba(0, 0, 0, 0.40),
+          0 0 50px rgba(255, 56, 92, 0.18),
+          inset 0 1px 1px rgba(255, 255, 255, 1);
 }
 
 .auth-input-wrapper {
@@ -1721,7 +1721,7 @@ textarea::placeholder {
 .animate-spin {
   animation: spin 0.8s linear infinite;
 }
-/* â”€â”€ Luxury Auth Input Enhancements â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Luxury Auth Input Enhancements ───────────────────────────────────────── */
 .auth-input-container {
   position: relative;
   display: flex;
@@ -1768,7 +1768,7 @@ textarea::placeholder {
   background: #F1F5F9;
 }
 
-/* â”€â”€ Luxury Logout Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Luxury Logout Modal ─────────────────────────────────────────────────────────── */
 .logout-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1789,9 +1789,9 @@ textarea::placeholder {
   max-width: 440px;
   width: 100%;
   padding: 2.25rem 2rem;
-  box-shadow: 
-    0 25px 60px -15px rgba(0, 0, 0, 0.35),
-    0 0 40px rgba(255, 56, 92, 0.12);
+  box-shadow:
+          0 25px 60px -15px rgba(0, 0, 0, 0.35),
+          0 0 40px rgba(255, 56, 92, 0.12);
   text-align: center;
   position: relative;
   animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -1899,7 +1899,7 @@ textarea::placeholder {
   transform: translateY(0);
 }
 
-/* â”€â”€ Auth Footer Security Badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Auth Footer Security Badge ─────────────────────────────────────────────────── */
 .auth-trust-badge {
   display: flex;
   align-items: center;

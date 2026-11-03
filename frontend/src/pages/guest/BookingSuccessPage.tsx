@@ -1,179 +1,178 @@
 // Airbnb-Inspired Booking Success / Confirmation Page (TypeScript)
 import React from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { formatVND } from '../../constants';
-import {
-  CheckCircleFill,
-  CalendarCheck,
-  GeoAltFill,
-  HouseDoor,
-  BagCheck,
-  ShieldCheck,
-} from 'react-bootstrap-icons';
 
 export default function BookingSuccessPage() {
-  const [searchParams] = useSearchParams();
-  const { store } = useStore();
+    const [searchParams] = useSearchParams();
+    const { store } = useStore();
+    const navigate = useNavigate();
 
-  const code = searchParams.get('code') || 'ODD-DEMO-0002';
-  const booking = store.getBooking(code) || store.getAllBookings()[0];
+    const code = searchParams.get('code') || 'ODD-DEMO-0002';
+    const booking = store.getBooking(code) || store.getAllBookings()[0];
 
-  return (
-    <div style={{ maxWidth: 720, margin: '3rem auto 5rem', padding: '0 1.5rem' }}>
-      {/* Success Hero Header */}
-      <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-        <div
-          style={{
-            width: 72,
-            height: 72,
-            borderRadius: 'var(--radius-full)',
-            background: '#ecfdf5',
-            color: '#059669',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '2.5rem',
-            margin: '0 auto 1.25rem',
-          }}
-        >
-          <CheckCircleFill />
-        </div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: '0 0 0.5rem', color: 'var(--ink)' }}>
-          Đặt phòng thành công!
-        </h1>
-        <p style={{ color: 'var(--ink-secondary)', fontSize: '1.05rem', margin: 0 }}>
-          Yêu cầu lưu trú của bạn đã được gửi tới chủ nhà và đang được giữ chỗ an toàn.
-        </p>
-      </div>
+    // Nhận thêm thông tin giao dịch truyền từ BookingQuotePage qua URL
+    const txnCode = searchParams.get('txn') || 'TXN-808384';
+    const dbMethod = searchParams.get('method') || 'BANK_TRANSFER';
+    const subChannel = searchParams.get('channel') || 'Quét mã VietQR';
+    const paidAmount = Number(searchParams.get('amount')) || booking?.total || 1300000;
+    const totalAmount = booking?.total || paidAmount;
+    const remainingAmount = Math.max(0, totalAmount - paidAmount);
 
-      {/* Confirmation Receipt Card */}
-      <div
-        style={{
-          border: '1px solid var(--line)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-card)',
-          background: '#ffffff',
-          overflow: 'hidden',
-          marginBottom: '2rem',
-        }}
-      >
-        {/* Code Header Bar */}
-        <div
-          style={{
-            background: 'var(--surface-alt)',
-            padding: '1.25rem 1.75rem',
-            borderBottom: '1px solid var(--line)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '0.75rem',
-          }}
-        >
-          <div>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ink-secondary)' }}>
-              Mã xác nhận đặt phòng
+    return (
+        <div style={{ maxWidth: 540, margin: '3.5rem auto 5rem', padding: '0 1.5rem' }}>
+            <div
+                style={{
+                    background: '#ffffff',
+                    padding: '2.25rem 2rem',
+                    borderRadius: 18,
+                    border: '1px solid #E2E8F0',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.06)',
+                    textAlign: 'center',
+                }}
+            >
+                {/* Icon Check Xanh */}
+                <div
+                    style={{
+                        width: 68,
+                        height: 68,
+                        borderRadius: '50%',
+                        margin: '0 auto 1.25rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '2rem',
+                        fontWeight: 700,
+                        backgroundColor: '#ECFDF5',
+                        color: '#10B981',
+                    }}
+                >
+                    ✓
+                </div>
+
+                <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 700, color: '#1E293B' }}>
+                    Thanh toán thành công!
+                </h3>
+                <p style={{ margin: '0 0 1.5rem', fontSize: '0.92rem', color: '#64748B', lineHeight: 1.5 }}>
+                    Đơn #{booking?.code || code} đã hoàn tất{' '}
+                    {dbMethod === 'CASH' ? 'đặt cọc 30% giữ chỗ' : 'thanh toán 100%'}. Phương thức thanh toán đã được khóa.
+                </p>
+
+                {/* Khung thông tin chi tiết đồng bộ với PaymentFailedScreen */}
+                <div
+                    style={{
+                        background: '#F8FAFC',
+                        borderRadius: 14,
+                        padding: '1.25rem',
+                        textAlign: 'left',
+                        marginBottom: '1.5rem',
+                        border: '1px solid #E2E8F0',
+                        fontSize: '0.9rem',
+                    }}
+                >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+                        <span style={{ color: '#64748B' }}>Mã xác nhận đặt phòng:</span>
+                        <strong style={{ color: '#1E293B', fontFamily: 'monospace' }}>
+                            {booking?.code || code}
+                        </strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+                        <span style={{ color: '#64748B' }}>Mã giao dịch:</span>
+                        <strong style={{ color: '#1E293B' }}>{txnCode}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+                        <span style={{ color: '#64748B' }}>Chỗ ở & Hạng phòng:</span>
+                        <strong style={{ color: '#1E293B', textAlign: 'right' }}>
+                            {booking?.propertyName || 'ODauDay Stay'} ({booking?.roomName || 'Phòng nghỉ'})
+                        </strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+                        <span style={{ color: '#64748B' }}>Thời gian lưu trú:</span>
+                        <span style={{ color: '#1E293B', fontWeight: 600 }}>
+              {booking?.checkIn} → {booking?.checkOut} ({booking?.nights} đêm)
             </span>
-            <p style={{ margin: '0.2rem 0 0', fontSize: '1.4rem', fontWeight: 800, fontFamily: 'monospace', color: 'var(--ink)' }}>
-              {booking?.code || code}
-            </p>
-          </div>
-          <span
-            style={{
-              background: '#fef3c7',
-              color: '#92400e',
-              padding: '0.35rem 0.85rem',
-              borderRadius: 'var(--radius-full)',
-              fontSize: '0.82rem',
-              fontWeight: 700,
-            }}
-          >
-            Trạng thái: Chờ chủ nhà duyệt
-          </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+                        <span style={{ color: '#64748B' }}>Người liên hệ:</span>
+                        <span style={{ color: '#1E293B', fontWeight: 600 }}>
+              {booking?.guestName} ({booking?.guestPhone})
+            </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+                        <span style={{ color: '#64748B' }}>Phương thức (DB):</span>
+                        <strong style={{ color: '#1E293B' }}>{dbMethod}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+                        <span style={{ color: '#64748B' }}>Kênh chi tiết:</span>
+                        <span style={{ color: '#1E293B', fontWeight: 600 }}>{subChannel}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+                        <span style={{ color: '#64748B' }}>Trạng thái:</span>
+                        <strong style={{ color: '#15803D' }}>PAID</strong>
+                    </div>
+
+                    <hr style={{ border: 'none', borderTop: '1px dashed #CBD5E1', margin: '0.85rem 0' }} />
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.05rem' }}>
+                        <strong style={{ color: '#1E293B' }}>Số tiền:</strong>
+                        <strong style={{ color: '#FF385C' }}>{formatVND(paidAmount)}</strong>
+                    </div>
+
+                    {remainingAmount > 0 && (
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                fontSize: '0.84rem',
+                                color: '#64748B',
+                                marginTop: '0.4rem',
+                            }}
+                        >
+                            <span>Còn lại thanh toán tại quầy (70%):</span>
+                            <strong>{formatVND(remainingAmount)}</strong>
+                        </div>
+                    )}
+                </div>
+
+                {/* Nút bấm đồng bộ kiểu dáng */}
+                <button
+                    type="button"
+                    onClick={() => navigate('/my-bookings')}
+                    style={{
+                        width: '100%',
+                        padding: '0.9rem 1.25rem',
+                        backgroundColor: '#1E293B',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: 10,
+                        fontSize: '0.95rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        marginBottom: '0.75rem',
+                    }}
+                >
+                    Xem những đơn đã đặt
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => navigate('/')}
+                    style={{
+                        width: '100%',
+                        padding: '0.75rem 1.25rem',
+                        backgroundColor: 'transparent',
+                        color: '#64748B',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: 10,
+                        fontSize: '0.88rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                    }}
+                >
+                    Khám phá thêm chỗ ở
+                </button>
+            </div>
         </div>
-
-        {/* Details Table */}
-        <div style={{ padding: '1.75rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--line)', paddingBottom: '1rem' }}>
-              <span style={{ color: 'var(--ink-secondary)', fontSize: '0.92rem' }}>Chỗ ở & Hạng phòng</span>
-              <div style={{ textAlign: 'right' }}>
-                <strong style={{ fontSize: '0.98rem', display: 'block' }}>
-                  {booking?.propertyName || 'ODauDay Stay'}
-                </strong>
-                <span style={{ fontSize: '0.85rem', color: 'var(--ink-secondary)' }}>
-                  {booking?.roomName || 'Phòng nghỉ dưỡng'}
-                </span>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--line)', paddingBottom: '1rem' }}>
-              <span style={{ color: 'var(--ink-secondary)', fontSize: '0.92rem' }}>Thời gian lưu trú</span>
-              <div style={{ textAlign: 'right' }}>
-                <strong style={{ fontSize: '0.95rem', display: 'block' }}>
-                  {booking?.checkIn} → {booking?.checkOut}
-                </strong>
-                <span style={{ fontSize: '0.85rem', color: 'var(--ink-secondary)' }}>
-                  {booking?.nights} đêm · Nhận phòng từ 14:00
-                </span>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--line)', paddingBottom: '1rem' }}>
-              <span style={{ color: 'var(--ink-secondary)', fontSize: '0.92rem' }}>Số lượng khách</span>
-              <span style={{ fontWeight: 600 }}>{booking?.guests} khách</span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--line)', paddingBottom: '1rem' }}>
-              <span style={{ color: 'var(--ink-secondary)', fontSize: '0.92rem' }}>Người liên hệ</span>
-              <span style={{ fontWeight: 600 }}>{booking?.guestName} ({booking?.guestPhone})</span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', paddingTop: '0.25rem' }}>
-              <span style={{ fontSize: '1.05rem', fontWeight: 700 }}>Tổng số tiền thanh toán</span>
-              <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--airbnb-pink)' }}>
-                {formatVND(booking?.total || 1300000)}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-        <Link
-          to="/my-bookings"
-          className="btn btn-primary"
-          style={{
-            padding: '0.85rem 1.75rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          <BagCheck />
-          <span>Xem chuyến đi của bạn</span>
-        </Link>
-
-        <Link
-          to="/"
-          className="btn btn-outline"
-          style={{
-            padding: '0.85rem 1.75rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          <HouseDoor />
-          <span>Khám phá thêm chỗ ở</span>
-        </Link>
-      </div>
-    </div>
-  );
+    );
 }

@@ -135,29 +135,28 @@ export default function AdminBookingsPage() {
       {/* 4 Stat Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
         <StatCard
-          label="Tổng đơn đặt phát sinh"
-          value={`${bookings.length} đơn`}
-          description="Toàn bộ lịch sử trên hệ thống"
-          variant="highlight"
+            label="Tổng đơn đặt phát sinh"
+            value={`${bookings.length} đơn`}
+            description="Toàn bộ lịch sử trên hệ thống"
+            variant="highlight"
         />
         <StatCard
-          label="Đơn đã hoàn tất"
-          value={`${completedCount} đơn`}
-          description="Kỳ lưu trú kết thúc thành công"
-          trend="Đã thu phí sàn"
-          trendDirection="up"
+            label="Đơn đã hoàn tất"
+            value={`${completedCount} đơn`}
+            description="Kỳ lưu trú kết thúc (Đã thu phí sàn)"
+            trendDirection="up"
         />
         <StatCard
-          label="Đơn đang chờ duyệt"
-          value={`${pendingCount} đơn`}
-          description="Cần chủ nhà xác nhận trước hạn"
-          trendDirection="neutral"
+            label="Đơn đang chờ duyệt"
+            value={`${pendingCount} đơn`}
+            description="Cần chủ nhà xác nhận trước hạn"
+            trendDirection="neutral"
         />
         <StatCard
-          label="Tổng giá trị đơn đặt"
-          value={formatVND(totalValue)}
-          description="Bao gồm đơn hoàn thành &amp; đang xử lý"
-          trendDirection="up"
+            label="Tổng giá trị đơn đặt"
+            value={formatVND(totalValue)}
+            description="Bao gồm đơn hoàn thành & đang xử lý"
+            trendDirection="up"
         />
       </div>
 
