@@ -1,6 +1,7 @@
 // UC-10: Admin User Management & RBAC Page (Standardized Components)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../contexts/StoreContext';
+import { authApi } from '../../api/authApi';
 import {
   Breadcrumb,
   Button,
@@ -48,41 +49,65 @@ export default function AdminUsersPage() {
   const [newEmail, setNewEmail] = useState('');
   const [newRole, setNewRole] = useState<'ADMIN' | 'HOST' | 'GUEST'>('HOST');
 
-  const refreshList = () => {
-    setUsers(store.getAllUsers());
+  useEffect(() => {
+    authApi.getUsers().then((res) => {
+      if (res.success && res.users && res.users.length > 0) {
+        setUsers(res.users);
+      }
+    });
+  }, []);
+
+  const refreshList = async () => {
+    const res = await authApi.getUsers();
+    if (res.success && res.users && res.users.length > 0) {
+      setUsers(res.users);
+    } else {
+      setUsers(store.getAllUsers());
+    }
   };
 
-  const handleToggleStatus = (u: User) => {
+  const handleToggleStatus = async (u: User) => {
     // Safety check: Cannot lock own admin account
     if (u.username === currentUser?.username || u.username === 'admin') {
       addToast('Quy tắc an toàn (ASSUM-01): Quản trị viên không thể tự khóa tài khoản chính mình!', 'error');
       return;
     }
 
-    const res = store.toggleUserStatus(u.id);
-    if (res.success) {
-      addToast(`Đã chuyển trạng thái tài khoản ${u.username} sang ${res.newStatus}`, 'success');
-      refreshList();
-    }
+    const nextStatus = u.status === 'ACTIVE' ? 'LOCKED' : 'ACTIVE';
+    await authApi.updateUserStatus(u.id, nextStatus);
+    store.toggleUserStatus(u.id);
+    addToast(`Đã chuyển trạng thái tài khoản ${u.username} sang ${nextStatus}`, 'success');
+    refreshList();
   };
 
-  const handleChangeRole = (u: User, newR: User['role']) => {
+  const handleChangeRole = async (u: User, newR: User['role']) => {
     if (u.username === 'admin' && newR !== 'ADMIN') {
       addToast('Quy tắc an toàn (ASSUM-01): Hệ thống phải duy trì ít nhất 01 Quản trị viên tối cao!', 'error');
       return;
     }
 
+    await authApi.updateUserRole(u.id, newR);
     store.changeUserRole(u.id, newR);
     addToast(`Đã đổi vai trò tài khoản ${u.username} thành ${newR}`, 'info');
     refreshList();
   };
 
-  const handleAddUser = (e?: React.FormEvent) => {
+  const handleAddUser = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!newFullName.trim() || !newUsername.trim() || !newPhone.trim() || !newEmail.trim() || !newPassword.trim()) {
       addToast('Vui lòng điền đầy đủ các thông tin bắt buộc', 'warning');
       return;
     }
+
+    await authApi.register({
+      username: newUsername,
+      password: newPassword,
+      fullName: newFullName,
+      phone: newPhone,
+      email: newEmail,
+      role: newRole,
+    });
+
     const res = store.addUser({
       username: newUsername,
       password: newPassword,

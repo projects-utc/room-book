@@ -11,8 +11,9 @@ export interface ToastMessage {
 
 export interface StoreContextType {
   currentUser: User | null;
-  login: (username: string, password?: string) => Promise<{ success: boolean; code?: string; message?: string; user?: User }>;
-  register: (newUser: Partial<User>) => Promise<{ success: boolean; message?: string; user?: User }>;
+  isBackendReady: boolean;
+  login: (username: string, password?: string) => Promise<{ success: boolean; user?: User }>;
+  register: (newUser: Partial<User>) => Promise<{ success: boolean; user?: User }>;
   logout: () => void;
   switchRole: (role: string) => void;
   addToast: (message: string, type?: 'info' | 'success' | 'warn' | 'error', duration?: number) => void;
@@ -26,99 +27,136 @@ const StoreContext = createContext<StoreContextType | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(() => getCurrentUser());
+  const [isBackendReady, setIsBackendReady] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const refreshUser = useCallback(() => {
     setCurrentUser(getCurrentUser());
   }, []);
 
-  // Check backend session on mount
+  // Kiểm tra backend IDE có đang chạy hay không. Nếu chưa chạy -> poll kiểm tra liên tục
   useEffect(() => {
-    authApi.getMe().then(res => {
-      if (res.success && res.user) {
-        const mapped: User = {
-          id: res.user.id,
-          username: res.user.username,
-          fullName: res.user.fullName,
-          phone: res.user.phone,
-          email: res.user.email,
-          role: res.user.role,
-          status: res.user.status,
-        };
-        ODDStore.setCurrentUser(mapped);
-        setCurrentUser(mapped);
+    let timer: any;
+    let isMounted = true;
+
+    const checkBackend = async () => {
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{}',
+        });
+        const contentType = res.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          if (isMounted) setIsBackendReady(true);
+          return;
+        }
+      } catch {
+        // Backend IDE chưa chạy
       }
-    });
+
+      if (isMounted) {
+        setIsBackendReady(false);
+        timer = setTimeout(checkBackend, 2500);
+      }
+    };
+
+    checkBackend();
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, []);
+
+  // Kiểm tra phiên đăng nhập thực tế bằng JWT và check-role khi load trang
+  useEffect(() => {
+    const token = authApi.getToken();
+    if (token) {
+      authApi.checkRole().then((res) => {
+        if (res.success && res.user) {
+          const u = res.user;
+          const mappedUser: User = {
+            id: u.id,
+            username: u.username,
+            fullName: u.fullName,
+            phone: u.phone || '',
+            email: u.email,
+            role: u.role,
+            status: u.status,
+          };
+          ODDStore.setCurrentUser(mappedUser);
+          setCurrentUser(mappedUser);
+        } else {
+          authApi.clearToken();
+          ODDStore.logout();
+          setCurrentUser(null);
+        }
+      });
+    }
   }, []);
 
   const login = useCallback(
     async (username: string, password?: string) => {
-      // 1. Try Backend API first
-      const backendRes = await authApi.login({ username, password });
-      if (backendRes.success && backendRes.data?.user) {
-        const u = backendRes.data.user;
-        const mappedUser: User = {
-          id: u.id,
-          username: u.username,
-          fullName: u.fullName,
-          phone: u.phone,
-          email: u.email,
-          role: u.role,
-          status: u.status,
-        };
-        ODDStore.setCurrentUser(mappedUser);
-        setCurrentUser(mappedUser);
-        return { success: true, user: mappedUser };
+      try {
+        const backendRes = await authApi.login({ username, password });
+        if (backendRes.success) {
+          // Lấy thông tin tài khoản và vai trò thực tế từ backend
+          const roleRes = await authApi.checkRole();
+          const u = roleRes.success && roleRes.user ? roleRes.user : backendRes.data?.user;
+          if (u) {
+            const mappedUser: User = {
+              id: u.id,
+              username: u.username,
+              fullName: u.fullName,
+              phone: u.phone || '',
+              email: u.email,
+              role: u.role,
+              status: u.status,
+            };
+            ODDStore.setCurrentUser(mappedUser);
+            setCurrentUser(mappedUser);
+            return { success: true, user: mappedUser };
+          }
+        }
+        return { success: false };
+      } catch {
+        return { success: false };
       }
-
-      // If backend explicitly rejected with business error
-      if (backendRes.message && !backendRes.message.includes('kết nối') && !backendRes.message.includes('fetch')) {
-        return { success: false, message: backendRes.message };
-      }
-
-      // 2. Fallback to Local ODDStore
-      const result = ODDStore.login(username, password);
-      if (result.success) {
-        refreshUser();
-      }
-      return result;
     },
-    [refreshUser]
+    []
   );
 
   const register = useCallback(
     async (newUser: Partial<User>) => {
-      // 1. Try Backend API first
-      const backendRes = await authApi.register({
-        username: newUser.username || '',
-        password: newUser.password || '',
-        fullName: newUser.fullName || '',
-        phone: newUser.phone || '',
-        email: newUser.email || '',
-        role: newUser.role === 'HOST' ? 'HOST' : 'GUEST',
-      });
+      try {
+        const backendRes = await authApi.register({
+          username: newUser.username || '',
+          password: newUser.password || '',
+          fullName: newUser.fullName || '',
+          phone: newUser.phone || '',
+          email: newUser.email || '',
+          role: newUser.role === 'HOST' ? 'HOST' : 'GUEST',
+        });
 
-      if (backendRes.success && backendRes.data?.user) {
-        const u = backendRes.data.user;
-        const mappedUser: User = {
-          id: u.id,
-          username: u.username,
-          fullName: u.fullName,
-          phone: u.phone,
-          email: u.email,
-          role: u.role,
-          status: u.status,
-        };
-        ODDStore.register(mappedUser);
-        return { success: true, user: mappedUser };
+        if (backendRes.success && backendRes.data?.user) {
+          const u = backendRes.data.user;
+          const mappedUser: User = {
+            id: u.id,
+            username: u.username,
+            fullName: u.fullName,
+            phone: u.phone,
+            email: u.email,
+            role: u.role,
+            status: u.status,
+          };
+          ODDStore.register(mappedUser);
+          return { success: true, user: mappedUser };
+        }
+        return { success: false };
+      } catch {
+        return { success: false };
       }
-
-      if (backendRes.message && !backendRes.message.includes('kết nối') && !backendRes.message.includes('fetch')) {
-        return { success: false, message: backendRes.message };
-      }
-
-      // 2. Fallback to Local ODDStore
-      return ODDStore.register(newUser);
     },
     []
   );
@@ -148,26 +186,28 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [login, logout]
   );
 
-  const addToast = useCallback((message: string, type: 'info' | 'success' | 'warn' | 'error' = 'info', duration: number = 3500) => {
+  const addToast = useCallback((message: string, type: 'info' | 'success' | 'warn' | 'error' = 'info', duration = 3500) => {
     const id = Date.now() + Math.random();
-    setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), duration);
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, duration);
   }, []);
 
   const removeToast = useCallback((id: number) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   const resetStore = useCallback(() => {
     ODDStore.reset();
     refreshUser();
-    addToast('Đã khôi phục CSDL về dữ liệu mẫu ban đầu.', 'success');
-  }, [refreshUser, addToast]);
+  }, [refreshUser]);
 
   return (
     <StoreContext.Provider
       value={{
         currentUser,
+        isBackendReady,
         login,
         register,
         logout,
@@ -185,9 +225,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 }
 
 export function useStore(): StoreContextType {
-  const ctx = useContext(StoreContext);
-  if (!ctx) throw new Error('useStore must be used within StoreProvider');
-  return ctx;
+  const context = useContext(StoreContext);
+  if (!context) {
+    throw new Error('useStore must be used within a StoreProvider');
+  }
+  return context;
 }
-
-export default StoreContext;

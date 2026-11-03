@@ -28,11 +28,9 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<'GUEST' | 'HOST'>('GUEST');
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
     setLoading(true);
 
     try {
@@ -45,17 +43,13 @@ export default function RegisterPage() {
         role,
       });
 
-      if (!res.success) {
-        setErrorMsg(res.message || 'Đăng ký không thành công. Vui lòng kiểm tra lại thông tin.');
-        addToast(res.message || 'Đăng ký thất bại', 'error');
-      } else {
+      if (res.success) {
+        setLoading(false);
         addToast('Chúc mừng bạn đã tạo tài khoản thành công! Hãy đăng nhập để bắt đầu trải nghiệm ✨', 'success');
         navigate('/login');
       }
-    } catch (err: any) {
-      setErrorMsg('Không thể kết nối đến máy chủ. Vui lòng thử lại sau.');
-    } finally {
-      setLoading(false);
+    } catch {
+      // Giữ loading quay liên tục nếu backend chưa chạy
     }
   };
 
@@ -128,28 +122,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          {/* Error Alert */}
-          {errorMsg && (
-            <div
-              style={{
-                background: '#FEF2F2',
-                border: '1px solid #FCA5A5',
-                borderRadius: '12px',
-                padding: '0.85rem 1rem',
-                marginBottom: '1.25rem',
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '0.65rem',
-                color: '#991B1B',
-                fontSize: '0.88rem',
-              }}
-            >
-              <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>⚠️</span>
-              <div>
-                <strong>Lỗi đăng ký:</strong> {errorMsg}
-              </div>
-            </div>
-          )}
+
 
           {/* Form */}
           <form onSubmit={handleSubmit}>
