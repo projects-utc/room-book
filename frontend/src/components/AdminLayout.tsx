@@ -1,6 +1,6 @@
 // Admin Layout: Standardized Luxury & High-Efficiency Admin Interface
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useStore } from '../contexts/StoreContext';
 import {
   Speedometer2,
@@ -57,6 +57,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     addToast('Đã đăng xuất khỏi tài khoản Quản trị viên.', 'info');
     navigate('/login');
   };
+
+  if (!currentUser) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (currentUser.role !== 'ADMIN') {
+    return <Navigate to={currentUser.role === 'HOST' ? '/host/properties' : '/client'} replace />;
+  }
 
   const isActive = (path: string) => {
     if (path === '/admin') {

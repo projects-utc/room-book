@@ -39,7 +39,7 @@ export default function BookingQuotePage() {
   const [copiedField, setCopiedField] = useState('');
   const [isDownloadingQr, setIsDownloadingQr] = useState(false);
 
-  // Thêm state chặn thanh toán 2 lần
+  // State chống gửi trùng giao dịch thanh toán
   const [isAlreadyPaid, setIsAlreadyPaid] = useState<boolean>(false);
 
   const [simulateOutcome, setSimulateOutcome] = useState<'SUCCESS' | 'FAILED'>('SUCCESS');
@@ -96,7 +96,8 @@ export default function BookingQuotePage() {
       link.remove();
       setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
     } catch {
-      addToast('Không thể tải mã QR. Vui lòng thử mở ảnh QR và lưu thủ công.', 'error');
+      window.open(vietQrUrl, '_blank');
+      addToast('Đang mở ảnh QR trong tab mới để bạn tải và lưu thủ công.', 'info');
     } finally {
       setIsDownloadingQr(false);
     }

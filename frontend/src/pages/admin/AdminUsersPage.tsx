@@ -77,8 +77,12 @@ export default function AdminUsersPage() {
     refreshList();
   };
 
-  const handleAddUser = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddUser = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!newFullName.trim() || !newUsername.trim() || !newPhone.trim() || !newEmail.trim() || !newPassword.trim()) {
+      addToast('Vui lòng điền đầy đủ các thông tin bắt buộc', 'warning');
+      return;
+    }
     const res = store.addUser({
       username: newUsername,
       password: newPassword,
@@ -96,6 +100,8 @@ export default function AdminUsersPage() {
       setNewUsername('');
       setNewFullName('');
       setNewEmail('');
+      setNewPhone('');
+      setNewPassword('');
     } else {
       addToast(res.message || 'Lỗi khi tạo tài khoản', 'error');
     }
@@ -356,13 +362,13 @@ export default function AdminUsersPage() {
                 <Button variant="outline" onClick={() => setShowAddForm(false)}>
                   Hủy
                 </Button>
-                <Button variant="primary" onClick={handleAddUser as any} style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)', border: 'none' }}>
+                <Button type="submit" form="add-user-form" variant="primary" style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)', border: 'none' }}>
                   Tạo tài khoản
                 </Button>
               </div>
             }
         >
-          <form onSubmit={handleAddUser}>
+          <form id="add-user-form" onSubmit={handleAddUser}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               <InputField
                   label="Họ và tên"

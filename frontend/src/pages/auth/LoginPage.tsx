@@ -1,6 +1,6 @@
 // Standardized Luxury Login Page (TypeScript)
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import {
   HouseDoorFill,
@@ -16,6 +16,7 @@ import {
 export default function LoginPage() {
   const { login, addToast } = useStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [username, setUsername] = useState('guest.demo');
   const [password, setPassword] = useState('123');
@@ -44,12 +45,15 @@ export default function LoginPage() {
       } else {
         const displayName = res.user?.fullName || username;
         addToast(`Chào mừng bạn trở lại, ${displayName}! Chúc bạn một ngày tốt lành ✨`, 'success');
-        if (res.user?.role === 'HOST') {
-          navigate('/host/properties');
+        const from = (location.state as any)?.from?.pathname;
+        if (from && from !== '/login' && from !== '/client/login' && from !== '/register') {
+          navigate(from, { replace: true });
+        } else if (res.user?.role === 'HOST') {
+          navigate('/host/properties', { replace: true });
         } else if (res.user?.role === 'ADMIN') {
-          navigate('/admin/users');
+          navigate('/admin', { replace: true });
         } else {
-          navigate('/');
+          navigate('/client', { replace: true });
         }
       }
     } catch (err: any) {
