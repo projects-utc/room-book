@@ -77,15 +77,15 @@ export function Header() {
         navigate('/');
     };
 
-    const handleRoleSwitch = (role: string) => {
-        switchRole(role);
+    const handleRoleSwitch = async (role: string) => {
+        await switchRole(role);
         setMenuOpen(false);
         addToast(`Đã chuyển sang vai trò: ${role.toUpperCase()}`, 'success');
-        if (role === 'guest' && location.pathname.startsWith('/admin')) {
-            navigate('/client');
-        } else if (role === 'host' && location.pathname.startsWith('/admin')) {
+        if (role === 'admin') {
+            navigate('/admin');
+        } else if (role === 'host') {
             navigate('/host/properties');
-        } else if (role === 'guest' && location.pathname.startsWith('/host')) {
+        } else {
             navigate('/client');
         }
     };

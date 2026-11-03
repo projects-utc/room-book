@@ -27,7 +27,7 @@ export function ProtectedRoute({
   useEffect(() => {
     if (!isAuthenticated && !toastFiredRef.current) {
       toastFiredRef.current = true;
-      addToast(unauthenticatedMessage || 'Vui lòng đăng nhập để tiếp tục.', 'warning');
+      addToast(unauthenticatedMessage || 'Vui lòng đăng nhập để tiếp tục.', 'warn');
     } else if (isAuthenticated && !isAuthorized && !toastFiredRef.current) {
       toastFiredRef.current = true;
       addToast(unauthorizedMessage || 'Bạn không có quyền truy cập trang này.', 'error');
