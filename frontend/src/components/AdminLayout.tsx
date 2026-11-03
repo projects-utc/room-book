@@ -1,4 +1,3 @@
-// Admin Layout: Standardized Luxury & High-Efficiency Admin Interface
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useStore } from '../contexts/StoreContext';
