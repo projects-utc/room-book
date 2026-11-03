@@ -1,6 +1,7 @@
 // UC-10: Admin User Management & RBAC Page (Standardized Components)
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../contexts/StoreContext';
+import { stayApi } from '../../api/stayApi';
 import { authApi } from '../../api/authApi';
 import {
   Breadcrumb,
@@ -49,22 +50,27 @@ export default function AdminUsersPage() {
   const [newEmail, setNewEmail] = useState('');
   const [newRole, setNewRole] = useState<'ADMIN' | 'HOST' | 'GUEST'>('HOST');
 
-  useEffect(() => {
-    authApi.getUsers().then((res) => {
-      if (res.success && res.users && res.users.length > 0) {
-        setUsers(res.users);
-      }
-    });
-  }, []);
-
   const refreshList = async () => {
-    const res = await authApi.getUsers();
-    if (res.success && res.users && res.users.length > 0) {
-      setUsers(res.users);
-    } else {
-      setUsers(store.getAllUsers());
+    try {
+      const res = await stayApi.getUsers();
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setUsers(res.data);
+        return;
+      }
+    } catch {
+      // fallback
     }
+    const authRes = await authApi.getUsers();
+    if (authRes.success && authRes.users && authRes.users.length > 0) {
+      setUsers(authRes.users);
+      return;
+    }
+    setUsers(store.getAllUsers());
   };
+
+  useEffect(() => {
+    refreshList();
+  }, []);
 
   const handleToggleStatus = async (u: User) => {
     // Safety check: Cannot lock own admin account
@@ -74,9 +80,13 @@ export default function AdminUsersPage() {
     }
 
     const nextStatus = u.status === 'ACTIVE' ? 'LOCKED' : 'ACTIVE';
-    await authApi.updateUserStatus(u.id, nextStatus);
-    store.toggleUserStatus(u.id);
-    addToast(`Đã chuyển trạng thái tài khoản ${u.username} sang ${nextStatus}`, 'success');
+    try {
+      await stayApi.toggleUserStatus(u.id);
+    } catch {
+      await authApi.updateUserStatus(u.id, nextStatus);
+    }
+    const res = store.toggleUserStatus(u.id);
+    addToast(`Đã chuyển trạng thái tài khoản ${u.username} sang ${res.newStatus || nextStatus}`, 'success');
     refreshList();
   };
 
@@ -86,7 +96,11 @@ export default function AdminUsersPage() {
       return;
     }
 
-    await authApi.updateUserRole(u.id, newR);
+    try {
+      await stayApi.changeUserRole(u.id, newR);
+    } catch {
+      await authApi.updateUserRole(u.id, newR);
+    }
     store.changeUserRole(u.id, newR);
     addToast(`Đã đổi vai trò tài khoản ${u.username} thành ${newR}`, 'info');
     refreshList();
@@ -99,14 +113,25 @@ export default function AdminUsersPage() {
       return;
     }
 
-    await authApi.register({
-      username: newUsername,
-      password: newPassword,
-      fullName: newFullName,
-      phone: newPhone,
-      email: newEmail,
-      role: newRole,
-    });
+    try {
+      await stayApi.createUser({
+        username: newUsername,
+        password: newPassword,
+        fullName: newFullName,
+        phone: newPhone,
+        email: newEmail,
+        role: newRole,
+      });
+    } catch {
+      await authApi.register({
+        username: newUsername,
+        password: newPassword,
+        fullName: newFullName,
+        phone: newPhone,
+        email: newEmail,
+        role: newRole,
+      });
+    }
 
     const res = store.addUser({
       username: newUsername,

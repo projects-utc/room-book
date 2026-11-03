@@ -21,6 +21,7 @@ export interface StoreContextType {
   toasts: ToastMessage[];
   resetStore: () => void;
   store: typeof ODDStore;
+  dataVersion?: number;
 }
 
 const StoreContext = createContext<StoreContextType | null>(null);
@@ -29,9 +30,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(() => getCurrentUser());
   const [isBackendReady, setIsBackendReady] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [dataVersion, setDataVersion] = useState<number>(0);
 
   const refreshUser = useCallback(() => {
     setCurrentUser(getCurrentUser());
+  }, []);
+
+  useEffect(() => {
+    return ODDStore.subscribe(() => {
+      setDataVersion(v => v + 1);
+    });
   }, []);
 
   // Kiểm tra backend IDE có đang chạy hay không. Nếu chưa chạy -> poll kiểm tra liên tục
@@ -69,8 +77,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Kiểm tra phiên đăng nhập thực tế bằng JWT và check-role khi load trang
+  // Đồng bộ dữ liệu từ backend và kiểm tra phiên đăng nhập thực tế khi load trang
   useEffect(() => {
+    ODDStore.syncFromBackend().finally(() => {
+      refreshUser();
+    });
+
     const token = authApi.getToken();
     if (token) {
       authApi.checkRole().then((res) => {
@@ -94,7 +106,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }
       });
     }
-  }, []);
+  }, [refreshUser]);
 
   const login = useCallback(
     async (username: string, password?: string) => {
@@ -217,6 +229,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         toasts,
         resetStore,
         store: ODDStore,
+        dataVersion,
       }}
     >
       {children}

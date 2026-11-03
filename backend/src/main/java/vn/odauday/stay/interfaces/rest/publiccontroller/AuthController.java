@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import vn.odauday.stay.application.common.ApiResponse;
 import vn.odauday.stay.application.model.user.AuthResponse;
 import vn.odauday.stay.application.model.user.LoginRequest;
 import vn.odauday.stay.application.model.user.RegisterRequest;
@@ -41,23 +42,23 @@ public class AuthController {
         return authService.login(request);
     }
 
-    @GetMapping({"/me", "/role"})
-    public UserResponse checkRole(@RequestHeader(value = "Authorization", required = false) String authHeader) {
-        return authService.checkRole(authHeader);
+    @GetMapping({"/me", "/check-role"})
+    public ApiResponse<UserResponse> getMe(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        return ApiResponse.ok(authService.getMe(authHeader));
     }
 
     @GetMapping("/users")
-    public List<UserResponse> getAllUsers() {
-        return authService.getAllUsers();
+    public ApiResponse<List<UserResponse>> getAllUsers() {
+        return ApiResponse.ok(authService.getAllUsers());
     }
 
     @PutMapping("/users/{id}/role")
-    public UserResponse updateUserRole(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        return authService.updateUserRole(id, body.get("role"));
+    public ApiResponse<UserResponse> updateUserRole(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        return ApiResponse.ok(authService.updateUserRole(id, body.get("role")));
     }
 
     @PutMapping("/users/{id}/status")
-    public UserResponse updateUserStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        return authService.updateUserStatus(id, body.get("status"));
+    public ApiResponse<UserResponse> updateUserStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        return ApiResponse.ok(authService.updateUserStatus(id, body.get("status")));
     }
 }

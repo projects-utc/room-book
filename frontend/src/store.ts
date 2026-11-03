@@ -2,25 +2,39 @@
 import { STORAGE_KEY, USER_KEY, formatVND } from './constants';
 import { INITIAL_DATA, InitialDataState, User, Property, Room, RoomBlock, Booking, Review, Promotion, AuditLog } from './data';
 
+let cachedData: InitialDataState | null = null;
+const stateListeners: Set<(data: InitialDataState) => void> = new Set();
+
 function loadData(): InitialDataState {
+  if (cachedData) return cachedData;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      saveData(INITIAL_DATA);
-      return JSON.parse(JSON.stringify(INITIAL_DATA));
+      cachedData = JSON.parse(JSON.stringify(INITIAL_DATA));
+      return cachedData!;
     }
-    return JSON.parse(raw);
+    cachedData = JSON.parse(raw);
+    return cachedData!;
   } catch {
-    return JSON.parse(JSON.stringify(INITIAL_DATA));
+    cachedData = JSON.parse(JSON.stringify(INITIAL_DATA));
+    return cachedData!;
   }
 }
 
 function saveData(data: InitialDataState): void {
+  cachedData = data;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch (e) {
     console.error('Cannot save data to LocalStorage:', e);
   }
+  stateListeners.forEach(listener => {
+    try {
+      listener(data);
+    } catch (e) {
+      console.error('Error in state listener:', e);
+    }
+  });
 }
 
 export function getCurrentUser(): User | null {
@@ -64,7 +78,30 @@ export interface QuoteResult {
 export const ODDStore = {
   getData: () => loadData(),
 
+  async syncFromBackend(): Promise<InitialDataState> {
+    try {
+      const res = await fetch('/api/state');
+      if (res.ok) {
+        const json = await res.json();
+        const state = json.data ? json.data : json;
+        if (state && Array.isArray(state.properties) && state.properties.length > 0) {
+          saveData(state);
+          return state;
+        }
+      }
+    } catch (err) {
+      console.warn('Backend sync failed, falling back to local cache', err);
+    }
+    return loadData();
+  },
+
+  subscribe(listener: (data: InitialDataState) => void): () => void {
+    stateListeners.add(listener);
+    return () => stateListeners.delete(listener);
+  },
+
   reset(): InitialDataState {
+    fetch('/api/state/reset', { method: 'POST' }).catch(() => {});
     saveData(INITIAL_DATA);
     setCurrentUser(null);
     return JSON.parse(JSON.stringify(INITIAL_DATA));
@@ -304,6 +341,11 @@ export const ODDStore = {
 
     data.bookings.push(newBooking);
     saveData(data);
+    fetch('/api/bookings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newBooking),
+    }).catch(() => {});
     return { success: true, booking: newBooking };
   },
 
@@ -328,6 +370,7 @@ export const ODDStore = {
     }
     data.bookings[idx].status = 'CANCELLED';
     saveData(data);
+    fetch(`/api/bookings/${encodeURIComponent(code)}/cancel`, { method: 'POST' }).catch(() => {});
     return { success: true };
   },
 
@@ -352,6 +395,11 @@ export const ODDStore = {
     });
     data.bookings[idx].isReviewed = true;
     saveData(data);
+    fetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...reviewPayload, date: data.reviews[data.reviews.length - 1].date }),
+    }).catch(() => {});
     return { success: true };
   },
 
@@ -385,6 +433,16 @@ export const ODDStore = {
     };
     data.properties.push(newProp);
     saveData(data);
+    fetch('/api/properties', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newProp),
+    }).then(r => r.json()).then(res => {
+      if (res?.data?.id) {
+        newProp.id = res.data.id;
+        saveData(data);
+      }
+    }).catch(() => {});
     return { success: true, property: newProp };
   },
 
@@ -392,9 +450,9 @@ export const ODDStore = {
     const data = loadData();
     data.properties = data.properties.filter(p => p.id !== id);
     saveData(data);
+    fetch(`/api/properties/${id}`, { method: 'DELETE' }).catch(() => {});
     return { success: true };
   },
-
   getAllRooms(): Room[] {
     const data = loadData();
     return data.rooms;
@@ -415,6 +473,16 @@ export const ODDStore = {
     };
     data.rooms.push(newRoom);
     saveData(data);
+    fetch('/api/rooms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newRoom),
+    }).then(r => r.json()).then(res => {
+      if (res?.data?.id) {
+        newRoom.id = res.data.id;
+        saveData(data);
+      }
+    }).catch(() => {});
     return { success: true, room: newRoom };
   },
 
@@ -422,9 +490,9 @@ export const ODDStore = {
     const data = loadData();
     data.rooms = data.rooms.filter(r => r.id !== id);
     saveData(data);
+    fetch(`/api/rooms/${id}`, { method: 'DELETE' }).catch(() => {});
     return { success: true };
   },
-
   addRoomBlock(blockPayload: { roomId: number | string; roomName?: string; start: string; end: string; reason: string }): {
     success: boolean;
     code?: string;
@@ -446,16 +514,26 @@ export const ODDStore = {
       reason: blockPayload.reason,
     });
     saveData(data);
+    const lastBlock = data.roomBlocks[data.roomBlocks.length - 1];
+    fetch('/api/room-blocks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(lastBlock),
+    }).then(r => r.json()).then(res => {
+      if (res?.data?.id) {
+        lastBlock.id = res.data.id;
+        saveData(data);
+      }
+    }).catch(() => {});
     return { success: true };
   },
-
   deleteRoomBlock(id: number): { success: boolean } {
     const data = loadData();
     data.roomBlocks = data.roomBlocks.filter(b => b.id !== id);
     saveData(data);
+    fetch(`/api/room-blocks/${id}`, { method: 'DELETE' }).catch(() => {});
     return { success: true };
   },
-
   getRoomBlocks(roomId?: number | string): RoomBlock[] {
     const data = loadData();
     if (roomId) return data.roomBlocks.filter(b => b.roomId === parseInt(String(roomId), 10));
@@ -474,9 +552,13 @@ export const ODDStore = {
     if (idx === -1) return { success: false, message: 'Không tìm thấy đơn.' };
     data.bookings[idx].status = newStatus;
     saveData(data);
+    fetch(`/api/bookings/${encodeURIComponent(code)}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus }),
+    }).catch(() => {});
     return { success: true };
   },
-
   // UC-09: Revenue
   getRevenueData(ownerUsername: string) {
     const data = loadData();
@@ -510,18 +592,22 @@ export const ODDStore = {
     if (idx === -1) return { success: false };
     data.users[idx].status = data.users[idx].status === 'ACTIVE' ? 'LOCKED' : 'ACTIVE';
     saveData(data);
+    fetch(`/api/users/${userId}/toggle-status`, { method: 'PATCH' }).catch(() => {});
     return { success: true, newStatus: data.users[idx].status };
   },
-
   changeUserRole(userId: number | string, newRole: User['role']): { success: boolean } {
     const data = loadData();
     const idx = data.users.findIndex(u => u.id === parseInt(String(userId), 10));
     if (idx === -1) return { success: false };
     data.users[idx].role = newRole;
     saveData(data);
+    fetch(`/api/users/${userId}/role`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: newRole }),
+    }).catch(() => {});
     return { success: true };
   },
-
   // ── Admin Management Features ──────────────────────────────────────────
   getAllProperties(): Property[] {
     const data = loadData();
@@ -545,9 +631,9 @@ export const ODDStore = {
     });
 
     saveData(data);
+    fetch(`/api/properties/${id}/toggle-status`, { method: 'PATCH' }).catch(() => {});
     return { success: true, newStatus: nextStatus };
   },
-
   adminCancelBooking(code: string, reason: string): { success: boolean; message?: string } {
     const data = loadData();
     const idx = data.bookings.findIndex(b => b.code === code);
@@ -563,9 +649,13 @@ export const ODDStore = {
     });
 
     saveData(data);
+    fetch(`/api/bookings/${encodeURIComponent(code)}/admin-cancel`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason }),
+    }).catch(() => {});
     return { success: true };
   },
-
   getPromotions(): Promotion[] {
     const data = loadData();
     return data.promotions || [];
@@ -605,9 +695,18 @@ export const ODDStore = {
     });
 
     saveData(data);
+    fetch('/api/promotions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newPromo),
+    }).then(r => r.json()).then(res => {
+      if (res?.data?.id) {
+        newPromo.id = res.data.id;
+        saveData(data);
+      }
+    }).catch(() => {});
     return { success: true, promotion: newPromo };
   },
-
   togglePromotion(id: number): { success: boolean; newStatus?: 'ACTIVE' | 'INACTIVE' } {
     const data = loadData();
     if (!data.promotions) data.promotions = [];
@@ -617,9 +716,9 @@ export const ODDStore = {
     const nextStatus = cur === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     data.promotions[idx].status = nextStatus;
     saveData(data);
+    fetch(`/api/promotions/${id}/toggle`, { method: 'PATCH' }).catch(() => {});
     return { success: true, newStatus: nextStatus };
   },
-
   deletePromotion(id: number): { success: boolean } {
     const data = loadData();
     if (!data.promotions) return { success: true };
@@ -636,9 +735,9 @@ export const ODDStore = {
     }
 
     saveData(data);
+    fetch(`/api/promotions/${id}`, { method: 'DELETE' }).catch(() => {});
     return { success: true };
   },
-
   getAuditLogs(): AuditLog[] {
     const data = loadData();
     return (data.auditLogs || []).slice().reverse();
@@ -659,7 +758,12 @@ export const ODDStore = {
       timestamp: timeStr,
     });
     saveData(data);
+    const lastLog = data.auditLogs[data.auditLogs.length - 1];
+    fetch('/api/audit-logs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(lastLog),
+    }).catch(() => {});
   },
 };
-
 export default ODDStore;

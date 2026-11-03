@@ -42,7 +42,7 @@ public class AuthService {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    private String generateToken(User user) {
+    public String generateToken(User user) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
@@ -134,7 +134,7 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponse checkRole(String authHeader) {
+    public UserResponse getMe(String authHeader) {
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
             throw new UnauthorizedException("Vui lòng đăng nhập để tiếp tục");
         }
@@ -143,13 +143,18 @@ public class AuthService {
         String username = extractUsernameFromToken(token);
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UnauthorizedException("Tài khoản không tồn tại trên hệ thống"));
+                .orElseThrow(() -> new UnauthorizedException("Tài khoản không tồn tại"));
 
         if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
             throw new UnauthorizedException("Tài khoản này đang bị khóa bởi Quản trị viên");
         }
 
         return toUserResponse(user);
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponse checkRole(String authHeader) {
+        return getMe(authHeader);
     }
 
     @Transactional(readOnly = true)
@@ -169,6 +174,10 @@ public class AuthService {
             role = "GUEST";
         }
 
+        if ("admin".equalsIgnoreCase(user.getUsername()) && !"ADMIN".equals(role)) {
+            throw new IllegalArgumentException("Không thể hạ quyền tài khoản Quản trị viên tối cao (admin)");
+        }
+
         user.setRole(role);
         User saved = userRepository.save(user);
         log.info("Updated user {} role to {}", saved.getUsername(), saved.getRole());
@@ -181,6 +190,10 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản có ID: " + id));
 
         String status = "LOCKED".equalsIgnoreCase(newStatus) ? "LOCKED" : "ACTIVE";
+        if ("admin".equalsIgnoreCase(user.getUsername()) && "LOCKED".equals(status)) {
+            throw new IllegalArgumentException("Không thể khóa tài khoản Quản trị viên tối cao (admin)");
+        }
+
         user.setStatus(status);
         User saved = userRepository.save(user);
         log.info("Updated user {} status to {}", saved.getUsername(), saved.getStatus());
