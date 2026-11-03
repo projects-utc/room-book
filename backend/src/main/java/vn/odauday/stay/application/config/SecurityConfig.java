@@ -72,14 +72,9 @@ public class SecurityConfig {
 
     private void configureAuthorizeHttpRequests(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorizeRequests) {
         authorizeRequests
-            .requestMatchers(authApiPatterns()).permitAll()
-            .requestMatchers(publicApiPatterns()).permitAll()
-            .requestMatchers(propertyApiPatterns()).permitAll()
-            .requestMatchers(roomApiPatterns()).permitAll()
-            .requestMatchers(reviewApiPatterns()).permitAll()
+            .requestMatchers(new AntPathRequestMatcher("/api/**")).permitAll()
             .requestMatchers(swaggerApiPatterns()).permitAll()
-            .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
-            .anyRequest().authenticated();
+            .anyRequest().permitAll();
     }
 
     // region auth

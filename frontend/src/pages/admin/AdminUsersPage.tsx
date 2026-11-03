@@ -1,6 +1,7 @@
 // UC-10: Admin User Management & RBAC Page (Standardized Components)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../contexts/StoreContext';
+import { stayApi } from '../../api/stayApi';
 import {
   Breadcrumb,
   Button,
@@ -49,8 +50,18 @@ export default function AdminUsersPage() {
   const [newRole, setNewRole] = useState<'ADMIN' | 'HOST' | 'GUEST'>('HOST');
 
   const refreshList = () => {
-    setUsers(store.getAllUsers());
+    stayApi.getUsers().then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setUsers(res.data);
+      } else {
+        setUsers(store.getAllUsers());
+      }
+    });
   };
+
+  useEffect(() => {
+    refreshList();
+  }, []);
 
   const handleToggleStatus = (u: User) => {
     // Safety check: Cannot lock own admin account

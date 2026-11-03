@@ -1,7 +1,9 @@
 // Admin Dashboard: System Overview & Business Analytics (TypeScript)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
+import { stayApi } from '../../api/stayApi';
+import { ODDStore } from '../../store';
 import {
   Card,
   StatCard,
@@ -32,8 +34,15 @@ import {
 import { formatVND } from '../../constants';
 
 export default function AdminDashboardPage() {
-  const { store } = useStore();
+  const { store, dataVersion } = useStore();
 
+  useEffect(() => {
+    stayApi.getState().then(res => {
+      if (res.success && res.data) {
+        ODDStore.syncFromBackend();
+      }
+    });
+  }, []);
   const users = store.getAllUsers();
   const properties = store.getAllProperties();
   const rooms = store.getAllRooms();

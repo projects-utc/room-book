@@ -1,14 +1,15 @@
 // ODauDay Stay — Airbnb Vietnam Exact Homepage Layout & Micro-Animations (TypeScript)
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { PropertyCard } from '../../components/UI';
 import SearchBar from '../../components/SearchBar';
 import { Search, ChevronLeft, ChevronRight, X } from 'react-bootstrap-icons';
 import { Property } from '../../data';
+import { stayApi } from '../../api/stayApi';
 
 export default function HomePage() {
-  const { store } = useStore();
+  const { store, dataVersion } = useStore();
   const navigate = useNavigate();
 
   const [kw, setKw] = useState('');
@@ -17,8 +18,22 @@ export default function HomePage() {
   const [guests, setGuests] = useState('');
   const [showFeeBadge, setShowFeeBadge] = useState(true);
 
-  const data = store.getData();
-  const properties: Property[] = data.properties || [];
+  const [properties, setProperties] = useState<Property[]>(() => store.getData().properties || []);
+
+  useEffect(() => {
+    stayApi.getProperties().then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setProperties(res.data);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const list = store.getData().properties;
+    if (list && list.length > 0) {
+      setProperties(list);
+    }
+  }, [dataVersion, store]);
 
   // Group properties into lush, rich destination collections (6-7 items each for wide screens)
   const hanoiSection = [

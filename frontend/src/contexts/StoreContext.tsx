@@ -20,6 +20,7 @@ export interface StoreContextType {
   toasts: ToastMessage[];
   resetStore: () => void;
   store: typeof ODDStore;
+  dataVersion?: number;
 }
 
 const StoreContext = createContext<StoreContextType | null>(null);
@@ -27,13 +28,23 @@ const StoreContext = createContext<StoreContextType | null>(null);
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(() => getCurrentUser());
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [dataVersion, setDataVersion] = useState<number>(0);
 
   const refreshUser = useCallback(() => {
     setCurrentUser(getCurrentUser());
   }, []);
 
+  useEffect(() => {
+    return ODDStore.subscribe(() => {
+      setDataVersion(v => v + 1);
+    });
+  }, []);
+
   // Check backend session on mount
   useEffect(() => {
+    ODDStore.syncFromBackend().finally(() => {
+      refreshUser();
+    });
     authApi.getMe().then(res => {
       if (res.success && res.user) {
         const mapped: User = {
@@ -49,7 +60,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setCurrentUser(mapped);
       }
     });
-  }, []);
+  }, [refreshUser]);
 
   const login = useCallback(
     async (username: string, password?: string) => {
@@ -177,6 +188,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         toasts,
         resetStore,
         store: ODDStore,
+        dataVersion,
       }}
     >
       {children}

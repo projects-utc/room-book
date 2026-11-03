@@ -1,11 +1,16 @@
 package vn.odauday.stay.application.service.user;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import vn.odauday.stay.application.common.exception.UnauthorizedException;
 import vn.odauday.stay.application.model.user.AuthResponse;
 import vn.odauday.stay.application.model.user.LoginRequest;
 import vn.odauday.stay.application.model.user.RegisterRequest;
@@ -13,7 +18,9 @@ import vn.odauday.stay.application.model.user.UserResponse;
 import vn.odauday.stay.domain.user.model.User;
 import vn.odauday.stay.domain.user.persistent.UserRepository;
 
-import java.util.UUID;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 @Slf4j
 @Service
@@ -23,6 +30,11 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.jwt.secret:odaudaystaysecretkeyforjwttokengenerationshouldbelongenough256bit}")
+    private String jwtSecret;
+
+    @Value("${app.jwt.expiration-ms:86400000}")
+    private long jwtExpirationMs;
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         String username = request.getUsername().trim().toLowerCase();
@@ -54,7 +66,7 @@ public class AuthService {
         log.info("Registered user: {}", saved.getUsername());
 
         return AuthResponse.builder()
-                .token(UUID.randomUUID().toString())
+                .token(generateToken(saved))
                 .tokenType("Bearer")
                 .user(toUserResponse(saved))
                 .build();
@@ -77,7 +89,7 @@ public class AuthService {
         log.info("User logged in: {}", user.getUsername());
 
         return AuthResponse.builder()
-                .token(UUID.randomUUID().toString())
+                .token(generateToken(user))
                 .tokenType("Bearer")
                 .user(toUserResponse(user))
                 .build();
@@ -93,5 +105,38 @@ public class AuthService {
                 .role(user.getRole())
                 .status(user.getStatus())
                 .build();
+    }
+
+    public UserResponse getMe(String authHeader) {
+        if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
+            throw new UnauthorizedException("Vui lòng đăng nhập để tiếp tục");
+        }
+        String token = authHeader.substring(7).trim();
+        try {
+            SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+            Claims claims = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+            String username = claims.getSubject();
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new UnauthorizedException("Tài khoản không tồn tại"));
+            return toUserResponse(user);
+        } catch (Exception e) {
+            log.warn("Invalid JWT token: {}", e.getMessage());
+            throw new UnauthorizedException("Phiên đăng nhập không hợp lệ hoặc đã hết hạn");
+        }
+    }
+
+    private String generateToken(User user) {
+        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        return Jwts.builder()
+                .subject(user.getUsername())
+                .claim("role", user.getRole())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .signWith(key)
+                .compact();
     }
 }

@@ -1,6 +1,7 @@
 // Admin Properties Page: Property & Homestay Management (TypeScript)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../contexts/StoreContext';
+import { stayApi } from '../../api/stayApi';
 import {
   Card,
   StatCard,
@@ -46,8 +47,18 @@ export default function AdminPropertiesPage() {
   const [showRoomModal, setShowRoomModal] = useState(false);
 
   const refreshList = () => {
-    setProperties(store.getAllProperties());
+    stayApi.getProperties().then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setProperties(res.data);
+      } else {
+        setProperties(store.getAllProperties());
+      }
+    });
   };
+
+  useEffect(() => {
+    refreshList();
+  }, []);
 
   const cities = ['ALL', ...Array.from(new Set(properties.map((p) => p.city).filter(Boolean)))];
 

@@ -1,6 +1,7 @@
 // Admin Bookings Page: Platform-wide Booking Oversight & Intervention (TypeScript)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../contexts/StoreContext';
+import { stayApi } from '../../api/stayApi';
 import {
   Card,
   StatCard,
@@ -35,6 +36,20 @@ export default function AdminBookingsPage() {
   const { store, addToast } = useStore();
 
   const [bookings, setBookings] = useState<Booking[]>(() => store.getAllBookings());
+
+  const refreshList = () => {
+    stayApi.getBookings().then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setBookings(res.data);
+      } else {
+        setBookings(store.getAllBookings());
+      }
+    });
+  };
+
+  useEffect(() => {
+    refreshList();
+  }, []);
   const [kw, setKw] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
 
@@ -47,9 +62,7 @@ export default function AdminBookingsPage() {
   const [cancelReason, setCancelReason] = useState('Tranh chấp hoặc khiếu nại được Admin giải quyết');
   const [showCancelModal, setShowCancelModal] = useState(false);
 
-  const refreshList = () => {
-    setBookings(store.getAllBookings());
-  };
+  // refreshList is defined above with stayApi
 
   const filtered = bookings.filter((b) => {
     const kwLower = kw.toLowerCase().trim();
