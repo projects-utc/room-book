@@ -6,6 +6,15 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export interface HostRevenueRow {
+  hostId: number;
+  roomId: number;
+  roomName: string;
+  revenueMonth: string;
+  totalBookings: number;
+  totalRevenue: number;
+}
+
 const TOKEN_KEY = 'odd_jwt_token';
 
 async function fetchJson<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
@@ -125,6 +134,10 @@ export const stayApi = {
     return fetchJson<Booking[]>(`/api/bookings${qs}`);
   },
 
+  async getAdminBookings() {
+    return fetchJson<Booking[]>('/api/admin/bookings');
+  },
+
   async getBooking(code: string) {
     return fetchJson<Booking>(`/api/bookings/${encodeURIComponent(code)}`);
   },
@@ -150,10 +163,25 @@ export const stayApi = {
   },
 
   async adminCancelBooking(code: string, reason: string) {
-    return fetchJson<Booking>(`/api/bookings/${encodeURIComponent(code)}/admin-cancel`, {
+    return fetchJson<Booking>(`/api/admin/bookings/${encodeURIComponent(code)}/cancel`, {
       method: 'POST',
       body: JSON.stringify({ reason }),
     });
+  },
+
+  async adminUpdateBookingStatus(code: string, status: string, reason?: string) {
+    return fetchJson<Booking>(`/api/admin/bookings/${encodeURIComponent(code)}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, reason }),
+    });
+  },
+
+  async getHostRevenue() {
+    return fetchJson<HostRevenueRow[]>('/api/host/revenue');
+  },
+
+  async getAdminRevenue() {
+    return fetchJson<HostRevenueRow[]>('/api/admin/revenue');
   },
 
   // 6. Reviews
