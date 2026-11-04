@@ -1,6 +1,8 @@
 // UC-10: Admin User Management & RBAC Page (Standardized Components)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../contexts/StoreContext';
+import { stayApi } from '../../api/stayApi';
+import { authApi } from '../../api/authApi';
 import {
   Breadcrumb,
   Button,
@@ -48,37 +50,89 @@ export default function AdminUsersPage() {
   const [newEmail, setNewEmail] = useState('');
   const [newRole, setNewRole] = useState<'ADMIN' | 'HOST' | 'GUEST'>('HOST');
 
-  const refreshList = () => {
+  const refreshList = async () => {
+    try {
+      const res = await stayApi.getUsers();
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setUsers(res.data);
+        return;
+      }
+    } catch {
+      // fallback
+    }
+    const authRes = await authApi.getUsers();
+    if (authRes.success && authRes.users && authRes.users.length > 0) {
+      setUsers(authRes.users);
+      return;
+    }
     setUsers(store.getAllUsers());
   };
 
-  const handleToggleStatus = (u: User) => {
+  useEffect(() => {
+    refreshList();
+  }, []);
+
+  const handleToggleStatus = async (u: User) => {
     // Safety check: Cannot lock own admin account
     if (u.username === currentUser?.username || u.username === 'admin') {
       addToast('Quy tắc an toàn (ASSUM-01): Quản trị viên không thể tự khóa tài khoản chính mình!', 'error');
       return;
     }
 
-    const res = store.toggleUserStatus(u.id);
-    if (res.success) {
-      addToast(`Đã chuyển trạng thái tài khoản ${u.username} sang ${res.newStatus}`, 'success');
-      refreshList();
+    const nextStatus = u.status === 'ACTIVE' ? 'LOCKED' : 'ACTIVE';
+    try {
+      await stayApi.toggleUserStatus(u.id);
+    } catch {
+      await authApi.updateUserStatus(u.id, nextStatus);
     }
+    const res = store.toggleUserStatus(u.id);
+    addToast(`Đã chuyển trạng thái tài khoản ${u.username} sang ${res.newStatus || nextStatus}`, 'success');
+    refreshList();
   };
 
-  const handleChangeRole = (u: User, newR: User['role']) => {
+  const handleChangeRole = async (u: User, newR: User['role']) => {
     if (u.username === 'admin' && newR !== 'ADMIN') {
       addToast('Quy tắc an toàn (ASSUM-01): Hệ thống phải duy trì ít nhất 01 Quản trị viên tối cao!', 'error');
       return;
     }
 
+    try {
+      await stayApi.changeUserRole(u.id, newR);
+    } catch {
+      await authApi.updateUserRole(u.id, newR);
+    }
     store.changeUserRole(u.id, newR);
     addToast(`Đã đổi vai trò tài khoản ${u.username} thành ${newR}`, 'info');
     refreshList();
   };
 
-  const handleAddUser = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddUser = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!newFullName.trim() || !newUsername.trim() || !newPhone.trim() || !newEmail.trim() || !newPassword.trim()) {
+      addToast('Vui lòng điền đầy đủ các thông tin bắt buộc', 'warning');
+      return;
+    }
+
+    try {
+      await stayApi.createUser({
+        username: newUsername,
+        password: newPassword,
+        fullName: newFullName,
+        phone: newPhone,
+        email: newEmail,
+        role: newRole,
+      });
+    } catch {
+      await authApi.register({
+        username: newUsername,
+        password: newPassword,
+        fullName: newFullName,
+        phone: newPhone,
+        email: newEmail,
+        role: newRole,
+      });
+    }
+
     const res = store.addUser({
       username: newUsername,
       password: newPassword,
@@ -96,6 +150,8 @@ export default function AdminUsersPage() {
       setNewUsername('');
       setNewFullName('');
       setNewEmail('');
+      setNewPhone('');
+      setNewPassword('');
     } else {
       addToast(res.message || 'Lỗi khi tạo tài khoản', 'error');
     }
@@ -356,13 +412,13 @@ export default function AdminUsersPage() {
                 <Button variant="outline" onClick={() => setShowAddForm(false)}>
                   Hủy
                 </Button>
-                <Button variant="primary" onClick={handleAddUser as any} style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)', border: 'none' }}>
+                <Button type="submit" form="add-user-form" variant="primary" style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)', border: 'none' }}>
                   Tạo tài khoản
                 </Button>
               </div>
             }
         >
-          <form onSubmit={handleAddUser}>
+          <form id="add-user-form" onSubmit={handleAddUser}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               <InputField
                   label="Họ và tên"

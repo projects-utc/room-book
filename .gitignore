@@ -33,8 +33,10 @@ build/
 # ==============================================================================
 # 3. Backend (Java / Spring Boot / Maven / Gradle)
 # ==============================================================================
-# Thư mục build output của Maven
+# Thư mục build output của Maven & Java Compiler
 target/
+bin/
+*.class
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

@@ -1110,20 +1110,44 @@ button {
   pointer-events: none;
 }
 
+.toast,
 .airbnb-toast {
-  background: rgba(34, 34, 34, 0.92);
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(8px);
   color: #ffffff;
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem 1.35rem;
   border-radius: var(--radius-full);
   font-size: 0.88rem;
-  font-weight: 500;
-  box-shadow: var(--shadow-dropdown);
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  animation: toastFade 0.2s ease;
+  animation: toastFade 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: auto;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+}
+
+.toast.toast-error,
+.airbnb-toast.toast-error {
+  background: rgba(30, 27, 75, 0.95);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #FFE4E6;
+}
+
+.toast.toast-success,
+.airbnb-toast.toast-success {
+  background: rgba(6, 78, 59, 0.95);
+  border-color: rgba(16, 185, 129, 0.45);
+  color: #D1FAE5;
+}
+
+.toast.toast-warn,
+.airbnb-toast.toast-warn {
+  background: rgba(69, 26, 3, 0.95);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: #FEF3C7;
 }
 
 @keyframes toastFade {

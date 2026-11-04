@@ -1,5 +1,5 @@
 // Airbnb-Inspired Property Detail Page (TypeScript)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb, DateRangePicker } from '../../components';
@@ -23,6 +23,7 @@ import {
   CalendarCheck,
   PeopleFill,
 } from 'react-bootstrap-icons';
+import { stayApi } from '../../api/stayApi';
 
 export default function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -31,10 +32,21 @@ export default function PropertyDetailPage() {
   const navigate = useNavigate();
 
   const propertyId = Number(id) || 1;
-  const property = store.getProperty(propertyId) || store.getProperty(1)!;
-  const rooms = store.getRoomsByProperty(property.id);
-  const reviews = store.getReviewsByProperty(property.id);
+  const [property, setProperty] = useState<Property | null>(() => store.getProperty(propertyId) || store.getProperty(1));
+  const [rooms, setRooms] = useState<Room[]>(() => store.getRoomsByProperty(propertyId));
+  const [reviews, setReviews] = useState<Review[]>(() => store.getReviewsByProperty(propertyId));
 
+  useEffect(() => {
+    stayApi.getProperty(propertyId).then(res => {
+      if (res.success && res.data) setProperty(res.data);
+    });
+    stayApi.getRooms(propertyId).then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) setRooms(res.data);
+    });
+    stayApi.getReviews(propertyId).then(res => {
+      if (res.success && Array.isArray(res.data)) setReviews(res.data);
+    });
+  }, [propertyId]);
   const [checkIn, setCheckIn] = useState(searchParams.get('in') || '');
   const [checkOut, setCheckOut] = useState(searchParams.get('out') || '');
   const [guests, setGuests] = useState(searchParams.get('guests') || '');
@@ -52,9 +64,8 @@ export default function PropertyDetailPage() {
   };
 
   const nights = calculateNights();
-  const unitPrice = selectedRoom?.price || property.priceMin;
+  const unitPrice = selectedRoom?.price || property?.priceMin || 500000;
   const totalPrice = unitPrice * nights;
-
   // Lấy ra phòng đang được chọn
   const room = store.getAllRooms().find(r => r.id === selectedRoomId);
 
@@ -128,6 +139,15 @@ export default function PropertyDetailPage() {
     setIsSaved(!isSaved);
     addToast(isSaved ? 'Đã xóa khỏi danh sách yêu thích' : 'Đã lưu vào danh sách yêu thích!', 'info');
   };
+
+  if (!property) {
+    return (
+      <div className="detail-container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>
+        <h2 style={{ color: '#222222', fontSize: '1.5rem', marginBottom: '1rem' }}>Đang tải thông tin chỗ nghỉ...</h2>
+        <p style={{ color: '#717171' }}>Vui lòng đợi giây lát trong khi hệ thống kết nối với máy chủ.</p>
+      </div>
+    );
+  }
 
   return (
       <div className="detail-container">

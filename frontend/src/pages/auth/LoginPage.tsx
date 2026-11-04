@@ -1,6 +1,6 @@
 // Standardized Luxury Login Page (TypeScript)
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import {
   HouseDoorFill,
@@ -16,46 +16,43 @@ import {
 export default function LoginPage() {
   const { login, addToast } = useStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [username, setUsername] = useState('guest.demo');
   const [password, setPassword] = useState('123');
   const [showPassword, setShowPassword] = useState(false);
   const [selectedDemo, setSelectedDemo] = useState<'guest' | 'host' | 'admin'>('guest');
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
 
   const fillCredentials = (type: 'guest' | 'host' | 'admin', u: string, p: string) => {
     setSelectedDemo(type);
     setUsername(u);
     setPassword(p);
-    setErrorMsg('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
     setLoading(true);
 
     try {
       const res = await login(username.trim(), password);
-      if (!res.success) {
-        setErrorMsg(res.message || 'Tài khoản hoặc mật khẩu không chính xác. Bạn vui lòng thử lại nhé!');
-        addToast(res.message || 'Đăng nhập không thành công', 'error');
-      } else {
+      if (res.success) {
+        setLoading(false);
         const displayName = res.user?.fullName || username;
         addToast(`Chào mừng bạn trở lại, ${displayName}! Chúc bạn một ngày tốt lành ✨`, 'success');
-        if (res.user?.role === 'HOST') {
-          navigate('/host/properties');
+        const from = (location.state as any)?.from?.pathname;
+        if (from && from !== '/login' && from !== '/client/login' && from !== '/register') {
+          navigate(from, { replace: true });
+        } else if (res.user?.role === 'HOST') {
+          navigate('/host/properties', { replace: true });
         } else if (res.user?.role === 'ADMIN') {
-          navigate('/admin/users');
+          navigate('/admin', { replace: true });
         } else {
-          navigate('/');
+          navigate('/client', { replace: true });
         }
       }
-    } catch (err: any) {
-      setErrorMsg('Không thể kết nối đến máy chủ. Vui lòng thử lại sau.');
-    } finally {
-      setLoading(false);
+    } catch {
+      // Giữ icon loading quay liên tục khi backend chưa chạy
     }
   };
 
@@ -128,29 +125,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Error Alert */}
-          {errorMsg && (
-            <div
-              style={{
-                background: '#FEF2F2',
-                border: '1px solid #FCA5A5',
-                borderRadius: '12px',
-                padding: '0.85rem 1rem',
-                marginBottom: '1.25rem',
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '0.65rem',
-                color: '#991B1B',
-                fontSize: '0.88rem',
-                lineHeight: 1.45,
-              }}
-            >
-              <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>⚠️</span>
-              <div>
-                <strong>Lỗi đăng nhập:</strong> {errorMsg}
-              </div>
-            </div>
-          )}
+
 
           {/* Login Form */}
           <form onSubmit={handleSubmit}>

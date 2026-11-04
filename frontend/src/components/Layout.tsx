@@ -77,10 +77,17 @@ export function Header() {
         navigate('/');
     };
 
-    const handleRoleSwitch = (role: string) => {
-        switchRole(role);
+    const handleRoleSwitch = async (role: string) => {
+        await switchRole(role);
         setMenuOpen(false);
         addToast(`Đã chuyển sang vai trò: ${role.toUpperCase()}`, 'success');
+        if (role === 'admin') {
+            navigate('/admin');
+        } else if (role === 'host') {
+            navigate('/host/properties');
+        } else {
+            navigate('/client');
+        }
     };
 
     const handleResetData = () => {
@@ -250,21 +257,45 @@ export function Header() {
 
                 {/* Right Navigation & Profile Menu */}
                 <div className="header-actions" ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', position: 'relative' }}>
-                    <Link
-                        to={currentUser?.role === ROLES.HOST ? '/host/properties' : '/register'}
-                        className="host-link"
-                        style={{
-                            fontWeight: 600,
-                            fontSize: '0.88rem',
-                            color: '#222222',
-                            padding: '0.65rem 1rem',
-                            borderRadius: '9999px',
-                            textDecoration: 'none',
-                            transition: 'background 0.2s',
-                        }}
-                    >
-                        Đón tiếp khách
-                    </Link>
+                    {currentUser?.role === ROLES.ADMIN ? (
+                        <Link
+                            to="/admin"
+                            className="admin-badge-link"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                                fontWeight: 700,
+                                fontSize: '0.85rem',
+                                color: '#FFFFFF',
+                                background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+                                padding: '0.5rem 0.95rem',
+                                borderRadius: '9999px',
+                                textDecoration: 'none',
+                                border: '1px solid #334155',
+                                boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                            }}
+                        >
+                            <Speedometer2 style={{ color: '#FF385C' }} />
+                            <span>Vào Quản trị</span>
+                        </Link>
+                    ) : (
+                        <Link
+                            to={currentUser?.role === ROLES.HOST ? '/host/properties' : '/register'}
+                            className="host-link"
+                            style={{
+                                fontWeight: 600,
+                                fontSize: '0.88rem',
+                                color: '#222222',
+                                padding: '0.65rem 1rem',
+                                borderRadius: '9999px',
+                                textDecoration: 'none',
+                                transition: 'background 0.2s',
+                            }}
+                        >
+                            {currentUser?.role === ROLES.HOST ? 'Quản lý Chỗ ở' : 'Đón tiếp khách'}
+                        </Link>
+                    )}
 
                     <button
                         type="button"
@@ -396,8 +427,17 @@ export function Header() {
                                         <>
                                             <div className="dropdown-divider" style={{ height: 1, background: '#E2E8F0', margin: '4px 0' }} />
                                             <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: '#64748B' }}>Quản trị viên</div>
+                                            <Link to="/admin" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#FF385C', fontWeight: 700 }}>
+                                                <Speedometer2 /> Bảng điều khiển Quản trị
+                                            </Link>
                                             <Link to="/admin/users" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
-                                                <PeopleFill /> Quản lý tài khoản
+                                                <PeopleFill /> Quản lý tài khoản & RBAC
+                                            </Link>
+                                            <Link to="/admin/properties" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
+                                                <Building /> Quản lý chỗ ở toàn sàn
+                                            </Link>
+                                            <Link to="/admin/bookings" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
+                                                <CalendarCheck /> Quản lý đơn đặt phòng
                                             </Link>
                                         </>
                                     )}

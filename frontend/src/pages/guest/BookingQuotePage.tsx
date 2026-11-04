@@ -5,10 +5,10 @@ import { useStore } from '../../contexts/StoreContext';
 import { InputField, Button, Card, Badge, Breadcrumb } from '../../components';
 import { formatVND } from '../../constants';
 import { ChevronLeft, StarFill, CreditCard, CashCoin, ShieldCheck, CalendarCheck, CheckCircleFill } from 'react-bootstrap-icons';
+import { stayApi } from '../../api/stayApi';
 
 import PaymentWaitingPage from './PaymentWaitingPage';
 import BookingFailedPage, { FailedPaymentData } from './BookingFailedPage';
-
 interface BankApiItem {
   id: number;
   name: string;
@@ -24,9 +24,18 @@ export default function BookingQuotePage() {
 
   const propertyId = Number(searchParams.get('propertyId')) || 1;
   const roomId = Number(searchParams.get('roomId')) || 1;
-  const checkIn = searchParams.get('in') || '2027-01-10';
-  const checkOut = searchParams.get('out') || '2027-01-12';
-  const guests = searchParams.get('guests') || '2';
+  const rawCheckIn = searchParams.get('in') || '2026-11-04';
+  const rawCheckOut = searchParams.get('out') || '2026-11-05';
+  const guests = searchParams.get('guests') || '1';
+
+  // If checkOut <= checkIn, adjust checkOut to next day so at least 1 night stay is valid
+  const checkIn = rawCheckIn;
+  let checkOut = rawCheckOut;
+  if (checkIn && checkOut && new Date(checkOut) <= new Date(checkIn)) {
+    const d = new Date(checkIn);
+    d.setDate(d.getDate() + 1);
+    checkOut = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
 
   const [guestName, setGuestName] = useState(currentUser?.fullName || 'Khách thuê');
   const [guestPhone, setGuestPhone] = useState(currentUser?.phone || '0900000003');
@@ -39,7 +48,7 @@ export default function BookingQuotePage() {
   const [copiedField, setCopiedField] = useState('');
   const [isDownloadingQr, setIsDownloadingQr] = useState(false);
 
-  // Thêm state chặn thanh toán 2 lần
+  // State chống gửi trùng giao dịch thanh toán
   const [isAlreadyPaid, setIsAlreadyPaid] = useState<boolean>(false);
 
   const [simulateOutcome, setSimulateOutcome] = useState<'SUCCESS' | 'FAILED'>('SUCCESS');
@@ -96,58 +105,75 @@ export default function BookingQuotePage() {
       link.remove();
       setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
     } catch {
-      addToast('Không thể tải mã QR. Vui lòng thử mở ảnh QR và lưu thủ công.', 'error');
+      window.open(vietQrUrl, '_blank');
+      addToast('Đang mở ảnh QR trong tab mới để bạn tải và lưu thủ công.', 'info');
     } finally {
       setIsDownloadingQr(false);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Chặn nếu đơn đã thanh toán (chỉ hiển thị toast góc màn hình, không hiện popup)
     if (isAlreadyPaid) {
       addToast('Đơn đặt phòng này đã được ghi nhận thanh toán.', 'error');
       return;
     }
 
     if (!quote.success) {
-      addToast(quote.message || 'Không thể đặt phòng với thông tin này.', 'error');
+      addToast(quote.message || 'Ngày trả phòng phải sau ngày nhận phòng ít nhất 1 đêm!', 'error');
       return;
     }
 
-    setProcessingState(bankSubMode === 'BANK_REDIRECT' ? 'WAITING_REDIRECT' : 'WAITING_CONFIRM');
     const dbMethod = paymentMethod === 'cod' ? 'CASH' : 'BANK_TRANSFER';
     const subChannelLabel = bankSubMode === 'QR_CODE' ? 'Quét mã VietQR' : `Chuyển hướng (${selectedBankObj?.shortName || selectedBankCode})`;
+    const txnCode = 'TXN-' + Math.floor(100000 + Math.random() * 900000);
 
-    setTimeout(() => {
-      setProcessingState('IDLE');
-      const txnCode = 'TXN-' + Math.floor(100000 + Math.random() * 900000);
+    // Prepare booking payload for Oracle backend API
+    const bookingPayload = {
+      propertyId: property.id,
+      propertyName: property.name,
+      roomId: room.id,
+      roomName: room.name,
+      checkIn,
+      checkOut,
+      nights,
+      guests: Number(guests) || 1,
+      pricePerNight: room.price,
+      subtotal,
+      serviceFee: 0,
+      total: totalAmount,
+      guestUsername: currentUser?.username || 'guest.demo',
+      guestName,
+      guestPhone,
+      guestEmail,
+      status: 'PENDING',
+    };
 
-      // Xử lý khi thanh toán thất bại -> Đẩy thẳng ra giao diện BookingFailedPage
-      if (simulateOutcome === 'FAILED') {
-        addToast('Giao dịch thanh toán thất bại!', 'error');
-        return setFailedData({
-          transactionCode: txnCode, propertyName: property.name, roomName: room.name,
-          checkIn, checkOut, nights, guests, guestName, guestPhone,
-          dbMethod, subChannel: subChannelLabel, amount: activePaymentAmount,
-        });
-      }
+    try {
+      // Call backend API immediately to persist booking in Oracle DB
+      const apiRes = await stayApi.createBooking(bookingPayload);
+      const createdCode = apiRes.success && apiRes.data?.code ? apiRes.data.code : 'ODD-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
 
-      // Xử lý khi thanh toán thành công
-      const res = store.createBooking({ roomId: room.id, checkIn, checkOut, guests, guestName, guestPhone, guestEmail });
-      if (!res.success) return addToast(res.message || 'Lỗi tạo đơn.', 'error');
+      // Sync to local store
+      store.createBooking({ roomId: room.id, checkIn, checkOut, guests, guestName, guestPhone, guestEmail });
 
       setIsAlreadyPaid(true);
-      addToast('Đặt phòng và thanh toán thành công!', 'success');
+      addToast(paymentMethod === 'cod' ? 'Xác nhận đặt cọc 30% thành công!' : 'Đặt phòng thành công!', 'success');
 
-      // Chuyển thẳng sang trang BookingSuccessPage
+      // Navigate to booking-success
       const params = new URLSearchParams({
-        code: res.booking?.code || 'ODD-DEMO', txn: txnCode,
-        method: dbMethod, channel: subChannelLabel, amount: String(activePaymentAmount),
+        code: createdCode,
+        txn: txnCode,
+        method: dbMethod,
+        channel: subChannelLabel,
+        amount: String(activePaymentAmount),
       });
       navigate(`/booking-success?${params.toString()}`);
-    }, 1800);
+    } catch (err) {
+      console.error('Error creating booking via API:', err);
+      addToast('Không thể kết nối đến máy chủ đặt phòng', 'error');
+    }
   };
 
   // Màn hình chờ chuyển hướng cổng thanh toán
@@ -633,7 +659,7 @@ export default function BookingQuotePage() {
                 </div>
 
                 <div style={{ marginTop: '1.25rem' }}>
-                  <Button type="submit" variant="primary" size="lg" disabled={!quote.success} icon={<CalendarCheck />} style={{ width: '100%', justifyContent: 'center' }}>
+                  <Button type="submit" variant="primary" size="lg" icon={<CalendarCheck />} style={{ width: '100%', justifyContent: 'center' }}>
                     {paymentMethod === 'cod' ? 'Xác nhận đặt cọc 30%' : 'Xác nhận thanh toán'}
                   </Button>
                 </div>
