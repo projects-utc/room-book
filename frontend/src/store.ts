@@ -308,6 +308,7 @@ export const ODDStore = {
     guestName?: string;
     guestPhone?: string;
     guestEmail?: string;
+    paymentMethod?: string;
   }): { success: boolean; booking?: Booking; message?: string } {
     const quote = this.calculateQuote(payload.roomId, payload.checkIn, payload.checkOut, payload.guests);
     if (!quote.success) return { success: false, message: quote.message };
@@ -316,7 +317,7 @@ export const ODDStore = {
     const currentUser = getCurrentUser();
     const code = 'ODD-' + new Date().getFullYear() + '-' + String(Math.floor(1000 + Math.random() * 9000));
 
-    const newBooking: Booking = {
+    const newBooking: any = {
       code,
       guestUsername: currentUser?.username || 'guest.demo',
       guestName: payload.guestName || currentUser?.fullName || 'Khách thuê Demo',
@@ -337,6 +338,7 @@ export const ODDStore = {
       status: 'PENDING',
       createdAt: new Date().toISOString().slice(0, 10),
       isReviewed: false,
+      paymentMethod: payload.paymentMethod || 'CASH',
     };
 
     data.bookings.push(newBooking);
