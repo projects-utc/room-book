@@ -1,5 +1,6 @@
 package vn.odauday.stay.domain.booking.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
@@ -82,7 +83,7 @@ public class BookingEntity {
     private String createdAt;
 
     @Column(name = "is_reviewed")
-    @JsonProperty("isReviewed")
+    @JsonProperty("is_reviewed")
     @Builder.Default
     private Boolean isReviewed = false;
 }
