@@ -95,6 +95,10 @@ export const ODDStore = {
     return loadData();
   },
 
+  replaceStateFromApi(state: InitialDataState): void {
+    saveData(state);
+  },
+
   subscribe(listener: (data: InitialDataState) => void): () => void {
     stateListeners.add(listener);
     return () => stateListeners.delete(listener);
@@ -349,6 +353,14 @@ export const ODDStore = {
     return { success: true, booking: newBooking };
   },
 
+  upsertBookingFromApi(booking: Booking): void {
+    const data = loadData();
+    const index = data.bookings.findIndex(item => item.code === booking.code);
+    if (index === -1) data.bookings.unshift(booking);
+    else data.bookings[index] = booking;
+    saveData(data);
+  },
+
   // UC-04: My Bookings
   getMyBookings(username: string): Booking[] {
     const data = loadData();
@@ -365,12 +377,11 @@ export const ODDStore = {
     const idx = data.bookings.findIndex(b => b.code === code);
     if (idx === -1) return { success: false, message: 'Không tìm thấy đơn đặt phòng.' };
     const b = data.bookings[idx];
-    if (!['PENDING', 'CONFIRMED'].includes(b.status)) {
-      return { success: false, message: 'Chỉ có thể hủy đơn ở trạng thái PENDING hoặc CONFIRMED.' };
+    if (b.status !== 'PENDING') {
+      return { success: false, message: 'Chỉ có thể hủy đơn khi còn chờ chủ nhà duyệt.' };
     }
     data.bookings[idx].status = 'CANCELLED';
     saveData(data);
-    fetch(`/api/bookings/${encodeURIComponent(code)}/cancel`, { method: 'POST' }).catch(() => {});
     return { success: true };
   },
 
@@ -552,11 +563,6 @@ export const ODDStore = {
     if (idx === -1) return { success: false, message: 'Không tìm thấy đơn.' };
     data.bookings[idx].status = newStatus;
     saveData(data);
-    fetch(`/api/bookings/${encodeURIComponent(code)}/status`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: newStatus }),
-    }).catch(() => {});
     return { success: true };
   },
   // UC-09: Revenue
@@ -649,11 +655,6 @@ export const ODDStore = {
     });
 
     saveData(data);
-    fetch(`/api/bookings/${encodeURIComponent(code)}/admin-cancel`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reason }),
-    }).catch(() => {});
     return { success: true };
   },
   getPromotions(): Promotion[] {
