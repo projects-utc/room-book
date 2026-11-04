@@ -5,24 +5,29 @@ spring:
   application:
     name: odauday-stay-backend
   datasource:
-    url: jdbc:h2:file:./data/odauday;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: 
+    url: ${ORACLE_DB_URL:jdbc:oracle:thin:@//58.186.149.175:32012/FREE}
+    username: ${ORACLE_DB_USER:ODAUDAY_STAY}
+    password: ${ORACLE_DB_PASSWORD:Odauday_2026_Stay#9x}
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1200000
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.OracleDialect
+    open-in-view: false
     hibernate:
       ddl-auto: update
     show-sql: false
     properties:
       hibernate:
         format_sql: true
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
 
 app:
   jwt:
-    secret: odaudaystaysecretkeyforjwttokengenerationshouldbelongenough256bit
+    secret: ${APP_JWT_SECRET:local-dev-secret-must-be-replaced-before-use-2026}
     expiration-ms: 86400000
+  booking:
+    expiry-check-ms: 60000
