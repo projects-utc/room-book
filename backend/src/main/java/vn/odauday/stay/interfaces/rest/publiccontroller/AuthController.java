@@ -31,6 +31,11 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @GetMapping("/health")
+    public ApiResponse<Map<String, String>> health() {
+        return ApiResponse.ok(Map.of("status", "UP"));
+    }
+
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse register(@RequestBody @Valid RegisterRequest request) {
