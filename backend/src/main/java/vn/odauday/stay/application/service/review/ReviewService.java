@@ -23,10 +23,9 @@ import java.util.List;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final PropertyRepository propertyRepository; // Từ nhánh Tan_Phat
-    private final BookingRepository bookingRepository;   // Từ nhánh master
+    private final PropertyRepository propertyRepository;
+    private final BookingRepository bookingRepository;
 
-    // Hàm lấy danh sách đánh giá (Giữ lại từ nhánh master)
     @Transactional(readOnly = true)
     public List<ReviewEntity> getReviews(Long propertyId) {
         if (propertyId != null) {
@@ -35,15 +34,12 @@ public class ReviewService {
         return reviewRepository.findAll();
     }
 
-    // Hàm tạo đánh giá kết hợp logic của cả Tan_Phat và master
     @Transactional
     public ReviewResponse createReview(String username, String fullName, CreateReviewRequest request) {
-        // 1. Kiểm tra đơn đặt phòng
         if (reviewRepository.existsByBookingCode(request.getBookingCode())) {
             throw new IllegalStateException("Đơn đặt phòng này đã được đánh giá trước đó.");
         }
 
-        // 2. Tạo Entity và lưu Review (Lấy format ngày dd/MM/yyyy từ nhánh master)
         String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
         ReviewEntity review = ReviewEntity.builder()
@@ -58,10 +54,8 @@ public class ReviewService {
 
         ReviewEntity savedReview = reviewRepository.save(review);
 
-        // 3. TỰ ĐỘNG CẬP NHẬT ĐIỂM SỐ CHO PROPERTY (Logic của nhánh Tan_Phat)
         updatePropertyRating(request.getPropertyId());
 
-        // 4. ĐÁNH DẤU ĐƠN ĐẶT PHÒNG LÀ ĐÃ ĐÁNH GIÁ (Logic của nhánh master)
         if (request.getBookingCode() != null && !request.getBookingCode().isBlank()) {
             bookingRepository.findByCode(request.getBookingCode()).ifPresent(b -> {
                 b.setIsReviewed(true);
@@ -69,11 +63,9 @@ public class ReviewService {
             });
         }
 
-        // 5. Trả về Response
         return mapToResponse(savedReview);
     }
 
-    // Logic tính và cập nhật điểm trung bình (Từ nhánh Tan_Phat)
     private void updatePropertyRating(Long propertyId) {
         try {
             Double avgRating = reviewRepository.calculateAverageRating(propertyId);
@@ -94,7 +86,6 @@ public class ReviewService {
         }
     }
 
-    // Mapper (Từ nhánh Tan_Phat)
     private ReviewResponse mapToResponse(ReviewEntity review) {
         return ReviewResponse.builder()
                 .id(review.getId())
