@@ -43,25 +43,7 @@ async function fetchJson<T>(url: string, options: RequestInit = {}): Promise<Api
 }
 
 export const stayApi = {
-  // 1. System state
-  async getState() {
-    return fetchJson<{
-      users: User[];
-      properties: Property[];
-      rooms: Room[];
-      roomBlocks: RoomBlock[];
-      bookings: Booking[];
-      reviews: Review[];
-      promotions: Promotion[];
-      auditLogs: AuditLog[];
-    }>('/api/state');
-  },
-
-  async resetState() {
-    return fetchJson<Record<string, unknown>>('/api/state/reset', { method: 'POST' });
-  },
-
-  // 2. Properties
+  // 1. Properties
   async getProperties() {
     return fetchJson<Property[]>('/api/properties');
   },
@@ -85,7 +67,7 @@ export const stayApi = {
     return fetchJson<Property>(`/api/properties/${id}/toggle-status`, { method: 'PATCH' });
   },
 
-  // 3. Rooms
+  // 2. Rooms
   async getRooms(propertyId?: number | string) {
     const qs = propertyId ? `?propertyId=${encodeURIComponent(propertyId)}` : '';
     return fetchJson<Room[]>(`/api/rooms${qs}`);
@@ -102,7 +84,7 @@ export const stayApi = {
     return fetchJson<void>(`/api/rooms/${id}`, { method: 'DELETE' });
   },
 
-  // 4. Room blocks
+  // 3. Room blocks
   async getRoomBlocks(roomId?: number | string) {
     const qs = roomId ? `?roomId=${encodeURIComponent(roomId)}` : '';
     return fetchJson<RoomBlock[]>(`/api/room-blocks${qs}`);
@@ -119,7 +101,7 @@ export const stayApi = {
     return fetchJson<void>(`/api/room-blocks/${id}`, { method: 'DELETE' });
   },
 
-  // 5. Bookings
+  // 4. Bookings
   async getBookings(guestUsername?: string) {
     const qs = guestUsername ? `?guestUsername=${encodeURIComponent(guestUsername)}` : '';
     return fetchJson<Booking[]>(`/api/bookings${qs}`);
@@ -156,7 +138,7 @@ export const stayApi = {
     });
   },
 
-  // 6. Reviews
+  // 5. Reviews
   async getReviews(propertyId?: number | string) {
     const qs = propertyId ? `?propertyId=${encodeURIComponent(propertyId)}` : '';
     return fetchJson<Review[]>(`/api/reviews${qs}`);
@@ -169,7 +151,7 @@ export const stayApi = {
     });
   },
 
-  // 7. Promotions
+  // 6. Promotions
   async getPromotions() {
     return fetchJson<Promotion[]>('/api/promotions');
   },
@@ -189,7 +171,7 @@ export const stayApi = {
     return fetchJson<void>(`/api/promotions/${id}`, { method: 'DELETE' });
   },
 
-  // 8. Users
+  // 7. Users
   async getUsers() {
     return fetchJson<User[]>('/api/users');
   },
@@ -212,7 +194,7 @@ export const stayApi = {
     });
   },
 
-  // 9. Audit logs
+  // 8. Audit logs
   async getAuditLogs() {
     return fetchJson<AuditLog[]>('/api/audit-logs');
   },

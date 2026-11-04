@@ -54,6 +54,7 @@ public class ReviewService {
 
         ReviewEntity savedReview = reviewRepository.save(review);
 
+        // Tự động tính toán và cập nhật điểm số Property
         updatePropertyRating(request.getPropertyId());
 
         if (request.getBookingCode() != null && !request.getBookingCode().isBlank()) {
@@ -64,6 +65,27 @@ public class ReviewService {
         }
 
         return mapToResponse(savedReview);
+    }
+
+    @Transactional
+    public ReviewEntity submitReview(ReviewEntity review) {
+        if (review.getDate() == null || review.getDate().isBlank()) {
+            review.setDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        }
+        ReviewEntity saved = reviewRepository.save(review);
+
+        // Cập nhật điểm property nếu có propertyId
+        if (review.getPropertyId() != null) {
+            updatePropertyRating(review.getPropertyId());
+        }
+
+        if (review.getBookingCode() != null && !review.getBookingCode().isBlank()) {
+            bookingRepository.findByCode(review.getBookingCode()).ifPresent(b -> {
+                b.setIsReviewed(true);
+                bookingRepository.save(b);
+            });
+        }
+        return saved;
     }
 
     private void updatePropertyRating(Long propertyId) {
