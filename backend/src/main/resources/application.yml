@@ -5,10 +5,9 @@ spring:
   application:
     name: odauday-stay-backend
   datasource:
-    url: ${ORACLE_DB_URL:jdbc:oracle:thin:@//localhost:1521/FREEPDB1}
-    username: ${ORACLE_DB_USER:ODAUDAY_STAY}
-    password: ${ORACLE_DB_PASSWORD:Odauday_2026_Stay#9x}
-    driver-class-name: oracle.jdbc.OracleDriver
+    url: ${SPRING_DATASOURCE_URL:${ORACLE_DB_URL:jdbc:h2:file:./data/odauday;DB_CLOSE_DELAY=-1;MODE=Oracle;DEFAULT_NULL_ORDERING=HIGH}}
+    username: ${SPRING_DATASOURCE_USERNAME:${ORACLE_DB_USER:sa}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${ORACLE_DB_PASSWORD:}}
     hikari:
       maximum-pool-size: 10
       minimum-idle: 1
@@ -17,7 +16,6 @@ spring:
       idle-timeout: 300000
       max-lifetime: 1200000
   jpa:
-    database-platform: org.hibernate.dialect.OracleDialect
     open-in-view: false
     hibernate:
       ddl-auto: update
@@ -25,7 +23,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.OracleDialect
 
 app:
   jwt:
