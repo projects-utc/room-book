@@ -41,9 +41,12 @@ public class DataInitializer implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    @Transactional
     public void run(String... args) {
-        seedAllIfEmpty();
+        try {
+            seedAllIfEmpty();
+        } catch (Exception e) {
+            log.warn("Database initialization skipped or delayed: {}", e.getMessage());
+        }
     }
 
     @Transactional
