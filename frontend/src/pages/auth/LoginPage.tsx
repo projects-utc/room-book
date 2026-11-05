@@ -39,7 +39,7 @@ export default function LoginPage() {
       if (res.success) {
         setLoading(false);
         const displayName = res.user?.fullName || username;
-        addToast(`Chào mừng bạn trở lại, ${displayName}! Chúc bạn một ngày tốt lành ✨`, 'success');
+        addToast("Chào mừng bạn trở lại, " + displayName + "!", 'success');
         const from = (location.state as any)?.from?.pathname;
         if (from && from !== '/login' && from !== '/client/login' && from !== '/register') {
           navigate(from, { replace: true });
@@ -50,9 +50,13 @@ export default function LoginPage() {
         } else {
           navigate('/client', { replace: true });
         }
+      } else {
+        setLoading(false);
+        addToast('Đăng nhập không thành công. Vui lòng kiểm tra lại thông tin.', 'error');
       }
     } catch {
-      // Giữ icon loading quay liên tục khi backend chưa chạy
+      setLoading(false);
+      addToast('Không thể kết nối tới máy chủ backend.', 'error');
     }
   };
 
