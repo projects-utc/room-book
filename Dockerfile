@@ -18,4 +18,5 @@ COPY --from=builder /app/build/libs/*.jar app.jar
 ENV PORT=8080
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "java -Xmx384m -Dserver.port=${PORT:-8080} -jar app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
