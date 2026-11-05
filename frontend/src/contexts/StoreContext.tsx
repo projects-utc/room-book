@@ -42,25 +42,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  // Kiểm tra backend IDE có đang chạy hay không. Nếu chưa chạy -> poll kiểm tra liên tục
+  // Kiểm tra backend có đang chạy hay không. Nếu chưa chạy -> poll kiểm tra liên tục
   useEffect(() => {
     let timer: any;
     let isMounted = true;
 
     const checkBackend = async () => {
       try {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: '{}',
-        });
-        const contentType = res.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
+        const res = await fetch('/api/auth/health');
+        if (res.ok) {
           if (isMounted) setIsBackendReady(true);
           return;
         }
       } catch {
-        // Backend IDE chưa chạy
+        // Backend chưa sẵn sàng
       }
 
       if (isMounted) {
@@ -79,9 +74,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   // Đồng bộ dữ liệu từ backend và kiểm tra phiên đăng nhập thực tế khi load trang
   useEffect(() => {
-    ODDStore.syncFromBackend().finally(() => {
-      refreshUser();
-    });
+    refreshUser();
 
     const token = authApi.getToken();
     if (token) {

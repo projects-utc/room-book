@@ -79,19 +79,6 @@ export const ODDStore = {
   getData: () => loadData(),
 
   async syncFromBackend(): Promise<InitialDataState> {
-    try {
-      const res = await fetch('/api/state');
-      if (res.ok) {
-        const json = await res.json();
-        const state = json.data ? json.data : json;
-        if (state && Array.isArray(state.properties) && state.properties.length > 0) {
-          saveData(state);
-          return state;
-        }
-      }
-    } catch (err) {
-      console.warn('Backend sync failed, falling back to local cache', err);
-    }
     return loadData();
   },
 
@@ -105,7 +92,6 @@ export const ODDStore = {
   },
 
   reset(): InitialDataState {
-    fetch('/api/state/reset', { method: 'POST' }).catch(() => {});
     saveData(INITIAL_DATA);
     setCurrentUser(null);
     return JSON.parse(JSON.stringify(INITIAL_DATA));
