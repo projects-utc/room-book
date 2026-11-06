@@ -1,37 +1,65 @@
 package vn.odauday.stay.interfaces.rest.publiccontroller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import vn.odauday.stay.application.common.ApiResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import vn.odauday.stay.application.model.review.CreateReviewRequest;
+import vn.odauday.stay.application.model.review.ReviewResponse;
 import vn.odauday.stay.application.service.review.ReviewService;
 import vn.odauday.stay.domain.review.model.ReviewEntity;
 
 import java.util.List;
+import java.util.Map;
 
-@Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/reviews")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "*") // Mở CORS để Frontend (React) có thể gọi được API
 public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @GetMapping
-    public ApiResponse<List<ReviewEntity>> getReviews(@RequestParam(required = false) Long propertyId) {
-        return ApiResponse.ok(reviewService.getReviews(propertyId));
+    // API 1: Tạo đánh giá mới (POST /api/reviews)
+    @PostMapping
+    public ResponseEntity<?> createReview(
+            @RequestHeader(value = "X-User-Name", required = false, defaultValue = "guest_user") String username,
+            @RequestHeader(value = "X-Full-Name", required = false, defaultValue = "Khách Hàng Ẩn Danh") String fullName,
+            @Valid @RequestBody CreateReviewRequest request) {
+
+        try {
+            // Biến username và fullName giờ đây sẽ lấy trực tiếp từ Header do React gửi lên
+            // Khi hệ thống có JWT Authentication sau này, bạn chỉ cần thay 2 @RequestHeader bằng (Principal principal)
+
+            ReviewResponse response = reviewService.createReview(username, fullName, request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                    "success", true,
+                    "message", "Đánh giá thành công!",
+                    "data", response
+            ));
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            // Xử lý lỗi nếu khách hàng đã đánh giá đơn này rồi hoặc dữ liệu không hợp lệ
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            // Xử lý các lỗi hệ thống khác
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "success", false,
+                    "message", "Lỗi hệ thống: " + e.getMessage()
+            ));
+        }
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<ReviewEntity> submitReview(@RequestBody ReviewEntity review) {
-        return ApiResponse.ok("Đã gửi đánh giá thành công", reviewService.submitReview(review));
+    // API 2: Lấy danh sách đánh giá của 1 chỗ ở để hiển thị lên UI (GET /api/reviews/property/{propertyId})
+    @GetMapping("/property/{propertyId}")
+    public ResponseEntity<?> getReviewsByProperty(@PathVariable Long propertyId) {
+        List<ReviewEntity> reviews = reviewService.getReviews(propertyId);
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "data", reviews
+        ));
     }
 }

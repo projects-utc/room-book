@@ -1,9 +1,11 @@
 // Standardized "Trips" (Chuyến đi của tôi) Page (Airbnb Luxury Style)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { formatVND } from '../../constants';
 import { Button, Badge } from '../../components';
+import { stayApi } from '../../api/stayApi';
+import { Booking } from '../../data';
 import {
   HouseDoor,
   Search,
@@ -28,7 +30,17 @@ export default function MyBookingsPage() {
   const [activeTab, setActiveTab] = useState<'UPCOMING' | 'COMPLETED' | 'CANCELLED' | 'ALL'>('UPCOMING');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const myBookings = store.getMyBookings(username);
+  const [myBookings, setMyBookings] = useState<Booking[]>(() => store.getMyBookings(username));
+
+  useEffect(() => {
+    if (username) {
+      stayApi.getBookings(username).then(res => {
+        if (res.success && res.data && res.data.length > 0) {
+          setMyBookings(res.data);
+        }
+      }).catch(() => {});
+    }
+  }, [username]);
 
   // Filter bookings by tab and search
   const filteredBookings = myBookings.filter(b => {
@@ -57,8 +69,10 @@ export default function MyBookingsPage() {
   const handleCancelBooking = (code: string) => {
     if (window.confirm(`Bạn có chắc chắn muốn hủy đơn đặt phòng #${code}?`)) {
       const res = store.cancelBooking(code);
+      stayApi.cancelBooking(code).catch(() => {});
       if (res.success) {
         addToast(`Đã hủy thành công đơn #${code}`, 'success');
+        setMyBookings(prev => prev.map(b => b.code === code ? { ...b, status: 'CANCELLED' } : b));
       } else {
         addToast(res.message || 'Không thể hủy đơn', 'error');
       }

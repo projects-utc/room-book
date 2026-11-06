@@ -1,6 +1,5 @@
 package vn.odauday.stay.domain.booking.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
@@ -78,6 +77,10 @@ public class BookingEntity {
     @JsonProperty("status")
     @Builder.Default
     private String status = "PENDING";
+
+    @Column(name = "payment_method", length = 50)
+    @JsonProperty("paymentMethod")
+    private String paymentMethod;
 
     @Column(name = "created_at_str", length = 30)
     private String createdAt;

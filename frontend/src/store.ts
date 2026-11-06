@@ -294,6 +294,7 @@ export const ODDStore = {
     guestName?: string;
     guestPhone?: string;
     guestEmail?: string;
+    paymentMethod?: string;
   }): { success: boolean; booking?: Booking; message?: string } {
     const quote = this.calculateQuote(payload.roomId, payload.checkIn, payload.checkOut, payload.guests);
     if (!quote.success) return { success: false, message: quote.message };
@@ -323,6 +324,7 @@ export const ODDStore = {
       status: 'PENDING',
       createdAt: new Date().toISOString().slice(0, 10),
       isReviewed: false,
+      paymentMethod: payload.paymentMethod || 'CASH',
     };
 
     data.bookings.push(newBooking);
@@ -333,6 +335,16 @@ export const ODDStore = {
       body: JSON.stringify(newBooking),
     }).catch(() => {});
     return { success: true, booking: newBooking };
+  },
+
+  // Sync booking trả về từ API vào local store (tránh gọi lại BE lần 2)
+  syncBookingFromApi(booking: Booking): void {
+    const data = loadData();
+    const exists = data.bookings.find(b => b.code === booking.code);
+    if (!exists) {
+      data.bookings.push(booking);
+      saveData(data);
+    }
   },
 
   // UC-04: My Bookings
