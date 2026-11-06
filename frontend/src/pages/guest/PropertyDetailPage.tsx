@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb, DateRangePicker } from '../../components';
+import { Property, Room, Review } from '../../data';
 import { formatVND } from '../../constants';
 import {
   StarFill,
@@ -330,6 +331,7 @@ export default function PropertyDetailPage() {
                 <DateRangePicker
                     label="Lịch nhận & trả phòng"
                     value={{ start: checkIn, end: checkOut }}
+                    minDate={new Date().toISOString().split('T')[0]}
                     // Truyền logic kiểm tra ngày bận vào đây
                     isDateDisabled={isDateDisabled}
                     onChange={range => {
