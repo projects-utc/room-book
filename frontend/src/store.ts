@@ -303,7 +303,7 @@ export const ODDStore = {
     const currentUser = getCurrentUser();
     const code = 'ODD-' + new Date().getFullYear() + '-' + String(Math.floor(1000 + Math.random() * 9000));
 
-    const newBooking: any = {
+    const newBooking: Booking = {
       code,
       guestUsername: currentUser?.username || 'guest.demo',
       guestName: payload.guestName || currentUser?.fullName || 'Khách thuê Demo',
@@ -335,6 +335,16 @@ export const ODDStore = {
       body: JSON.stringify(newBooking),
     }).catch(() => {});
     return { success: true, booking: newBooking };
+  },
+
+  // Sync booking trả về từ API vào local store (tránh gọi lại BE lần 2)
+  syncBookingFromApi(booking: Booking): void {
+    const data = loadData();
+    const exists = data.bookings.find(b => b.code === booking.code);
+    if (!exists) {
+      data.bookings.push(booking);
+      saveData(data);
+    }
   },
 
   // UC-04: My Bookings

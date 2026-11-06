@@ -140,8 +140,11 @@ export const stayApi = {
 
   // 5. Reviews
   async getReviews(propertyId?: number | string) {
-    const qs = propertyId ? `?propertyId=${encodeURIComponent(propertyId)}` : '';
-    return fetchJson<Review[]>(`/api/reviews${qs}`);
+    // ĐÃ SỬA: Gọi đúng đường dẫn API chứa @PathVariable của Backend
+    if (propertyId) {
+      return fetchJson<Review[]>(`/api/reviews/property/${encodeURIComponent(propertyId)}`);
+    }
+    return fetchJson<Review[]>('/api/reviews');
   },
 
   async submitReview(review: Partial<Review>) {

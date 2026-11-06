@@ -104,9 +104,13 @@ export default function PropertyDetailPage() {
   };
 
   const nights = calculateNights();
-  const unitPrice = selectedRoom?.price || property?.priceMin || 500000;
-  const totalPrice = unitPrice * nights;
   const room = store.getAllRooms().find(r => r.id === selectedRoomId);
+  // Dùng calculateQuote để tính giá đồng nhất với trang checkout (tránh lệch nếu có giá cuối tuần)
+  const quote = (checkIn && checkOut && selectedRoomId)
+    ? store.calculateQuote(selectedRoomId, checkIn, checkOut, guests)
+    : null;
+  const unitPrice = quote?.pricePerNight ?? selectedRoom?.price ?? property?.priceMin ?? 500000;
+  const totalPrice = quote?.total ?? (unitPrice * nights);
 
   const isDateDisabled = (dateStr: string) => {
     if (!room) return false;

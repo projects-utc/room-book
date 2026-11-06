@@ -18,6 +18,7 @@ export default function ReviewFormPage() {
     const [rating, setRating] = useState<number>(5);
     const [hoverRating, setHoverRating] = useState<number>(0);
     const [comment, setComment] = useState<string>('');
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     // Nhãn cảm xúc theo số sao
     const ratingLabels: Record<number, { text: string; color: string }> = {
@@ -36,27 +37,58 @@ export default function ReviewFormPage() {
         }
     }, [booking, navigate, addToast]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    // HÀM SUBMIT SỬ DỤNG FETCH ĐỂ GỌI API THỰC TẾ
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (booking?.isReviewed || isSubmitting) return;
 
-        if (booking?.isReviewed) return;
+        setIsSubmitting(true);
 
         const reviewPayload = {
             bookingCode,
             propertyId: targetPropertyId,
-            guestUsername: currentUser?.username || 'guest.demo',
-            guestName: currentUser?.fullName || 'Khách thuê',
             rating,
             comment,
         };
 
-        const res = store.submitReview(reviewPayload);
+        try {
+            // Gửi dữ liệu xuống API bằng Fetch và kèm Header thông tin người dùng
+            const response = await fetch('/api/reviews', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Truyền tên thật của user xuống backend qua Header
+                    'X-User-Name': currentUser?.username || 'guest_user',
+                    'X-Full-Name': currentUser?.fullName || 'Khách Hàng Ẩn Danh'
+                },
+                body: JSON.stringify(reviewPayload)
+            });
 
-        if (res.success) {
-            addToast('Cảm ơn bạn! Đánh giá đã được gửi thành công.', 'success');
-            navigate(`/property/${targetPropertyId}?highlight=${bookingCode}#reviews-section`);
-        } else {
-            addToast(res.message || 'Lỗi khi gửi đánh giá', 'error');
+            const responseData = await response.json();
+
+            if (response.ok && (responseData.success || response.status === 201)) {
+                // Đánh dấu vào store cục bộ để UI biết đơn này đã được đánh giá
+                const localRes = store.submitReview({
+                    ...reviewPayload,
+                    guestUsername: currentUser?.username || 'guest_user',
+                    guestName: currentUser?.fullName || 'Khách Hàng Ẩn Danh'
+                });
+
+                if (localRes.success) {
+                    addToast('Cảm ơn bạn! Đánh giá đã được gửi thành công.', 'success');
+                    // Chuyển hướng về trang chi tiết chỗ ở kèm highlight
+                    navigate(`/property/${targetPropertyId}?highlight=${bookingCode}#reviews-section`);
+                }
+            } else {
+                throw new Error(responseData.message || 'Không thể gửi đánh giá, vui lòng thử lại sau.');
+            }
+
+        } catch (error: any) {
+            console.error("Lỗi khi gọi API submit review:", error);
+            const errorMsg = error.message || 'Không thể gửi đánh giá, vui lòng thử lại sau.';
+            addToast(errorMsg, 'error');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -147,9 +179,21 @@ export default function ReviewFormPage() {
 
                     <button
                         type="submit"
-                        style={{ width: '100%', padding: '14px 24px', background: 'linear-gradient(135deg, #FF385C 0%, #E61E4D 100%)', color: '#ffffff', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 14px rgba(255, 56, 92, 0.35)' }}
+                        disabled={isSubmitting}
+                        style={{
+                            width: '100%',
+                            padding: '14px 24px',
+                            background: isSubmitting ? '#E2E8F0' : 'linear-gradient(135deg, #FF385C 0%, #E61E4D 100%)',
+                            color: isSubmitting ? '#94A3B8' : '#ffffff',
+                            border: 'none',
+                            borderRadius: '10px',
+                            fontSize: '1rem',
+                            fontWeight: 700,
+                            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                            boxShadow: isSubmitting ? 'none' : '0 4px 14px rgba(255, 56, 92, 0.35)'
+                        }}
                     >
-                        Gửi đánh giá
+                        {isSubmitting ? 'Đang gửi...' : 'Gửi đánh giá'}
                     </button>
                 </form>
             </div>

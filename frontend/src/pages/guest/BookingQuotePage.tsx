@@ -67,9 +67,9 @@ export default function BookingQuotePage() {
     const room = store.getAllRooms().find(r => r.id === roomId) || store.getAllRooms()[0];
     const quote = store.calculateQuote(room.id, checkIn, checkOut, guests);
 
-    const nights = quote.nights || 2;
-    const subtotal = quote.subtotal || (room.price * nights);
-    const totalAmount = quote.total || (room.price * nights);
+    const nights = quote.nights || 1;
+    const subtotal = quote.subtotal ?? (room.price * nights);
+    const totalAmount = quote.total ?? subtotal;
     const depositAmount = Math.round(totalAmount * 0.3);
     const activePaymentAmount = paymentMethod === 'cod' ? depositAmount : totalAmount;
     const remainingAtHotel = paymentMethod === 'cod' ? (totalAmount - depositAmount) : 0;
@@ -161,29 +161,48 @@ export default function BookingQuotePage() {
 
             // 4. LUỒNG THÀNH CÔNG THỰC TẾ
             try {
-                // Chúng ta bỏ stayApi đi, chỉ gọi duy nhất qua Store để Store tự lo liệu việc gọi Fetch
-                const res = store.createBooking({
+                // Chuẩn bị payload chuẩn khớp với backend
+                const bookingPayload = {
                     roomId: room.id,
+                    propertyId: property.id,
+                    propertyName: property.name,
+                    roomName: room.name,
                     checkIn,
                     checkOut,
-                    guests,
+                    nights,
+                    guests: Number(guests) || 1,
+                    guestUsername: currentUser?.username || 'guest_user',
                     guestName,
                     guestPhone,
                     guestEmail,
-                    paymentMethod: dbMethod // Truyền giá trị thanh toán vào cho Store
-                } as any);
+                    pricePerNight: subtotal / nights,
+                    subtotal,
+                    serviceFee: 0,
+                    total: totalAmount,
+                    paymentMethod: dbMethod,
+                    status: 'PENDING'
+                };
 
-                if (!res.success || !res.booking) {
-                    addToast(res.message || 'Lỗi đặt phòng', 'error');
+                // GỌI TRỰC TIẾP API XUỐNG BACKEND THAY VÌ CHỈ LƯU STORE
+                const apiRes = await stayApi.createBooking(bookingPayload);
+
+                if (!apiRes.success || !apiRes.data) {
+                    addToast(apiRes.message || 'Lỗi đặt phòng từ máy chủ', 'error');
                     setProcessingState('IDLE');
                     return;
                 }
+
+                // Dữ liệu booking thực tế trả về từ Backend (đã có id và code tự generate)
+                const realBooking = apiRes.data;
+
+                // Đồng bộ ngược lại vào Store cục bộ để giao diện không bị giật
+                store.syncBookingFromApi(realBooking);
 
                 setIsAlreadyPaid(true);
                 addToast(paymentMethod === 'cod' ? 'Xác nhận đặt cọc 30% thành công!' : 'Đặt phòng thành công!', 'success');
 
                 const params = new URLSearchParams({
-                    code: res.booking.code, // Lấy trực tiếp mã đơn do Store vừa tạo
+                    code: realBooking.code, // Lấy mã đơn thật từ DB
                     txn: txnCode,
                     method: dbMethod,
                     channel: subChannelLabel,
@@ -192,8 +211,8 @@ export default function BookingQuotePage() {
                 navigate(`/booking-success?${params.toString()}`);
             } catch (err) {
                 console.error('Error creating booking:', err);
-                setProcessingState('IDLE'); // Tắt màn hình chờ nếu xảy ra lỗi
-                addToast('Có lỗi xảy ra khi xử lý đơn đặt phòng.', 'error');
+                setProcessingState('IDLE');
+                addToast('Có lỗi xảy ra kết nối với máy chủ khi xử lý đơn.', 'error');
             }
         }, 2000); // 2000 milliseconds = 2 giây
     };

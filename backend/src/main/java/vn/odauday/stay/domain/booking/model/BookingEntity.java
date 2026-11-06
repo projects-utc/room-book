@@ -79,7 +79,7 @@ public class BookingEntity {
     @Builder.Default
     private String status = "PENDING";
 
-    @Column(name = "PAYMENT_METHOD", length = 50)
+    @Column(name = "payment_method", length = 50)
     @JsonProperty("paymentMethod")
     private String paymentMethod;
 

@@ -27,7 +27,7 @@ spring:
 
 app:
   jwt:
-    secret: ${APP_JWT_SECRET:local-dev-secret-must-be-replaced-before-use-2026}
+    secret: ${APP_JWT_SECRET:odaudaystaysecretkeyforjwttokengenerationshouldbelongenough256bit}
     expiration-ms: 86400000
   booking:
     expiry-check-ms: 60000

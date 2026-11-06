@@ -71,6 +71,7 @@ export interface Booking {
   status: 'PENDING' | 'CONFIRMED' | 'CHECKED_IN' | 'COMPLETED' | 'CANCELLED' | 'REJECTED';
   createdAt: string;
   isReviewed: boolean;
+  paymentMethod?: string;
 }
 
 export interface Review {

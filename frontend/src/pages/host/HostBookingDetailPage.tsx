@@ -14,6 +14,7 @@ import {
   ClockHistory,
 } from 'react-bootstrap-icons';
 import { BookingStatus } from '../../constants';
+import stayApi from "../../api/stayApi";
 
 export default function HostBookingDetailPage() {
   const { code } = useParams<{ code: string }>();
@@ -24,13 +25,26 @@ export default function HostBookingDetailPage() {
 
   const [status, setStatus] = useState<BookingStatus>(booking?.status || 'PENDING');
 
-  const handleStatusChange = (newStatus: BookingStatus) => {
-    const res = store.updateBookingStatus(bookingCode, newStatus);
-    if (res.success) {
-      setStatus(newStatus);
-      addToast(`Đã chuyển trạng thái đơn #${bookingCode} sang ${newStatus}`, 'success');
-    } else {
-      addToast(res.message || 'Lỗi khi cập nhật trạng thái', 'error');
+  // HÀM ĐỔI TRẠNG THÁI GỌI XUỐNG BACKEND THỰC TẾ
+  const handleStatusChange = async (newStatus: BookingStatus) => {
+    try {
+      // 1. Gọi API cập nhật trạng thái trên MySQL
+      const response = await stayApi.updateBookingStatus(bookingCode, newStatus);
+
+      if (response.success) {
+        // 2. Cập nhật state cục bộ để giao diện đổi màu ngay
+        setStatus(newStatus);
+
+        // 3. Đồng bộ lại vào Store tĩnh (nếu cần)
+        store.updateBookingStatus(bookingCode, newStatus);
+
+        addToast(`Đã chuyển trạng thái đơn #${bookingCode} sang ${newStatus}`, 'success');
+      } else {
+        addToast(response.message || 'Lỗi khi cập nhật trạng thái từ máy chủ', 'error');
+      }
+    } catch (error) {
+      console.error("Lỗi đổi trạng thái:", error);
+      addToast('Không thể kết nối đến máy chủ để đổi trạng thái', 'error');
     }
   };
 

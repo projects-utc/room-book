@@ -16,8 +16,11 @@ export default function BookingSuccessPage() {
     const txnCode = searchParams.get('txn') || 'TXN-808384';
     const dbMethod = searchParams.get('method') || 'BANK_TRANSFER';
     const subChannel = searchParams.get('channel') || 'Quét mã VietQR';
-    const paidAmount = Number(searchParams.get('amount')) || booking?.total || 1300000;
+    // Số tiền đã thanh toán lần này (truyền từ BookingQuotePage qua URL)
+    const paidAmount = Number(searchParams.get('amount')) || booking?.total || 0;
+    // Tổng tiền đơn đặt phòng (lấy từ booking store)
     const totalAmount = booking?.total || paidAmount;
+    // Chỉ hiện "Còn lại" khi COD (đặt cọc 30%): paidAmount < totalAmount
     const remainingAmount = Math.max(0, totalAmount - paidAmount);
 
     return (
@@ -129,7 +132,7 @@ export default function BookingSuccessPage() {
                                 marginTop: '0.4rem',
                             }}
                         >
-                            <span>Còn lại thanh toán tại quầy (70%):</span>
+                            <span>Còn lại thanh toán tại quầy ({Math.round((remainingAmount / totalAmount) * 100)}%):</span>
                             <strong>{formatVND(remainingAmount)}</strong>
                         </div>
                     )}
