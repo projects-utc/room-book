@@ -17,6 +17,7 @@ import {
   ArrowRight,
   ArrowRepeat,
   XCircle,
+  StarFill,
 } from 'react-bootstrap-icons';
 
 export default function MyBookingsPage() {
@@ -634,7 +635,31 @@ export default function MyBookingsPage() {
                     {b.status === 'COMPLETED' && b.isReviewed && (
                       <button
                         type="button"
-                        onClick={() => navigate(`/property/${b.propertyId}`)}
+                        onClick={() => navigate(`/property/${b.propertyId || 1}#reviews`)}
+                        style={{
+                          width: '100%',
+                          padding: '0.6rem 1rem',
+                          borderRadius: 10,
+                          background: '#FFFBEB',
+                          color: '#B45309',
+                          border: '1px solid #FDE68A',
+                          fontSize: '0.84rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 6,
+                        }}
+                      >
+                        <StarFill style={{ color: '#F59E0B' }} /> Xem đánh giá
+                      </button>
+                    )}
+
+                    {b.status === 'COMPLETED' && b.isReviewed && (
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/property/${b.propertyId || 1}`)}
                         style={{
                           width: '100%',
                           padding: '0.6rem 1rem',
