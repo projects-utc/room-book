@@ -861,16 +861,163 @@ button {
 
 .checkout-grid {
   display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: 4rem;
+  grid-template-columns: minmax(0, 1.4fr) minmax(340px, 400px);
+  gap: 3rem;
   align-items: start;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   .checkout-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
+}
+
+/* ── Page & Section Headers ─────────────────── */
+.page-section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1E293B;
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-divider {
+  border: none;
+  border-top: 1px solid #E2E8F0;
+  margin: 1.75rem 0;
+}
+
+/* ── Selectable Payment Method Cards ───────── */
+.payment-method-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  cursor: pointer;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  margin-bottom: 0.75rem;
+}
+
+.payment-method-card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.payment-method-card.selected {
+  border-color: #E11D48;
+  background: #FFF1F2;
+  box-shadow: 0 4px 12px rgba(225,29,72,0.1);
+}
+
+/* ── Summary Aside Card ──────────────────── */
+.booking-summary-card {
+  position: sticky;
+  top: 6rem;
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+/* ── My Trip Card Responsive Grid ────────── */
+.my-trip-card {
+  display: grid;
+  grid-template-columns: 280px 1fr 220px;
+}
+
+@media (max-width: 992px) {
+  .my-trip-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Page Breadcrumb & Back row ─────────── */
+.page-top-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.page-top-nav h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0;
+  color: #1E293B;
+  letter-spacing: -0.02em;
+}
+
+/* ── Uniform Info Row in Summary ─────────── */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  color: #64748B;
+  margin-bottom: 0.6rem;
+}
+
+.info-row strong {
+  color: #1E293B;
+  text-align: right;
+}
+
+/* ── Test Sim Box ────────────────────────── */
+.sim-box {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: #F8FAFC;
+  border: 1px dashed #CBD5E1;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sim-box label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748B;
+  margin: 0;
+}
+
+.sim-btn {
+  padding: 0.3rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sim-btn-success {
+  border: 1.5px solid #15803D;
+  background: transparent;
+  color: #15803D;
+}
+
+.sim-btn-success.active {
+  background: #15803D;
+  color: #ffffff;
+}
+
+.sim-btn-fail {
+  border: 1.5px solid #B91C1C;
+  background: transparent;
+  color: #B91C1C;
+}
+
+.sim-btn-fail.active {
+  background: #B91C1C;
+  color: #ffffff;
 }
 
 .checkout-summary-card {
