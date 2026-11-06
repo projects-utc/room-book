@@ -286,7 +286,7 @@ export default function ReviewFormPage() {
                     </p>
                     <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                         <Link
-                            to={`/property/${booking?.propertyId || 1}`}
+                            to={`/property/${booking?.propertyId || 1}#reviews`}
                             className="btn btn-primary"
                             style={{
                                 padding: '0.75rem 1.5rem',
@@ -295,7 +295,7 @@ export default function ReviewFormPage() {
                                 fontSize: '0.92rem',
                             }}
                         >
-                            Xem chỗ ở
+                            Xem đánh giá trên trang đặt phòng
                         </Link>
                         <Link
                             to="/my-bookings"
