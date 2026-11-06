@@ -1,8 +1,9 @@
 // Airbnb-Inspired Property Detail Page (TypeScript)
 import React, { useState, useEffect } from 'react';
-import { useParams, useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb, DateRangePicker } from '../../components';
+import { Property, Room, Review } from '../../data';
 import { formatVND } from '../../constants';
 import {
   StarFill,
@@ -10,41 +11,32 @@ import {
   Heart,
   Share,
   PatchCheckFill,
+  ShieldCheck,
   Wifi,
   Tv,
   Snow,
   DoorOpen,
   ArrowRight,
   GeoAltFill,
+  PersonCircle,
   KeyFill,
   CheckCircleFill,
+  CalendarCheck,
   PeopleFill,
 } from 'react-bootstrap-icons';
 import { stayApi } from '../../api/stayApi';
 
-// Bảng màu gradient tươi sáng cho Avatar người đánh giá
-const AVATAR_GRADIENTS = [
-  'linear-gradient(135deg, #FF385C 0%, #FF7A00 100%)',
-  'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)',
-  'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-  'linear-gradient(135deg, #F59E0B 0%, #EF4444 100%)',
-];
-
 export default function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-  const location = useLocation();
   const { store, addToast } = useStore();
   const navigate = useNavigate();
 
   const propertyId = Number(id) || 1;
-  const highlightBookingCode = searchParams.get('highlight') || '';
+  const [property, setProperty] = useState<Property | null>(() => store.getProperty(propertyId) || store.getProperty(1));
+  const [rooms, setRooms] = useState<Room[]>(() => store.getRoomsByProperty(propertyId));
+  const [reviews, setReviews] = useState<Review[]>(() => store.getReviewsByProperty(propertyId));
 
-  const [property, setProperty] = useState<any>(() => store.getProperty(propertyId) || store.getProperty(1));
-  const [rooms, setRooms] = useState<any[]>(() => store.getRoomsByProperty(propertyId));
-  const [reviews, setReviews] = useState<any[]>(() => store.getReviewsByProperty(propertyId));
-
-  // GỌI API VÀ ĐỒNG BỘ DỮ LIỆU ĐÁNH GIÁ
   useEffect(() => {
     stayApi.getProperty(propertyId).then(res => {
       if (res.success && res.data) setProperty(res.data);
@@ -52,41 +44,30 @@ export default function PropertyDetailPage() {
     stayApi.getRooms(propertyId).then(res => {
       if (res.success && Array.isArray(res.data) && res.data.length > 0) setRooms(res.data);
     });
-
-    const localReviews = store.getReviewsByProperty(propertyId);
-    setReviews(localReviews);
-
     stayApi.getReviews(propertyId).then(res => {
-      if (res.success && Array.isArray(res.data)) {
-        const merged = [...res.data];
-        localReviews.forEach(lr => {
-          if (!merged.some(mr => mr.bookingCode === lr.bookingCode && mr.comment === lr.comment)) {
-            merged.unshift(lr);
-          }
-        });
-        setReviews(merged);
-      }
+      if (res.success && Array.isArray(res.data)) setReviews(res.data);
     });
-  }, [propertyId, store]);
+  }, [propertyId]);
 
-  // TỰ ĐỘNG CUỘN ĐÚNG ĐẾN BÀI ĐÁNH GIÁ NỔI BẬT KHI DỮ LIỆU ĐÃ TẢI XONG
+  // Cuộn mượt mà đến mục đánh giá khi có hash #reviews trên URL
   useEffect(() => {
-    if (highlightBookingCode || location.hash === '#reviews-section') {
+    if (window.location.hash === '#reviews') {
       const timer = setTimeout(() => {
-        const highlightedCard = document.querySelector('[data-highlighted="true"]');
-        if (highlightedCard) {
-          highlightedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-          const sectionEl = document.getElementById('reviews-section');
-          if (sectionEl) {
-            sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+        const el = document.getElementById('reviews');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      }, 500);
+      }, 350);
       return () => clearTimeout(timer);
     }
-  }, [highlightBookingCode, location.hash, reviews.length]);
+  }, [propertyId, reviews]);
 
+  // Tính toán số sao trung bình động từ dữ liệu đánh giá thực tế trong Database
+  const totalReviews = reviews.length;
+  const avgRating = totalReviews > 0
+    ? (reviews.reduce((acc, r) => acc + (Number(r.rating) || 5), 0) / totalReviews)
+    : (property?.rating || 5.0);
+  const displayRating = totalReviews > 0 ? avgRating.toFixed(1) : (property?.rating ? property.rating.toFixed(1) : '5.0');
   const [checkIn, setCheckIn] = useState(searchParams.get('in') || '');
   const [checkOut, setCheckOut] = useState(searchParams.get('out') || '');
   const [guests, setGuests] = useState(searchParams.get('guests') || '');
@@ -112,17 +93,21 @@ export default function PropertyDetailPage() {
   const unitPrice = quote?.pricePerNight ?? selectedRoom?.price ?? property?.priceMin ?? 500000;
   const totalPrice = quote?.total ?? (unitPrice * nights);
 
+  // Hàm kiểm tra ngày bị vô hiệu hóa (tối màu) để truyền vào Component Lịch
   const isDateDisabled = (dateStr: string) => {
     if (!room) return false;
     const targetDate = new Date(dateStr).getTime();
 
+    // 1. Kiểm tra lịch đã có khách đặt
     const activeBookings = store.getAllBookings().filter(b => b.roomId === room.id && ['PENDING', 'CONFIRMED', 'CHECKED_IN'].includes(b.status));
     for (const b of activeBookings) {
       const inTime = new Date(b.checkIn).getTime();
       const outTime = new Date(b.checkOut).getTime();
+      // Chặn các ngày nằm trong khoảng Check-in và Check-out của khách cũ
       if (targetDate >= inTime && targetDate < outTime) return true;
     }
 
+    // 2. Kiểm tra lịch bảo trì / khóa phòng (blocks)
     const blocks = store.getRoomBlocks(room.id);
     for (const bl of blocks) {
       const start = new Date(bl.start).getTime();
@@ -145,17 +130,20 @@ export default function PropertyDetailPage() {
 
     const guestCount = guests ? parseInt(guests, 10) : 1;
 
+    // Chặn 1: Kiểm tra sức chứa
     if (guestCount > activeRoom.capacity) {
       addToast(`Hạng phòng này chỉ phục vụ tối đa ${activeRoom.capacity} khách. Vui lòng giảm số lượng.`, 'error');
       return;
     }
 
+    // Chặn 2: Gọi kho dữ liệu để check trùng lịch (Đổi từ alert sang Toast góc màn hình)
     const conflict = store.checkConflict(activeRoom.id, checkIn, checkOut);
     if (conflict.hasConflict) {
       addToast(`Ngày bạn chọn đã kín chỗ: ${conflict.reason}`, 'error');
       return;
     }
 
+    // Nếu mọi thứ OK
     const params = new URLSearchParams({
       propertyId: String(property.id),
       roomId: String(rId),
@@ -178,18 +166,12 @@ export default function PropertyDetailPage() {
 
   if (!property) {
     return (
-        <div className="detail-container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>
-          <h2 style={{ color: '#222222', fontSize: '1.5rem', marginBottom: '1rem' }}>Đang tải thông tin chỗ nghỉ...</h2>
-          <p style={{ color: '#717171' }}>Vui lòng đợi giây lát trong khi hệ thống kết nối với máy chủ.</p>
-        </div>
+      <div className="detail-container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>
+        <h2 style={{ color: '#222222', fontSize: '1.5rem', marginBottom: '1rem' }}>Đang tải thông tin chỗ nghỉ...</h2>
+        <p style={{ color: '#717171' }}>Vui lòng đợi giây lát trong khi hệ thống kết nối với máy chủ.</p>
+      </div>
     );
   }
-
-  const avgRating = reviews.length > 0
-      ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(2)
-      : (property.rating ? property.rating.toFixed(2) : "5.00");
-
-  const displayedReviews = [...reviews].reverse();
 
   return (
       <div className="detail-container">
@@ -205,23 +187,27 @@ export default function PropertyDetailPage() {
           <h1 className="detail-title">{property.name}</h1>
           <div className="detail-sub">
             <div className="detail-rating-meta">
-              <StarFill style={{ color: '#FFB400', fontSize: '1rem' }} />
-              <span style={{ fontWeight: 700 }}>{avgRating}</span>
+              <StarFill style={{ color: '#F59E0B', fontSize: '0.95rem' }} />
+              <strong style={{ fontSize: '0.95rem', color: 'var(--ink)' }}>{displayRating}</strong>
               <span>·</span>
               <a
-                  href="#reviews-section"
-                  style={{ textDecoration: 'underline', color: 'inherit', cursor: 'pointer', fontWeight: 600 }}
+                href="#reviews"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                style={{ textDecoration: 'underline', color: 'var(--ink)', cursor: 'pointer', fontWeight: 600 }}
               >
-                {reviews.length || 0} đánh giá
+                {totalReviews} đánh giá
               </a>
               <span>·</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: 'var(--ink)' }}>
-                <PatchCheckFill style={{ color: 'var(--airbnb-pink)' }} /> Chủ nhà siêu cấp
-              </span>
+              <PatchCheckFill style={{ color: 'var(--airbnb-pink)' }} /> Chủ nhà siêu cấp
+            </span>
               <span>·</span>
               <span style={{ color: 'var(--ink-secondary)', textDecoration: 'underline' }}>
-                <GeoAltFill style={{ color: 'var(--danger)' }} /> {property.address}
-              </span>
+              <GeoAltFill style={{ color: 'var(--danger)' }} /> {property.address}
+            </span>
             </div>
 
             <div className="detail-actions">
@@ -300,7 +286,7 @@ export default function PropertyDetailPage() {
               </div>
             </div>
 
-            <div style={{ paddingBottom: '1.5rem' }}>
+            <div style={{ borderBottom: '1px solid var(--line)', paddingBottom: '1.5rem' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0 0 1rem' }}>Chọn hạng phòng lưu trú ({rooms.length})</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {rooms.map(roomItem => (
@@ -332,205 +318,183 @@ export default function PropertyDetailPage() {
               </div>
             </div>
 
-            {/* ================= PHẦN HIỂN THỊ ĐÁNH GIÁ MỚI (ĐẸP MẮT & SAO MÀU SẮC) ================= */}
-            <div
-                id="reviews-section"
-                style={{
-                  marginTop: '2.5rem',
-                  borderTop: '1px solid var(--line)',
-                  paddingTop: '2.5rem',
-                  scrollMarginTop: '6rem',
-                }}
-            >
-              {/* Banner tổng quan điểm đánh giá */}
-              <div
-                  style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '1rem',
-                    padding: '1.25rem 1.5rem',
-                    marginBottom: '2rem',
-                    borderRadius: '16px',
-                    background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
-                    border: '1px solid #FDE68A',
-                  }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div
-                      style={{
-                        width: '52px',
-                        height: '52px',
-                        borderRadius: '14px',
-                        background: '#FFB400',
-                        color: '#ffffff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '1.6rem',
-                        boxShadow: '0 4px 12px rgba(255, 180, 0, 0.35)',
-                      }}
-                  >
-                    <StarFill />
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1E293B' }}>{avgRating}</span>
-                      <span style={{ color: '#94A3B8' }}>·</span>
-                      <span style={{ fontSize: '1.15rem', fontWeight: 700, color: '#1E293B' }}>
-                        {reviews.length} đánh giá từ khách lưu trú
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
-                      {Array.from({ length: 5 }).map((_, i) => (
-                          <StarFill key={i} style={{ color: '#FFB400', fontSize: '0.95rem' }} />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                    style={{
-                      display: 'inline-flex',
+            {/* ── MỤC ĐÁNH GIÁ CHỖ NGHỈ (Anchor #reviews) ── */}
+            <div id="reviews" style={{ scrollMarginTop: '6.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--line)' }}>
+              {/* Header tổng quan đánh giá */}
+              <div style={{
+                background: 'linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 60%, #FFF1F2 100%)',
+                borderRadius: 20,
+                padding: '1.75rem 2rem',
+                border: '1px solid #FEF3C7',
+                marginBottom: '2rem',
+                boxShadow: '0 4px 16px rgba(245, 158, 11, 0.05)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: 18,
+                      background: '#FEF3C7',
+                      color: '#D97706',
+                      display: 'flex',
                       alignItems: 'center',
-                      gap: '6px',
-                      background: '#FFFFFF',
-                      color: '#059669',
-                      padding: '6px 14px',
-                      borderRadius: '999px',
-                      fontSize: '0.82rem',
-                      fontWeight: 700,
-                      border: '1px solid #A7F3D0',
-                    }}
-                >
-                  <CheckCircleFill /> 100% Đánh giá xác thực
+                      justifyContent: 'center',
+                      fontSize: '1.85rem',
+                      boxShadow: '0 4px 12px rgba(217, 119, 6, 0.15)'
+                    }}>
+                      <StarFill />
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                        <span style={{ fontSize: '2.1rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em' }}>
+                          {displayRating}
+                        </span>
+                        <span style={{ fontSize: '1rem', color: '#64748B', fontWeight: 600 }}>/ 5.0</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: '0.9rem', color: '#475569', fontWeight: 600 }}>
+                        {totalReviews > 0 ? `Dựa trên ${totalReviews} đánh giá thực tế từ khách đã lưu trú` : 'Chưa có đánh giá nào được ghi nhận'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Badges tiêu chí nổi bật */}
+                  <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 999, background: '#FFFFFF', border: '1px solid #E2E8F0', fontSize: '0.78rem', fontWeight: 700, color: '#334155' }}>
+                      ✨ Sạch sẽ: <strong>4.9</strong>
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 999, background: '#FFFFFF', border: '1px solid #E2E8F0', fontSize: '0.78rem', fontWeight: 700, color: '#334155' }}>
+                      📍 Vị trí: <strong>5.0</strong>
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 999, background: '#FFFFFF', border: '1px solid #E2E8F0', fontSize: '0.78rem', fontWeight: 700, color: '#334155' }}>
+                      💬 Phục vụ: <strong>4.9</strong>
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              {displayedReviews.length === 0 ? (
-                  <p style={{ color: 'var(--ink-secondary)' }}>Chưa có đánh giá nào cho chỗ ở này.</p>
-              ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem' }}>
-                    {displayedReviews.map((review, index) => {
-                      const isHighlighted = highlightBookingCode && review.bookingCode === highlightBookingCode;
-                      const avatarBg = AVATAR_GRADIENTS[index % AVATAR_GRADIENTS.length];
-
+                {/* Thanh phân bổ số sao */}
+                {totalReviews > 0 && (
+                  <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px dashed #FDE68A', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.85rem' }}>
+                    {[5, 4, 3, 2, 1].map(stars => {
+                      const count = reviews.filter(r => Math.round(Number(r.rating)) === stars).length;
+                      const pct = Math.round((count / totalReviews) * 100);
                       return (
-                          <div
-                              key={review.id || index}
-                              data-highlighted={isHighlighted ? "true" : "false"}
-                          >
-                            <style>{`
-                              @keyframes highlightPulse {
-                                0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 180, 0, 0.8); }
-                                50% { transform: scale(1.02); box-shadow: 0 0 0 12px rgba(255, 180, 0, 0); background-color: #FEF3C7; }
-                                100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 180, 0, 0); }
-                              }
-                            `}</style>
-
-                            <div
-                                style={{
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  justifyContent: 'space-between',
-                                  gap: '14px',
-                                  padding: '1.35rem 1.5rem',
-                                  borderRadius: '16px',
-                                  background: isHighlighted ? 'linear-gradient(180deg, #FFFDF5 0%, #FFFBEB 100%)' : '#FFFFFF',
-                                  border: isHighlighted ? '2px solid #FFB400' : '1px solid #EBEBEB',
-                                  boxShadow: isHighlighted ? '0 8px 24px rgba(255, 180, 0, 0.25)' : '0 4px 14px rgba(0, 0, 0, 0.04)',
-                                  animation: isHighlighted ? 'highlightPulse 1.5s ease-in-out 1' : 'none',
-                                  transition: 'transform 0.2s ease',
-                                }}
-                            >
-                              <div>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '12px' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <div
-                                        style={{
-                                          width: '46px',
-                                          height: '46px',
-                                          borderRadius: '50%',
-                                          background: avatarBg,
-                                          color: '#FFFFFF',
-                                          display: 'flex',
-                                          alignItems: 'center',
-                                          justifyContent: 'center',
-                                          fontWeight: 800,
-                                          fontSize: '1.1rem',
-                                          boxShadow: '0 3px 8px rgba(0,0,0,0.12)',
-                                          flexShrink: 0,
-                                        }}
-                                    >
-                                      {review.guestName ? review.guestName.charAt(0).toUpperCase() : 'G'}
-                                    </div>
-                                    <div>
-                                      <div style={{ fontWeight: 700, color: '#1E293B', fontSize: '0.98rem', textTransform: 'uppercase' }}>
-                                        {review.guestName}
-                                      </div>
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#64748B', marginTop: '2px' }}>
-                                        <span>{review.date}</span>
-                                        <span>·</span>
-                                        <span style={{ color: '#059669', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                                          <CheckCircleFill style={{ fontSize: '0.72rem' }} /> Đã lưu trú
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  {isHighlighted && (
-                                      <span
-                                          style={{
-                                            fontSize: '0.72rem',
-                                            fontWeight: 800,
-                                            background: '#FFB400',
-                                            color: '#FFFFFF',
-                                            padding: '4px 12px',
-                                            borderRadius: '999px',
-                                            boxShadow: '0 2px 6px rgba(255, 180, 0, 0.3)',
-                                          }}
-                                      >
-                                        Đánh giá của bạn
-                                      </span>
-                                  )}
-                                </div>
-
-                                <div
-                                    style={{
-                                      display: 'inline-flex',
-                                      alignItems: 'center',
-                                      gap: '4px',
-                                      background: '#FFFBEB',
-                                      border: '1px solid #FDE68A',
-                                      padding: '4px 10px',
-                                      borderRadius: '999px',
-                                      marginBottom: '10px',
-                                    }}
-                                >
-                                  {Array.from({ length: 5 }).map((_, i) => (
-                                      <StarFill
-                                          key={i}
-                                          style={{
-                                            color: i < review.rating ? '#FFB400' : '#E2E8F0',
-                                            fontSize: '0.88rem',
-                                          }}
-                                      />
-                                  ))}
-                                  <span style={{ marginLeft: '4px', fontSize: '0.78rem', fontWeight: 800, color: '#B45309' }}>
-                                    {review.rating}.0
-                                  </span>
-                                </div>
-
-                                <p style={{ margin: 0, color: '#334155', lineHeight: 1.65, fontSize: '0.94rem' }}>
-                                  {review.comment}
-                                </p>
-                              </div>
-                            </div>
+                        <div key={stars} style={{ fontSize: '0.8rem' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#475569', marginBottom: 4, fontWeight: 600 }}>
+                            <span>{stars} sao</span>
+                            <span>{count} ({pct}%)</span>
                           </div>
+                          <div style={{ width: '100%', height: 6, background: '#E2E8F0', borderRadius: 999, overflow: 'hidden' }}>
+                            <div style={{ width: `${pct}%`, height: '100%', background: '#F59E0B', borderRadius: 999, transition: 'width 0.4s ease' }} />
+                          </div>
+                        </div>
                       );
                     })}
                   </div>
+                )}
+              </div>
+
+              {/* Danh sách các thẻ nhận xét */}
+              {totalReviews === 0 ? (
+                <div style={{
+                  background: '#F8FAFC',
+                  borderRadius: 16,
+                  padding: '3rem 2rem',
+                  textAlign: 'center',
+                  border: '1px dashed #CBD5E1'
+                }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>💬</div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', margin: '0 0 0.35rem' }}>
+                    Chưa có nhận xét nào
+                  </h3>
+                  <p style={{ color: '#64748B', fontSize: '0.9rem', margin: 0 }}>
+                    Hãy là người đầu tiên trải nghiệm chỗ nghỉ này và để lại đánh giá của bạn!
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                  {reviews.map(rev => (
+                    <div
+                      key={rev.id}
+                      style={{
+                        background: '#ffffff',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: 16,
+                        padding: '1.35rem 1.5rem',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                        transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 6px 18px rgba(0,0,0,0.06)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
+                      }}
+                    >
+                      {/* User Header */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <div style={{
+                            width: 44,
+                            height: 44,
+                            borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #FF385C, #E00B41)',
+                            color: '#ffffff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 800,
+                            fontSize: '1.1rem',
+                            flexShrink: 0
+                          }}>
+                            {rev.guestName?.substring(0, 1).toUpperCase() || 'U'}
+                          </div>
+                          <div>
+                            <strong style={{ display: 'block', fontSize: '0.95rem', color: '#0F172A' }}>
+                              {rev.guestName}
+                            </strong>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.76rem', color: '#16A34A', fontWeight: 600 }}>
+                              <CheckCircleFill style={{ fontSize: '0.72rem' }} /> Đã xác thực lưu trú
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Ngày đánh giá */}
+                        <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>
+                          {rev.date}
+                        </span>
+                      </div>
+
+                      {/* Sao đánh giá */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginBottom: '0.65rem' }}>
+                        {[1, 2, 3, 4, 5].map(st => (
+                          <StarFill
+                            key={st}
+                            style={{
+                              fontSize: '0.85rem',
+                              color: st <= rev.rating ? '#F59E0B' : '#E2E8F0'
+                            }}
+                          />
+                        ))}
+                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0F172A', marginLeft: 6 }}>
+                          {rev.rating}.0
+                        </span>
+                        {rev.bookingCode && (
+                          <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: '#94A3B8', fontFamily: 'monospace' }}>
+                            #{rev.bookingCode}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Nội dung nhận xét */}
+                      <p style={{ margin: 0, fontSize: '0.92rem', color: '#334155', lineHeight: 1.65 }}>
+                        "{rev.comment}"
+                      </p>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </div>
@@ -543,9 +507,9 @@ export default function PropertyDetailPage() {
                   <span style={{ fontSize: '0.9rem', color: 'var(--ink-secondary)' }}> / đêm</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.88rem', fontWeight: 600 }}>
-                  <StarFill style={{ fontSize: '0.85rem', color: '#FFB400' }} />
-                  <span>{avgRating}</span>
-                  <span style={{ color: 'var(--ink-secondary)', fontWeight: 400 }}>({reviews.length})</span>
+                  <StarFill style={{ fontSize: '0.85rem', color: '#F59E0B' }} />
+                  <span style={{ color: '#0F172A', fontWeight: 700 }}>{displayRating}</span>
+                  <span style={{ color: 'var(--ink-secondary)', fontWeight: 400 }}>({totalReviews})</span>
                 </div>
               </div>
 
@@ -553,11 +517,14 @@ export default function PropertyDetailPage() {
                 <DateRangePicker
                     label="Lịch nhận & trả phòng"
                     value={{ start: checkIn, end: checkOut }}
+                    minDate={new Date().toISOString().split('T')[0]}
+                    // Truyền logic kiểm tra ngày bận vào đây
                     isDateDisabled={isDateDisabled}
                     onChange={range => {
                       let newStart = range.start;
                       let newEnd = range.end;
 
+                      // TỰ ĐỘNG ĐẢO NGÀY: Nếu ngày trả < ngày nhận, tự tráo đổi 2 biến cho nhau
                       if (newStart && newEnd && new Date(newStart) > new Date(newEnd)) {
                         const temp = newStart;
                         newStart = newEnd;

@@ -62,7 +62,7 @@ export default function AdminUsersPage() {
     }
     const authRes = await authApi.getUsers();
     if (authRes.success && authRes.users && authRes.users.length > 0) {
-      setUsers(authRes.users);
+      setUsers(authRes.users.map(u => ({ ...u, phone: u.phone || '' })) as User[]);
       return;
     }
     setUsers(store.getAllUsers());
@@ -109,7 +109,7 @@ export default function AdminUsersPage() {
   const handleAddUser = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!newFullName.trim() || !newUsername.trim() || !newPhone.trim() || !newEmail.trim() || !newPassword.trim()) {
-      addToast('Vui lòng điền đầy đủ các thông tin bắt buộc', 'warning');
+      addToast('Vui lòng điền đầy đủ các thông tin bắt buộc', 'warn');
       return;
     }
 

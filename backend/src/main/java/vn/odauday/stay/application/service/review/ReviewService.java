@@ -85,6 +85,19 @@ public class ReviewService {
                 bookingRepository.save(b);
             });
         }
+        if (review.getPropertyId() != null) {
+            propertyRepository.findById(review.getPropertyId()).ifPresent(p -> {
+                List<ReviewEntity> revs = reviewRepository.findByPropertyId(review.getPropertyId());
+                double avg = revs.stream()
+                        .filter(r -> r.getRating() != null)
+                        .mapToInt(ReviewEntity::getRating)
+                        .average()
+                        .orElse(5.0);
+                p.setRating(Math.round(avg * 10.0) / 10.0);
+                p.setReviewsCount(revs.size());
+                propertyRepository.save(p);
+            });
+        }
         return saved;
     }
 

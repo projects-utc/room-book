@@ -77,7 +77,6 @@ export function TableBody({ children, style }: { children: ReactNode; style?: Re
   return (
     <tbody
       style={{
-        divideY: '1px solid #E2E8F0',
         ...style,
       }}
     >

@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.odauday.stay.application.service.audit.AuditLogService;
 import vn.odauday.stay.domain.property.model.PropertyEntity;
 import vn.odauday.stay.domain.property.persistent.PropertyRepository;
+import vn.odauday.stay.domain.review.model.ReviewEntity;
+import vn.odauday.stay.domain.review.persistent.ReviewRepository;
 
 import java.util.List;
 
@@ -16,17 +18,38 @@ import java.util.List;
 public class PropertyService {
 
     private final PropertyRepository propertyRepository;
+    private final ReviewRepository reviewRepository;
     private final AuditLogService auditLogService;
+
+    private void enrichRating(PropertyEntity property) {
+        if (property == null || property.getId() == null) return;
+        List<ReviewEntity> propertyReviews = reviewRepository.findByPropertyId(property.getId());
+        if (propertyReviews != null && !propertyReviews.isEmpty()) {
+            double avg = propertyReviews.stream()
+                    .filter(r -> r.getRating() != null)
+                    .mapToInt(ReviewEntity::getRating)
+                    .average()
+                    .orElse(5.0);
+            property.setRating(Math.round(avg * 10.0) / 10.0);
+            property.setReviewsCount(propertyReviews.size());
+        } else {
+            property.setReviewsCount(0);
+        }
+    }
 
     @Transactional(readOnly = true)
     public List<PropertyEntity> getAllProperties() {
-        return propertyRepository.findAll();
+        List<PropertyEntity> list = propertyRepository.findAll();
+        list.forEach(this::enrichRating);
+        return list;
     }
 
     @Transactional(readOnly = true)
     public PropertyEntity getPropertyById(Long id) {
-        return propertyRepository.findById(id)
+        PropertyEntity p = propertyRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy cơ sở lưu trú có ID: " + id));
+        enrichRating(p);
+        return p;
     }
 
     @Transactional
