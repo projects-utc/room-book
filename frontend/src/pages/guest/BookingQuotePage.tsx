@@ -6,6 +6,7 @@ import { InputField, Button, Card, Badge, Breadcrumb } from '../../components';
 import { formatVND } from '../../constants';
 import { ChevronLeft, StarFill, CreditCard, CashCoin, ShieldCheck, CalendarCheck, CheckCircleFill } from 'react-bootstrap-icons';
 import { stayApi } from '../../api/stayApi';
+import { Booking } from '../../data';
 
 import PaymentWaitingPage from './PaymentWaitingPage';
 import BookingFailedPage, { FailedPaymentData } from './BookingFailedPage';
@@ -162,7 +163,7 @@ export default function BookingQuotePage() {
             // 4. LUỒNG THÀNH CÔNG THỰC TẾ
             try {
                 // Chuẩn bị payload chuẩn khớp với backend
-                const bookingPayload = {
+                const bookingPayload: Partial<Booking> = {
                     roomId: room.id,
                     propertyId: property.id,
                     propertyName: property.name,
