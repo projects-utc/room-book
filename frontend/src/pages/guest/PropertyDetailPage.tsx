@@ -167,8 +167,8 @@ export default function PropertyDetailPage() {
   if (!property) {
     return (
       <div className="detail-container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>
-        <h2 style={{ color: '#222222', fontSize: '1.5rem', marginBottom: '1rem' }}>Đang tải thông tin chỗ nghỉ...</h2>
-        <p style={{ color: '#717171' }}>Vui lòng đợi giây lát trong khi hệ thống kết nối với máy chủ.</p>
+        <h2 style={{ color: 'var(--color-text-primary)', fontSize: '1.5rem', marginBottom: '1rem' }}>Đang tải thông tin chỗ nghỉ...</h2>
+        <p style={{ color: 'var(--color-text-secondary)' }}>Vui lòng đợi giây lát trong khi hệ thống kết nối với máy chủ.</p>
       </div>
     );
   }
@@ -187,7 +187,7 @@ export default function PropertyDetailPage() {
           <h1 className="detail-title">{property.name}</h1>
           <div className="detail-sub">
             <div className="detail-rating-meta">
-              <StarFill style={{ color: '#F59E0B', fontSize: '0.95rem' }} />
+              <StarFill style={{ color: 'var(--color-warning)', fontSize: '0.95rem' }} />
               <strong style={{ fontSize: '0.95rem', color: 'var(--ink)' }}>{displayRating}</strong>
               <span>·</span>
               <a
@@ -237,7 +237,7 @@ export default function PropertyDetailPage() {
                 <h3>Toàn bộ {property.type} · Chủ nhà {property.owner}</h3>
                 <p>2 phòng ngủ · 2 giường · 2 phòng tắm riêng · Sức chứa tối đa {selectedRoom?.capacity || 2} khách</p>
               </div>
-              <div style={{ width: 54, height: 54, borderRadius: 'var(--radius-full)', background: 'var(--airbnb-gradient)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1.25rem' }}>
+              <div style={{ width: 54, height: 54, borderRadius: 'var(--radius-full)', background: 'var(--airbnb-gradient)', color: 'var(--color-bg-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1.25rem' }}>
                 {property.owner.substring(0, 2).toUpperCase()}
               </div>
             </div>
@@ -258,7 +258,7 @@ export default function PropertyDetailPage() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <CheckCircleFill style={{ fontSize: '1.35rem', color: '#059669', marginTop: 2 }} />
+                <CheckCircleFill style={{ fontSize: '1.35rem', color: 'var(--color-success)', marginTop: 2 }} />
                 <div>
                   <strong style={{ display: 'block', fontSize: '0.98rem' }}>Hủy miễn phí trước 48 giờ</strong>
                   <span style={{ color: 'var(--ink-secondary)', fontSize: '0.88rem' }}>Nhận hoàn tiền đầy đủ nếu kế hoạch chuyến đi của bạn có thay đổi đột xuất.</span>
@@ -292,7 +292,7 @@ export default function PropertyDetailPage() {
                 {rooms.map(roomItem => (
                     <div
                         key={roomItem.id}
-                        style={{ border: selectedRoomId === roomItem.id ? '2px solid var(--ink)' : '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '1.25rem', background: selectedRoomId === roomItem.id ? 'var(--surface-alt)' : '#ffffff', cursor: 'pointer', transition: 'border-color 0.2s' }}
+                        style={{ border: selectedRoomId === roomItem.id ? '2px solid var(--ink)' : '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '1.25rem', background: selectedRoomId === roomItem.id ? 'var(--surface-alt)' : 'var(--color-bg-surface)', cursor: 'pointer', transition: 'border-color 0.2s' }}
                         onClick={() => setSelectedRoomId(roomItem.id)}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
@@ -300,7 +300,7 @@ export default function PropertyDetailPage() {
                           <h3 style={{ margin: '0 0 0.35rem', fontSize: '1.1rem', fontWeight: 700 }}>{roomItem.name}</h3>
                           <p style={{ margin: 0, color: 'var(--ink-secondary)', fontSize: '0.88rem' }}>{roomItem.desc}</p>
                           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                            <span className="badge" style={{ background: '#f1f5f9', color: '#475569', fontSize: '0.78rem' }}><PeopleFill /> Sức chứa: {roomItem.capacity} người</span>
+                            <span className="badge" style={{ background: 'var(--color-bg-muted)', color: 'var(--color-text-secondary)', fontSize: '0.78rem' }}><PeopleFill /> Sức chứa: {roomItem.capacity} người</span>
                           </div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
@@ -322,10 +322,10 @@ export default function PropertyDetailPage() {
             <div id="reviews" style={{ scrollMarginTop: '6.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--line)' }}>
               {/* Header tổng quan đánh giá */}
               <div style={{
-                background: 'linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 60%, #FFF1F2 100%)',
+                background: 'linear-gradient(135deg, var(--color-warning-bg) 0%, var(--color-bg-surface) 60%, var(--color-primary-soft) 100%)',
                 borderRadius: 20,
                 padding: '1.75rem 2rem',
-                border: '1px solid #FEF3C7',
+                border: '1px solid var(--color-warning-bg)',
                 marginBottom: '2rem',
                 boxShadow: '0 4px 16px rgba(245, 158, 11, 0.05)'
               }}>
@@ -335,8 +335,8 @@ export default function PropertyDetailPage() {
                       width: 64,
                       height: 64,
                       borderRadius: 18,
-                      background: '#FEF3C7',
-                      color: '#D97706',
+                      background: 'var(--color-warning-bg)',
+                      color: 'var(--color-warning)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -347,12 +347,12 @@ export default function PropertyDetailPage() {
                     </div>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                        <span style={{ fontSize: '2.1rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em' }}>
+                        <span style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
                           {displayRating}
                         </span>
-                        <span style={{ fontSize: '1rem', color: '#64748B', fontWeight: 600 }}>/ 5.0</span>
+                        <span style={{ fontSize: '1rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>/ 5.0</span>
                       </div>
-                      <p style={{ margin: 0, fontSize: '0.9rem', color: '#475569', fontWeight: 600 }}>
+                      <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-secondary)', fontWeight: 600 }}>
                         {totalReviews > 0 ? `Dựa trên ${totalReviews} đánh giá thực tế từ khách đã lưu trú` : 'Chưa có đánh giá nào được ghi nhận'}
                       </p>
                     </div>
@@ -360,13 +360,13 @@ export default function PropertyDetailPage() {
 
                   {/* Badges tiêu chí nổi bật */}
                   <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 999, background: '#FFFFFF', border: '1px solid #E2E8F0', fontSize: '0.78rem', fontWeight: 700, color: '#334155' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 999, background: 'var(--color-bg-surface)', border: '1px solid var(--color-border-subtle)', fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>
                       ✨ Sạch sẽ: <strong>4.9</strong>
                     </span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 999, background: '#FFFFFF', border: '1px solid #E2E8F0', fontSize: '0.78rem', fontWeight: 700, color: '#334155' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 999, background: 'var(--color-bg-surface)', border: '1px solid var(--color-border-subtle)', fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>
                       📍 Vị trí: <strong>5.0</strong>
                     </span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 999, background: '#FFFFFF', border: '1px solid #E2E8F0', fontSize: '0.78rem', fontWeight: 700, color: '#334155' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 999, background: 'var(--color-bg-surface)', border: '1px solid var(--color-border-subtle)', fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>
                       💬 Phục vụ: <strong>4.9</strong>
                     </span>
                   </div>
@@ -374,18 +374,18 @@ export default function PropertyDetailPage() {
 
                 {/* Thanh phân bổ số sao */}
                 {totalReviews > 0 && (
-                  <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px dashed #FDE68A', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.85rem' }}>
+                  <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px dashed var(--color-warning-border)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.85rem' }}>
                     {[5, 4, 3, 2, 1].map(stars => {
                       const count = reviews.filter(r => Math.round(Number(r.rating)) === stars).length;
                       const pct = Math.round((count / totalReviews) * 100);
                       return (
                         <div key={stars} style={{ fontSize: '0.8rem' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#475569', marginBottom: 4, fontWeight: 600 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-secondary)', marginBottom: 4, fontWeight: 600 }}>
                             <span>{stars} sao</span>
                             <span>{count} ({pct}%)</span>
                           </div>
-                          <div style={{ width: '100%', height: 6, background: '#E2E8F0', borderRadius: 999, overflow: 'hidden' }}>
-                            <div style={{ width: `${pct}%`, height: '100%', background: '#F59E0B', borderRadius: 999, transition: 'width 0.4s ease' }} />
+                          <div style={{ width: '100%', height: 6, background: 'var(--color-border-subtle)', borderRadius: 999, overflow: 'hidden' }}>
+                            <div style={{ width: `${pct}%`, height: '100%', background: 'var(--color-warning)', borderRadius: 999, transition: 'width 0.4s ease' }} />
                           </div>
                         </div>
                       );
@@ -397,17 +397,17 @@ export default function PropertyDetailPage() {
               {/* Danh sách các thẻ nhận xét */}
               {totalReviews === 0 ? (
                 <div style={{
-                  background: '#F8FAFC',
+                  background: 'var(--color-bg-app)',
                   borderRadius: 16,
                   padding: '3rem 2rem',
                   textAlign: 'center',
-                  border: '1px dashed #CBD5E1'
+                  border: '1px dashed var(--color-border-strong)'
                 }}>
                   <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>💬</div>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', margin: '0 0 0.35rem' }}>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 0.35rem' }}>
                     Chưa có nhận xét nào
                   </h3>
-                  <p style={{ color: '#64748B', fontSize: '0.9rem', margin: 0 }}>
+                  <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', margin: 0 }}>
                     Hãy là người đầu tiên trải nghiệm chỗ nghỉ này và để lại đánh giá của bạn!
                   </p>
                 </div>
@@ -417,8 +417,8 @@ export default function PropertyDetailPage() {
                     <div
                       key={rev.id}
                       style={{
-                        background: '#ffffff',
-                        border: '1px solid #E2E8F0',
+                        background: 'var(--color-bg-surface)',
+                        border: '1px solid var(--color-border-subtle)',
                         borderRadius: 16,
                         padding: '1.35rem 1.5rem',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
@@ -440,8 +440,8 @@ export default function PropertyDetailPage() {
                             width: 44,
                             height: 44,
                             borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #FF385C, #E00B41)',
-                            color: '#ffffff',
+                            background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))',
+                            color: 'var(--color-bg-surface)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -452,17 +452,17 @@ export default function PropertyDetailPage() {
                             {rev.guestName?.substring(0, 1).toUpperCase() || 'U'}
                           </div>
                           <div>
-                            <strong style={{ display: 'block', fontSize: '0.95rem', color: '#0F172A' }}>
+                            <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
                               {rev.guestName}
                             </strong>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.76rem', color: '#16A34A', fontWeight: 600 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.76rem', color: 'var(--color-success)', fontWeight: 600 }}>
                               <CheckCircleFill style={{ fontSize: '0.72rem' }} /> Đã xác thực lưu trú
                             </div>
                           </div>
                         </div>
 
                         {/* Ngày đánh giá */}
-                        <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
                           {rev.date}
                         </span>
                       </div>
@@ -474,22 +474,22 @@ export default function PropertyDetailPage() {
                             key={st}
                             style={{
                               fontSize: '0.85rem',
-                              color: st <= rev.rating ? '#F59E0B' : '#E2E8F0'
+                              color: st <= rev.rating ? 'var(--color-warning)' : 'var(--color-border-subtle)'
                             }}
                           />
                         ))}
-                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0F172A', marginLeft: 6 }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-primary)', marginLeft: 6 }}>
                           {rev.rating}.0
                         </span>
                         {rev.bookingCode && (
-                          <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: '#94A3B8', fontFamily: 'monospace' }}>
+                          <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>
                             #{rev.bookingCode}
                           </span>
                         )}
                       </div>
 
                       {/* Nội dung nhận xét */}
-                      <p style={{ margin: 0, fontSize: '0.92rem', color: '#334155', lineHeight: 1.65 }}>
+                      <p style={{ margin: 0, fontSize: '0.92rem', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
                         "{rev.comment}"
                       </p>
                     </div>
@@ -500,15 +500,15 @@ export default function PropertyDetailPage() {
           </div>
 
           <aside>
-            <div style={{ position: 'sticky', top: '6rem', border: '1px solid var(--line-strong)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', boxShadow: 'var(--shadow-card)', background: '#ffffff' }}>
+            <div style={{ position: 'sticky', top: '6rem', border: '1px solid var(--line-strong)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', boxShadow: 'var(--shadow-card)', background: 'var(--color-bg-surface)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1.25rem' }}>
                 <div>
                   <span style={{ fontSize: '1.45rem', fontWeight: 800 }}>{formatVND(unitPrice)}</span>
                   <span style={{ fontSize: '0.9rem', color: 'var(--ink-secondary)' }}> / đêm</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.88rem', fontWeight: 600 }}>
-                  <StarFill style={{ fontSize: '0.85rem', color: '#F59E0B' }} />
-                  <span style={{ color: '#0F172A', fontWeight: 700 }}>{displayRating}</span>
+                  <StarFill style={{ fontSize: '0.85rem', color: 'var(--color-warning)' }} />
+                  <span style={{ color: 'var(--color-text-primary)', fontWeight: 700 }}>{displayRating}</span>
                   <span style={{ color: 'var(--ink-secondary)', fontWeight: 400 }}>({totalReviews})</span>
                 </div>
               </div>
@@ -563,7 +563,7 @@ export default function PropertyDetailPage() {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ textDecoration: 'underline' }}>Phí dịch vụ ODauDay Stay</span>
-                  <span style={{ color: '#059669', fontWeight: 600 }}>0₫ (Miễn phí)</span>
+                  <span style={{ color: 'var(--color-success)', fontWeight: 600 }}>0₫ (Miễn phí)</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--line)', paddingTop: '0.85rem', fontWeight: 800, fontSize: '1.05rem' }}>
                   <span>Tổng trước thuế</span>

@@ -63,9 +63,9 @@ export default function MyBookingDetailPage() {
             gap: 6,
             padding: '6px 14px',
             borderRadius: 999,
-            background: '#FFFBEB',
-            color: '#B45309',
-            border: '1px solid #FDE68A',
+            background: 'var(--color-warning-bg)',
+            color: 'var(--color-warning)',
+            border: '1px solid var(--color-warning-border)',
             fontSize: '0.85rem',
             fontWeight: 700
           }}>
@@ -80,9 +80,9 @@ export default function MyBookingDetailPage() {
             gap: 6,
             padding: '6px 14px',
             borderRadius: 999,
-            background: '#EFF6FF',
-            color: '#1D4ED8',
-            border: '1px solid #BFDBFE',
+            background: 'var(--color-info-bg)',
+            color: 'var(--color-info)',
+            border: '1px solid var(--color-info-border)',
             fontSize: '0.85rem',
             fontWeight: 700
           }}>
@@ -97,9 +97,9 @@ export default function MyBookingDetailPage() {
             gap: 6,
             padding: '6px 14px',
             borderRadius: 999,
-            background: '#ECFDF5',
-            color: '#047857',
-            border: '1px solid #A7F3D0',
+            background: 'var(--color-success-bg)',
+            color: 'var(--color-success)',
+            border: '1px solid var(--color-success-border)',
             fontSize: '0.85rem',
             fontWeight: 700
           }}>
@@ -114,9 +114,9 @@ export default function MyBookingDetailPage() {
             gap: 6,
             padding: '6px 14px',
             borderRadius: 999,
-            background: '#F1F5F9',
-            color: '#334155',
-            border: '1px solid #CBD5E1',
+            background: 'var(--color-bg-muted)',
+            color: 'var(--color-text-secondary)',
+            border: '1px solid var(--color-border-strong)',
             fontSize: '0.85rem',
             fontWeight: 700
           }}>
@@ -132,9 +132,9 @@ export default function MyBookingDetailPage() {
             gap: 6,
             padding: '6px 14px',
             borderRadius: 999,
-            background: '#FEF2F2',
-            color: '#B91C1C',
-            border: '1px solid #FECACA',
+            background: 'var(--color-danger-bg)',
+            color: 'var(--color-danger)',
+            border: '1px solid var(--color-danger-border)',
             fontSize: '0.85rem',
             fontWeight: 700
           }}>
@@ -168,7 +168,7 @@ export default function MyBookingDetailPage() {
         flexWrap: 'wrap',
         gap: '1rem',
         paddingBottom: '1.5rem',
-        borderBottom: '1px solid #E2E8F0'
+        borderBottom: '1px solid var(--color-border-subtle)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button
@@ -178,23 +178,23 @@ export default function MyBookingDetailPage() {
               width: 40,
               height: 40,
               borderRadius: 12,
-              border: '1px solid #E2E8F0',
-              background: '#ffffff',
+              border: '1px solid var(--color-border-subtle)',
+              background: 'var(--color-bg-surface)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#0F172A',
+              color: 'var(--color-text-primary)',
               transition: 'background 0.15s ease',
             }}
           >
             <ChevronLeft style={{ fontSize: '1.1rem' }} />
           </button>
           <div>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.25rem', color: '#0F172A', letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.25rem', color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
               Chi tiết kỳ nghỉ #{bookingCode}
             </h1>
-            <span style={{ color: '#64748B', fontSize: '0.9rem' }}>
+            <span style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
               Thời điểm đặt: <strong>{booking?.createdAt || 'Gần đây'}</strong>
             </span>
           </div>
@@ -206,60 +206,60 @@ export default function MyBookingDetailPage() {
       {/* ── Status Banner Message ── */}
       {currentStatus === 'CANCELLED' ? (
         <div style={{
-          background: '#FEF2F2',
-          border: '1px solid #FECACA',
+          background: 'var(--color-danger-bg)',
+          border: '1px solid var(--color-danger-border)',
           borderRadius: 16,
           padding: '1.25rem 1.5rem',
           marginBottom: '2rem',
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          color: '#991B1B'
+          color: 'var(--color-danger)'
         }}>
           <XCircleFill style={{ fontSize: '1.5rem', flexShrink: 0 }} />
           <div>
             <strong style={{ display: 'block', fontSize: '0.98rem', marginBottom: 2 }}>Đơn đặt phòng này đã được hủy</strong>
-            <span style={{ fontSize: '0.88rem', color: '#B91C1C' }}>
+            <span style={{ fontSize: '0.88rem', color: 'var(--color-danger)' }}>
               Khoảng thời gian này đã được giải phóng trên hệ thống. Nếu có thắc mắc, vui lòng liên hệ bộ phận hỗ trợ khách hàng.
             </span>
           </div>
         </div>
       ) : currentStatus === 'CONFIRMED' ? (
         <div style={{
-          background: '#EFF6FF',
-          border: '1px solid #BFDBFE',
+          background: 'var(--color-info-bg)',
+          border: '1px solid var(--color-info-border)',
           borderRadius: 16,
           padding: '1.25rem 1.5rem',
           marginBottom: '2rem',
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          color: '#1E40AF'
+          color: 'var(--color-info)'
         }}>
-          <CheckCircleFill style={{ fontSize: '1.5rem', color: '#2563EB', flexShrink: 0 }} />
+          <CheckCircleFill style={{ fontSize: '1.5rem', color: 'var(--color-info)', flexShrink: 0 }} />
           <div>
             <strong style={{ display: 'block', fontSize: '0.98rem', marginBottom: 2 }}>Chỗ ở đã được xác nhận thành công!</strong>
-            <span style={{ fontSize: '0.88rem', color: '#1D4ED8' }}>
+            <span style={{ fontSize: '0.88rem', color: 'var(--color-info)' }}>
               Chủ nhà đã chuẩn bị sẵn sàng đón bạn vào ngày {booking?.checkIn}. Chúc bạn có kỳ nghỉ thật tuyệt vời!
             </span>
           </div>
         </div>
       ) : currentStatus === 'PENDING' ? (
         <div style={{
-          background: '#FFFBEB',
-          border: '1px solid #FDE68A',
+          background: 'var(--color-warning-bg)',
+          border: '1px solid var(--color-warning-border)',
           borderRadius: 16,
           padding: '1.25rem 1.5rem',
           marginBottom: '2rem',
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          color: '#92400E'
+          color: 'var(--color-warning)'
         }}>
-          <ClockHistory style={{ fontSize: '1.5rem', color: '#D97706', flexShrink: 0 }} />
+          <ClockHistory style={{ fontSize: '1.5rem', color: 'var(--color-warning)', flexShrink: 0 }} />
           <div>
             <strong style={{ display: 'block', fontSize: '0.98rem', marginBottom: 2 }}>Đang chờ chủ nhà xác nhận</strong>
-            <span style={{ fontSize: '0.88rem', color: '#B45309' }}>
+            <span style={{ fontSize: '0.88rem', color: 'var(--color-warning)' }}>
               Yêu cầu đặt phòng của bạn đã được gửi tới chủ nhà. Thông thường chủ nhà sẽ phản hồi trong vòng vài giờ.
             </span>
           </div>
@@ -272,9 +272,9 @@ export default function MyBookingDetailPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
           {/* Card Chỗ ở */}
           <div style={{
-            background: '#ffffff',
+            background: 'var(--color-bg-surface)',
             borderRadius: 20,
-            border: '1px solid #E2E8F0',
+            border: '1px solid var(--color-border-subtle)',
             overflow: 'hidden',
             boxShadow: '0 2px 12px rgba(0,0,0,0.03)'
           }}>
@@ -294,27 +294,27 @@ export default function MyBookingDetailPage() {
                 borderRadius: 999,
                 fontSize: '0.78rem',
                 fontWeight: 700,
-                color: '#0F172A'
+                color: 'var(--color-text-primary)'
               }}>
                 {property?.type || 'Homestay'} · {property?.city || 'Hà Nội'}
               </div>
             </div>
 
             <div style={{ padding: '1.5rem' }}>
-              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: '0 0 0.4rem', color: '#0F172A' }}>
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: '0 0 0.4rem', color: 'var(--color-text-primary)' }}>
                 {booking?.propertyName}
               </h2>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#64748B', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
-                <GeoAltFill style={{ color: '#E11D48' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-muted)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
+                <GeoAltFill style={{ color: 'var(--color-primary)' }} />
                 <span>{property?.address || 'Khu vực trung tâm'}</span>
               </div>
 
               {/* Hạng phòng */}
               <div style={{
-                background: '#F8FAFC',
+                background: 'var(--color-bg-app)',
                 borderRadius: 14,
                 padding: '1rem 1.25rem',
-                border: '1px solid #E2E8F0',
+                border: '1px solid var(--color-border-subtle)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -322,20 +322,20 @@ export default function MyBookingDetailPage() {
                 gap: '0.75rem'
               }}>
                 <div>
-                  <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Hạng phòng</span>
-                  <strong style={{ display: 'block', fontSize: '1.05rem', color: '#0F172A', marginTop: 2 }}>{booking?.roomName}</strong>
+                  <span style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Hạng phòng</span>
+                  <strong style={{ display: 'block', fontSize: '1.05rem', color: 'var(--color-text-primary)', marginTop: 2 }}>{booking?.roomName}</strong>
                 </div>
                 <button
                   type="button"
                   onClick={() => navigate(`/property/${booking?.propertyId || 1}`)}
                   style={{
-                    background: '#ffffff',
-                    border: '1px solid #CBD5E1',
+                    background: 'var(--color-bg-surface)',
+                    border: '1px solid var(--color-border-strong)',
                     borderRadius: 10,
                     padding: '0.5rem 1rem',
                     fontSize: '0.84rem',
                     fontWeight: 700,
-                    color: '#0F172A',
+                    color: 'var(--color-text-primary)',
                     cursor: 'pointer'
                   }}
                 >
@@ -347,88 +347,88 @@ export default function MyBookingDetailPage() {
 
           {/* Lịch trình Check-in / Check-out */}
           <div style={{
-            background: '#ffffff',
+            background: 'var(--color-bg-surface)',
             borderRadius: 20,
-            border: '1px solid #E2E8F0',
+            border: '1px solid var(--color-border-subtle)',
             padding: '1.75rem',
             boxShadow: '0 2px 12px rgba(0,0,0,0.03)'
           }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1.25rem', color: '#0F172A', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <CalendarCheck style={{ color: '#E11D48' }} /> Lịch trình chuyến đi
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1.25rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <CalendarCheck style={{ color: 'var(--color-primary)' }} /> Lịch trình chuyến đi
             </h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 12, background: '#F8FAFC', padding: '1.25rem', borderRadius: 16, border: '1px solid #E2E8F0' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 12, background: 'var(--color-bg-app)', padding: '1.25rem', borderRadius: 16, border: '1px solid var(--color-border-subtle)' }}>
               <div>
-                <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Nhận phòng</span>
-                <strong style={{ fontSize: '1.1rem', color: '#0F172A', display: 'block' }}>{booking?.checkIn}</strong>
-                <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Từ 14:00 chiều</span>
+                <span style={{ fontSize: '0.74rem', color: 'var(--color-text-muted)', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Nhận phòng</span>
+                <strong style={{ fontSize: '1.1rem', color: 'var(--color-text-primary)', display: 'block' }}>{booking?.checkIn}</strong>
+                <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Từ 14:00 chiều</span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#E11D48', fontSize: '0.78rem', fontWeight: 800 }}>
-                <span style={{ width: 36, height: 2, background: '#FDA4AF', display: 'block' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'var(--color-primary)', fontSize: '0.78rem', fontWeight: 800 }}>
+                <span style={{ width: 36, height: 2, background: 'var(--color-primary-border)', display: 'block' }} />
                 <span style={{ margin: '6px 0', whiteSpace: 'nowrap' }}>{booking?.nights} ĐÊM</span>
-                <span style={{ width: 36, height: 2, background: '#FDA4AF', display: 'block' }} />
+                <span style={{ width: 36, height: 2, background: 'var(--color-primary-border)', display: 'block' }} />
               </div>
 
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Trả phòng</span>
-                <strong style={{ fontSize: '1.1rem', color: '#0F172A', display: 'block' }}>{booking?.checkOut}</strong>
-                <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Trước 12:00 trưa</span>
+                <span style={{ fontSize: '0.74rem', color: 'var(--color-text-muted)', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Trả phòng</span>
+                <strong style={{ fontSize: '1.1rem', color: 'var(--color-text-primary)', display: 'block' }}>{booking?.checkOut}</strong>
+                <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Trước 12:00 trưa</span>
               </div>
             </div>
 
-            <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#475569' }}>
+            <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
               <span>Số lượng khách:</span>
-              <strong style={{ color: '#0F172A' }}>{booking?.guests} người lớn</strong>
+              <strong style={{ color: 'var(--color-text-primary)' }}>{booking?.guests} người lớn</strong>
             </div>
           </div>
 
           {/* Thông tin khách đặt */}
           <div style={{
-            background: '#ffffff',
+            background: 'var(--color-bg-surface)',
             borderRadius: 20,
-            border: '1px solid #E2E8F0',
+            border: '1px solid var(--color-border-subtle)',
             padding: '1.75rem',
             boxShadow: '0 2px 12px rgba(0,0,0,0.03)'
           }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1.25rem', color: '#0F172A', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <PersonCheck style={{ color: '#0284C7' }} /> Thông tin khách lưu trú
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1.25rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <PersonCheck style={{ color: 'var(--color-info)' }} /> Thông tin khách lưu trú
             </h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', fontSize: '0.9rem' }}>
               <div>
-                <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block', marginBottom: 2 }}>Người đại diện:</span>
-                <strong style={{ color: '#0F172A' }}>{booking?.guestName}</strong>
+                <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: 2 }}>Người đại diện:</span>
+                <strong style={{ color: 'var(--color-text-primary)' }}>{booking?.guestName}</strong>
               </div>
               <div>
-                <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block', marginBottom: 2 }}>Số điện thoại:</span>
-                <strong style={{ color: '#0F172A' }}>{booking?.guestPhone}</strong>
+                <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: 2 }}>Số điện thoại:</span>
+                <strong style={{ color: 'var(--color-text-primary)' }}>{booking?.guestPhone}</strong>
               </div>
               <div>
-                <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block', marginBottom: 2 }}>Email nhận vé:</span>
-                <strong style={{ color: '#0F172A' }}>{booking?.guestEmail}</strong>
+                <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: 2 }}>Email nhận vé:</span>
+                <strong style={{ color: 'var(--color-text-primary)' }}>{booking?.guestEmail}</strong>
               </div>
             </div>
           </div>
 
           {/* Card Đánh giá & Phản hồi */}
           <div style={{
-            background: '#ffffff',
+            background: 'var(--color-bg-surface)',
             borderRadius: 20,
-            border: '1px solid #E2E8F0',
+            border: '1px solid var(--color-border-subtle)',
             padding: '1.75rem',
             boxShadow: '0 2px 12px rgba(0,0,0,0.03)'
           }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1rem', color: '#0F172A', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <StarFill style={{ color: '#F59E0B' }} /> Đánh giá & Phản hồi kỳ nghỉ
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <StarFill style={{ color: 'var(--color-warning)' }} /> Đánh giá & Phản hồi kỳ nghỉ
             </h3>
 
             {booking?.isReviewed ? (
               <div style={{
-                background: '#FFFBEB',
+                background: 'var(--color-warning-bg)',
                 borderRadius: 14,
                 padding: '1.25rem 1.4rem',
-                border: '1px solid #FEF3C7',
+                border: '1px solid var(--color-warning-bg)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -436,10 +436,10 @@ export default function MyBookingDetailPage() {
                 gap: '1rem'
               }}>
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#92400E', fontWeight: 700, fontSize: '0.95rem', marginBottom: 4 }}>
-                    <CheckCircleFill style={{ color: '#16A34A' }} /> Đã gửi đánh giá cho kỳ nghỉ này
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-warning)', fontWeight: 700, fontSize: '0.95rem', marginBottom: 4 }}>
+                    <CheckCircleFill style={{ color: 'var(--color-success)' }} /> Đã gửi đánh giá cho kỳ nghỉ này
                   </div>
-                  <p style={{ margin: 0, fontSize: '0.86rem', color: '#B45309', lineHeight: 1.5 }}>
+                  <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--color-warning)', lineHeight: 1.5 }}>
                     Đánh giá của bạn đã được hiển thị công khai trên trang thông tin chỗ nghỉ để hỗ trợ cộng đồng du khách.
                   </p>
                 </div>
@@ -447,8 +447,8 @@ export default function MyBookingDetailPage() {
                   type="button"
                   onClick={() => navigate(`/property/${booking?.propertyId || 1}#reviews`)}
                   style={{
-                    background: '#1E293B',
-                    color: '#ffffff',
+                    background: 'var(--color-text-primary)',
+                    color: 'var(--color-bg-surface)',
                     border: 'none',
                     borderRadius: 10,
                     padding: '0.65rem 1.25rem',
@@ -461,15 +461,15 @@ export default function MyBookingDetailPage() {
                     boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
                   }}
                 >
-                  <StarFill style={{ color: '#F59E0B' }} /> Xem đánh giá trên trang đặt phòng ➔
+                  <StarFill style={{ color: 'var(--color-warning)' }} /> Xem đánh giá trên trang đặt phòng ➔
                 </button>
               </div>
             ) : currentStatus === 'COMPLETED' ? (
               <div style={{
-                background: '#F8FAFC',
+                background: 'var(--color-bg-app)',
                 borderRadius: 14,
                 padding: '1.25rem 1.4rem',
-                border: '1px solid #E2E8F0',
+                border: '1px solid var(--color-border-subtle)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -477,10 +477,10 @@ export default function MyBookingDetailPage() {
                 gap: '1rem'
               }}>
                 <div>
-                  <strong style={{ display: 'block', fontSize: '0.95rem', color: '#0F172A', marginBottom: 2 }}>
+                  <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--color-text-primary)', marginBottom: 2 }}>
                     Bạn thấy kỳ nghỉ này thế nào?
                   </strong>
-                  <span style={{ fontSize: '0.86rem', color: '#64748B' }}>
+                  <span style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)' }}>
                     Chia sẻ trải nghiệm thực tế để giúp chủ nhà cải thiện dịch vụ và hỗ trợ các du khách khác.
                   </span>
                 </div>
@@ -489,9 +489,9 @@ export default function MyBookingDetailPage() {
                     type="button"
                     onClick={() => navigate(`/property/${booking?.propertyId || 1}#reviews`)}
                     style={{
-                      background: '#ffffff',
-                      color: '#0F172A',
-                      border: '1px solid #CBD5E1',
+                      background: 'var(--color-bg-surface)',
+                      color: 'var(--color-text-primary)',
+                      border: '1px solid var(--color-border-strong)',
                       borderRadius: 10,
                       padding: '0.65rem 1.1rem',
                       fontSize: '0.86rem',
@@ -505,8 +505,8 @@ export default function MyBookingDetailPage() {
                     type="button"
                     onClick={() => navigate(`/review?bookingCode=${bookingCode}`)}
                     style={{
-                      background: 'linear-gradient(135deg, #FF385C, #E00B41)',
-                      color: '#ffffff',
+                      background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))',
+                      color: 'var(--color-bg-surface)',
                       border: 'none',
                       borderRadius: 10,
                       padding: '0.65rem 1.25rem',
@@ -523,17 +523,17 @@ export default function MyBookingDetailPage() {
                 </div>
               </div>
             ) : (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', background: '#F8FAFC', padding: '1rem 1.25rem', borderRadius: 14, border: '1px solid #E2E8F0' }}>
-                <span style={{ fontSize: '0.88rem', color: '#64748B' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', background: 'var(--color-bg-app)', padding: '1rem 1.25rem', borderRadius: 14, border: '1px solid var(--color-border-subtle)' }}>
+                <span style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)' }}>
                   Xem những nhận xét và đánh giá thực tế từ các du khách khác về <strong>{booking?.propertyName}</strong>.
                 </span>
                 <button
                   type="button"
                   onClick={() => navigate(`/property/${booking?.propertyId || 1}#reviews`)}
                   style={{
-                    background: '#ffffff',
-                    color: '#0F172A',
-                    border: '1px solid #CBD5E1',
+                    background: 'var(--color-bg-surface)',
+                    color: 'var(--color-text-primary)',
+                    border: '1px solid var(--color-border-strong)',
                     borderRadius: 10,
                     padding: '0.55rem 1.1rem',
                     fontSize: '0.84rem',
@@ -552,32 +552,32 @@ export default function MyBookingDetailPage() {
         <aside style={{ position: 'sticky', top: '6rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {/* Box Chi tiết thanh toán */}
           <div style={{
-            background: '#ffffff',
+            background: 'var(--color-bg-surface)',
             borderRadius: 20,
-            border: '1px solid #E2E8F0',
+            border: '1px solid var(--color-border-subtle)',
             padding: '1.75rem',
             boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
           }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1.25rem', color: '#0F172A' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1.25rem', color: 'var(--color-text-primary)' }}>
               Chi tiết thanh toán
             </h3>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.9rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748B' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-muted)' }}>
                 <span>Giá phòng ({booking?.nights} đêm)</span>
-                <strong style={{ color: '#1E293B' }}>{formatVND(booking?.subtotal || booking?.total || 1300000)}</strong>
+                <strong style={{ color: 'var(--color-text-primary)' }}>{formatVND(booking?.subtotal || booking?.total || 1300000)}</strong>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748B' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-muted)' }}>
                 <span>Phí dịch vụ</span>
-                <strong style={{ color: '#059669' }}>0₫ (Miễn phí)</strong>
+                <strong style={{ color: 'var(--color-success)' }}>0₫ (Miễn phí)</strong>
               </div>
 
-              <hr style={{ border: 'none', borderTop: '1px solid #E2E8F0', margin: '0.5rem 0' }} />
+              <hr style={{ border: 'none', borderTop: '1px solid var(--color-border-subtle)', margin: '0.5rem 0' }} />
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>Tổng thanh toán</span>
-                <strong style={{ fontSize: '1.4rem', color: '#E11D48', fontWeight: 800 }}>
+                <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Tổng thanh toán</span>
+                <strong style={{ fontSize: '1.4rem', color: 'var(--color-primary)', fontWeight: 800 }}>
                   {formatVND(booking?.total || 1300000)}
                 </strong>
               </div>
@@ -587,20 +587,20 @@ export default function MyBookingDetailPage() {
             <div style={{
               marginTop: '1.25rem',
               padding: '0.85rem 1rem',
-              background: '#F8FAFC',
+              background: 'var(--color-bg-app)',
               borderRadius: 12,
-              border: '1px solid #E2E8F0',
+              border: '1px solid var(--color-border-subtle)',
               fontSize: '0.84rem'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#334155', fontWeight: 700, marginBottom: 2 }}>
-                <CashCoin style={{ color: '#E11D48', fontSize: '1.1rem' }} /> Hình thức: Tiền mặt khi nhận phòng / Chuyển khoản
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 2 }}>
+                <CashCoin style={{ color: 'var(--color-primary)', fontSize: '1.1rem' }} /> Hình thức: Tiền mặt khi nhận phòng / Chuyển khoản
               </div>
-              <span style={{ color: '#64748B', fontSize: '0.78rem' }}>Mã đối soát hệ thống: #{bookingCode}</span>
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '0.78rem' }}>Mã đối soát hệ thống: #{bookingCode}</span>
             </div>
 
             {/* BẢO HIỂM CHUYẾN ĐI */}
-            <div style={{ marginTop: '1.25rem', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 10, background: '#ECFDF5', color: '#047857', fontSize: '0.78rem', fontWeight: 700 }}>
-              <ShieldCheck style={{ fontSize: '1rem', color: '#059669', flexShrink: 0 }} />
+            <div style={{ marginTop: '1.25rem', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 10, background: 'var(--color-success-bg)', color: 'var(--color-success)', fontSize: '0.78rem', fontWeight: 700 }}>
+              <ShieldCheck style={{ fontSize: '1rem', color: 'var(--color-success)', flexShrink: 0 }} />
               <span>Chuyến đi được bảo vệ bởi ODauDay Protection</span>
             </div>
 
@@ -614,9 +614,9 @@ export default function MyBookingDetailPage() {
                   style={{
                     width: '100%',
                     padding: '0.85rem 1.25rem',
-                    background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
-                    color: '#B45309',
-                    border: '1.5px solid #FDE68A',
+                    background: 'linear-gradient(135deg, var(--color-warning-bg) 0%, var(--color-warning-bg) 100%)',
+                    color: 'var(--color-warning)',
+                    border: '1.5px solid var(--color-warning-border)',
                     borderRadius: 12,
                     fontSize: '0.92rem',
                     fontWeight: 700,
@@ -631,7 +631,7 @@ export default function MyBookingDetailPage() {
                   onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
                   onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
                 >
-                  <StarFill style={{ color: '#F59E0B' }} /> Xem đánh giá trên trang đặt phòng
+                  <StarFill style={{ color: 'var(--color-warning)' }} /> Xem đánh giá trên trang đặt phòng
                 </button>
               ) : currentStatus === 'COMPLETED' ? (
                 <button
@@ -640,8 +640,8 @@ export default function MyBookingDetailPage() {
                   style={{
                     width: '100%',
                     padding: '0.85rem 1.25rem',
-                    background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)',
-                    color: '#ffffff',
+                    background: 'var(--gradient-primary)',
+                    color: 'var(--color-bg-surface)',
                     border: 'none',
                     borderRadius: 12,
                     fontSize: '0.95rem',
@@ -665,9 +665,9 @@ export default function MyBookingDetailPage() {
                 style={{
                   width: '100%',
                   padding: '0.75rem 1.25rem',
-                  background: '#ffffff',
-                  color: '#0F172A',
-                  border: '1px solid #CBD5E1',
+                  background: 'var(--color-bg-surface)',
+                  color: 'var(--color-text-primary)',
+                  border: '1px solid var(--color-border-strong)',
                   borderRadius: 12,
                   fontSize: '0.88rem',
                   fontWeight: 600,
@@ -678,7 +678,7 @@ export default function MyBookingDetailPage() {
                   gap: 6,
                 }}
               >
-                <StarFill style={{ color: '#F59E0B', fontSize: '0.85rem' }} /> Xem đánh giá chỗ ở này
+                <StarFill style={{ color: 'var(--color-warning)', fontSize: '0.85rem' }} /> Xem đánh giá chỗ ở này
               </button>
 
               {(currentStatus === 'PENDING' || currentStatus === 'CONFIRMED') && (
@@ -689,8 +689,8 @@ export default function MyBookingDetailPage() {
                     width: '100%',
                     padding: '0.8rem 1.25rem',
                     background: 'transparent',
-                    color: '#DC2626',
-                    border: '1.5px solid #FECACA',
+                    color: 'var(--color-danger)',
+                    border: '1.5px solid var(--color-danger-border)',
                     borderRadius: 12,
                     fontSize: '0.9rem',
                     fontWeight: 700,
@@ -702,12 +702,12 @@ export default function MyBookingDetailPage() {
                     transition: 'all 0.15s ease'
                   }}
                   onMouseEnter={e => {
-                    e.currentTarget.style.background = '#FEF2F2';
-                    e.currentTarget.style.borderColor = '#DC2626';
+                    e.currentTarget.style.background = 'var(--color-danger-bg)';
+                    e.currentTarget.style.borderColor = 'var(--color-danger)';
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.borderColor = '#FECACA';
+                    e.currentTarget.style.borderColor = 'var(--color-danger-border)';
                   }}
                 >
                   <XCircle /> Hủy đơn đặt phòng này
@@ -720,9 +720,9 @@ export default function MyBookingDetailPage() {
                 style={{
                   width: '100%',
                   padding: '0.75rem 1.25rem',
-                  background: '#F8FAFC',
-                  color: '#475569',
-                  border: '1px solid #E2E8F0',
+                  background: 'var(--color-bg-app)',
+                  color: 'var(--color-text-secondary)',
+                  border: '1px solid var(--color-border-subtle)',
                   borderRadius: 12,
                   fontSize: '0.88rem',
                   fontWeight: 600,

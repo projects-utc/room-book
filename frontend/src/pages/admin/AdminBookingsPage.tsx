@@ -137,10 +137,10 @@ export default function AdminBookingsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Page Title */}
       <div>
-        <h1 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#0F172A' }}>
+        <h1 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
           Quản lý Toàn bộ Đơn đặt phòng (UC-03 / UC-08 / Bookings)
         </h1>
-        <p style={{ margin: 0, color: '#64748B', fontSize: '0.92rem' }}>
+        <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.92rem' }}>
           Theo dõi vòng đời kỳ nghỉ, kiểm soát dòng tiền giao dịch và xử lý các tranh chấp, khiếu nại phát sinh giữa khách và chủ nhà.
         </p>
       </div>
@@ -177,7 +177,7 @@ export default function AdminBookingsPage() {
       <Card
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
-            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: '#0F172A' }}>
+            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>
               Danh sách đơn đặt phòng ({filtered.length} đơn)
             </span>
           </div>
@@ -227,36 +227,36 @@ export default function AdminBookingsPage() {
               {filtered.map((b) => (
                 <TableRow key={b.code}>
                   <TableCell>
-                    <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#0F172A', fontSize: '0.9rem' }}>
+                    <span style={{ fontFamily: 'monospace', fontWeight: 800, color: 'var(--color-text-primary)', fontSize: '0.9rem' }}>
                       {b.code}
                     </span>
-                    <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>Tạo: {b.createdAt}</div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>Tạo: {b.createdAt}</div>
                   </TableCell>
 
                   <TableCell>
-                    <div style={{ fontWeight: 700, color: '#0F172A' }}>{b.guestName}</div>
-                    <div style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                    <div style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>{b.guestName}</div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
                       {b.guestPhone} · {b.guestEmail}
                     </div>
                   </TableCell>
 
                   <TableCell>
-                    <div style={{ fontWeight: 700, color: '#0F172A' }}>{b.propertyName}</div>
-                    <div style={{ fontSize: '0.78rem', color: '#64748B' }}>{b.roomName}</div>
+                    <div style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>{b.propertyName}</div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{b.roomName}</div>
                   </TableCell>
 
                   <TableCell>
                     <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{b.checkIn} → {b.checkOut}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
                       {b.nights} đêm · {b.guests} khách
                     </div>
                   </TableCell>
 
                   <TableCell>
-                    <div style={{ fontWeight: 800, color: '#FF385C', fontSize: '0.95rem' }}>
+                    <div style={{ fontWeight: 800, color: 'var(--color-primary)', fontSize: '0.95rem' }}>
                       {formatVND(b.total)}
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: '#64748B' }}>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
                       Đơn giá: {formatVND(b.pricePerNight)}/đêm
                     </div>
                   </TableCell>
@@ -279,7 +279,7 @@ export default function AdminBookingsPage() {
                           variant="outline"
                           size="xs"
                           onClick={() => handleOpenCancel(b)}
-                          style={{ color: '#B91C1C', borderColor: '#FECACA' }}
+                          style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger-border)' }}
                           title="Hủy đơn can thiệp"
                         >
                           <XCircleFill /> Hủy đơn
@@ -294,10 +294,10 @@ export default function AdminBookingsPage() {
                           fontSize: '0.75rem',
                           fontWeight: 600,
                           borderRadius: 6,
-                          border: '1px solid #CBD5E1',
+                          border: '1px solid var(--color-border-strong)',
                           padding: '0.2rem 0.4rem',
-                          background: '#FFFFFF',
-                          color: '#334155',
+                          background: 'var(--color-bg-surface)',
+                          color: 'var(--color-text-secondary)',
                           cursor: 'pointer',
                         }}
                       >
@@ -326,10 +326,10 @@ export default function AdminBookingsPage() {
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {/* Header pill */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F8FAFC', padding: '0.85rem 1rem', borderRadius: 10, border: '1px solid #E2E8F0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--color-bg-app)', padding: '0.85rem 1rem', borderRadius: 10, border: '1px solid var(--color-border-subtle)' }}>
               <div>
-                <div style={{ fontSize: '0.78rem', color: '#64748B' }}>MÃ ĐƠN</div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', fontFamily: 'monospace' }}>{selectedBooking.code}</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>MÃ ĐƠN</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: 'monospace' }}>{selectedBooking.code}</div>
               </div>
               <div>{statusBadge(selectedBooking.status)}</div>
             </div>
@@ -337,39 +337,39 @@ export default function AdminBookingsPage() {
             {/* Information Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.88rem' }}>
               <div>
-                <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 700 }}>KHÁCH HÀNG</div>
-                <div style={{ fontWeight: 700, color: '#0F172A', marginTop: '0.2rem' }}>{selectedBooking.guestName}</div>
-                <div style={{ color: '#475569' }}>SĐT: {selectedBooking.guestPhone}</div>
-                <div style={{ color: '#475569' }}>Email: {selectedBooking.guestEmail}</div>
-                <div style={{ color: '#94A3B8', fontSize: '0.78rem' }}>Tài khoản: {selectedBooking.guestUsername}</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontWeight: 700 }}>KHÁCH HÀNG</div>
+                <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', marginTop: '0.2rem' }}>{selectedBooking.guestName}</div>
+                <div style={{ color: 'var(--color-text-secondary)' }}>SĐT: {selectedBooking.guestPhone}</div>
+                <div style={{ color: 'var(--color-text-secondary)' }}>Email: {selectedBooking.guestEmail}</div>
+                <div style={{ color: 'var(--color-text-muted)', fontSize: '0.78rem' }}>Tài khoản: {selectedBooking.guestUsername}</div>
               </div>
 
               <div>
-                <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 700 }}>CHỖ NGHỈ &amp; PHÒNG</div>
-                <div style={{ fontWeight: 700, color: '#0F172A', marginTop: '0.2rem' }}>{selectedBooking.propertyName}</div>
-                <div style={{ color: '#475569' }}>Phòng: {selectedBooking.roomName}</div>
-                <div style={{ color: '#475569' }}>Số khách: {selectedBooking.guests} người</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontWeight: 700 }}>CHỖ NGHỈ &amp; PHÒNG</div>
+                <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', marginTop: '0.2rem' }}>{selectedBooking.propertyName}</div>
+                <div style={{ color: 'var(--color-text-secondary)' }}>Phòng: {selectedBooking.roomName}</div>
+                <div style={{ color: 'var(--color-text-secondary)' }}>Số khách: {selectedBooking.guests} người</div>
               </div>
             </div>
 
             {/* Dates & Billing */}
-            <div style={{ background: '#FFF1F2', border: '1px solid #FFE4E6', borderRadius: 12, padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ background: 'var(--color-primary-soft)', border: '1px solid var(--color-primary-border)', borderRadius: 12, padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
-                <span style={{ color: '#64748B' }}>Lịch nhận - trả phòng:</span>
-                <span style={{ fontWeight: 700, color: '#0F172A' }}>{selectedBooking.checkIn} đến {selectedBooking.checkOut} ({selectedBooking.nights} đêm)</span>
+                <span style={{ color: 'var(--color-text-muted)' }}>Lịch nhận - trả phòng:</span>
+                <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>{selectedBooking.checkIn} đến {selectedBooking.checkOut} ({selectedBooking.nights} đêm)</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
-                <span style={{ color: '#64748B' }}>Đơn giá phòng / đêm:</span>
-                <span style={{ fontWeight: 600, color: '#0F172A' }}>{formatVND(selectedBooking.pricePerNight)}</span>
+                <span style={{ color: 'var(--color-text-muted)' }}>Đơn giá phòng / đêm:</span>
+                <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatVND(selectedBooking.pricePerNight)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
-                <span style={{ color: '#64748B' }}>Tiền phòng (Subtotal):</span>
-                <span style={{ fontWeight: 600, color: '#0F172A' }}>{formatVND(selectedBooking.subtotal)}</span>
+                <span style={{ color: 'var(--color-text-muted)' }}>Tiền phòng (Subtotal):</span>
+                <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatVND(selectedBooking.subtotal)}</span>
               </div>
-              <div style={{ height: 1, background: '#FECDD3', margin: '0.25rem 0' }} />
+              <div style={{ height: 1, background: 'var(--color-primary-border)', margin: '0.25rem 0' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1rem', fontWeight: 800 }}>
-                <span style={{ color: '#E11D48' }}>Tổng cộng thanh toán:</span>
-                <span style={{ color: '#E11D48' }}>{formatVND(selectedBooking.total)}</span>
+                <span style={{ color: 'var(--color-primary)' }}>Tổng cộng thanh toán:</span>
+                <span style={{ color: 'var(--color-primary)' }}>{formatVND(selectedBooking.total)}</span>
               </div>
             </div>
 
@@ -391,7 +391,7 @@ export default function AdminBookingsPage() {
           size="md"
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', padding: '0.85rem 1rem', borderRadius: 10, color: '#991B1B', fontSize: '0.88rem', lineHeight: 1.45 }}>
+            <div style={{ background: 'var(--color-danger-bg)', border: '1px solid var(--color-danger-border)', padding: '0.85rem 1rem', borderRadius: 10, color: 'var(--color-danger)', fontSize: '0.88rem', lineHeight: 1.45 }}>
               <strong>Lưu ý:</strong> Thao tác này sẽ hủy đơn ngay lập tức, giải phóng phòng và được ghi lại trong <strong>Nhật ký kiểm toán hệ thống (Audit Log)</strong>.
             </div>
 

@@ -188,14 +188,14 @@ export default function AdminUsersPage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', margin: '1rem 0 2rem' }}>
           <div>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#1E293B' }}>
+            <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
               Quản lý tài khoản &amp; Phân quyền RBAC
             </h1>
-            <p style={{ margin: 0, color: '#64748B', fontSize: '0.95rem' }}>
+            <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
               Kiểm soát tài khoản, thay đổi quyền hạn và khóa người dùng vi phạm. Bảo đảm quy tắc an toàn ASSUM-01.
             </p>
           </div>
-          <Button variant="primary" icon={<PersonPlusFill />} onClick={() => setShowAddForm(true)} style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)', border: 'none' }}>
+          <Button variant="primary" icon={<PersonPlusFill />} onClick={() => setShowAddForm(true)} style={{ background: 'var(--gradient-primary)', border: 'none' }}>
             Tạo tài khoản nội bộ
           </Button>
         </div>
@@ -313,11 +313,11 @@ export default function AdminUsersPage() {
                                     borderRadius: '50%',
                                     background:
                                         u.role === 'ADMIN'
-                                            ? 'linear-gradient(135deg, #FF385C 0%, #D70466 100%)'
+                                            ? 'var(--gradient-primary)'
                                             : u.role === 'HOST'
-                                                ? 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)'
-                                                : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                                    color: '#FFFFFF',
+                                                ? 'linear-gradient(135deg, var(--color-info) 0%, var(--color-info) 100%)'
+                                                : 'linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)',
+                                    color: 'var(--color-bg-surface)',
                                     fontWeight: 700,
                                     display: 'flex',
                                     alignItems: 'center',
@@ -328,8 +328,8 @@ export default function AdminUsersPage() {
                                 {u.fullName.charAt(0).toUpperCase()}
                               </div>
                               <div>
-                                <div style={{ fontWeight: 700, color: '#0F172A', fontSize: '0.92rem' }}>{u.fullName}</div>
-                                <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'monospace' }}>
+                                <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', fontSize: '0.92rem' }}>{u.fullName}</div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>
                                   @{u.username}
                                 </div>
                               </div>
@@ -345,10 +345,10 @@ export default function AdminUsersPage() {
                             )}
                           </TableCell>
                           <TableCell>
-                            <span style={{ fontSize: '0.88rem', color: '#334155' }}>{u.phone}</span>
+                            <span style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>{u.phone}</span>
                           </TableCell>
                           <TableCell>
-                            <span style={{ fontSize: '0.88rem', color: '#334155' }}>{u.email}</span>
+                            <span style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>{u.email}</span>
                           </TableCell>
                           <TableCell>
                             {isLocked ? (
@@ -368,8 +368,8 @@ export default function AdminUsersPage() {
                                     fontSize: '0.78rem',
                                     fontWeight: 600,
                                     borderRadius: 6,
-                                    border: '1px solid #CBD5E1',
-                                    background: isSuperAdmin ? '#F1F5F9' : '#ffffff',
+                                    border: '1px solid var(--color-border-strong)',
+                                    background: isSuperAdmin ? 'var(--color-bg-muted)' : 'var(--color-bg-surface)',
                                     cursor: isSuperAdmin ? 'not-allowed' : 'pointer',
                                   }}
                               >
@@ -383,8 +383,8 @@ export default function AdminUsersPage() {
                                   icon={isLocked ? <UnlockFill /> : <LockFill />}
                                   disabled={isSuperAdmin}
                                   style={{
-                                    color: isLocked ? '#10B981' : '#DC2626',
-                                    borderColor: isLocked ? '#10B981' : '#FECACA',
+                                    color: isLocked ? 'var(--color-success)' : 'var(--color-danger)',
+                                    borderColor: isLocked ? 'var(--color-success)' : 'var(--color-danger-border)',
                                   }}
                                   onClick={() => handleToggleStatus(u)}
                               >
@@ -412,7 +412,7 @@ export default function AdminUsersPage() {
                 <Button variant="outline" onClick={() => setShowAddForm(false)}>
                   Hủy
                 </Button>
-                <Button type="submit" form="add-user-form" variant="primary" style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)', border: 'none' }}>
+                <Button type="submit" form="add-user-form" variant="primary" style={{ background: 'var(--gradient-primary)', border: 'none' }}>
                   Tạo tài khoản
                 </Button>
               </div>

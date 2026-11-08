@@ -97,10 +97,10 @@ export default function HostRoomBlockPage() {
       />
 
       <div style={{ margin: '1rem 0 2rem' }}>
-        <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#1E293B' }}>
+        <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
           Quản lý lịch chặn phòng (RoomBlock) · {room.name}
         </h1>
-        <p style={{ margin: 0, color: '#64748B', fontSize: '0.95rem' }}>
+        <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
           Chủ động khóa các khoảng ngày tạm dừng nhận khách do kế hoạch sửa chữa, bảo dưỡng hoặc nhu cầu riêng của chủ nhà.
         </p>
       </div>
@@ -108,7 +108,7 @@ export default function HostRoomBlockPage() {
       {/* Test Scenario Switcher */}
       <Card style={{ marginBottom: '2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-          <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#475569' }}>
+          <span style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
             Kịch bản kiểm thử quy tắc UC-07:
           </span>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -169,14 +169,14 @@ export default function HostRoomBlockPage() {
 
               <div
                 style={{
-                  background: '#F8FAFC',
+                  background: 'var(--color-bg-app)',
                   padding: '1rem',
                   borderRadius: 12,
-                  border: '1px dashed #CBD5E1',
+                  border: '1px dashed var(--color-border-strong)',
                   marginBottom: '1.5rem',
                 }}
               >
-                <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748B', lineHeight: 1.6 }}>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
                   💡 <strong>Quy tắc bảo đảm BR-04:</strong> Không cho phép tạo lịch bảo trì <code>RoomBlock</code> đè lên khoảng ngày đã có đơn giữ phòng hợp lệ của khách nhằm bảo vệ quyền lợi người tiêu dùng.
                 </p>
               </div>
@@ -217,10 +217,10 @@ export default function HostRoomBlockPage() {
                   <div
                     key={b.id}
                     style={{
-                      border: '1px solid #E2E8F0',
+                      border: '1px solid var(--color-border-subtle)',
                       borderRadius: 12,
                       padding: '1rem',
-                      background: '#FFFFFF',
+                      background: 'var(--color-bg-surface)',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
@@ -228,16 +228,16 @@ export default function HostRoomBlockPage() {
                     }}
                   >
                     <div>
-                      <strong style={{ display: 'block', fontSize: '0.95rem', color: '#1E293B' }}>
+                      <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
                         {b.start} → {b.end}
                       </strong>
-                      <span style={{ fontSize: '0.82rem', color: '#64748B' }}>{b.reason}</span>
+                      <span style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>{b.reason}</span>
                     </div>
                     <Button
                       size="xs"
                       variant="ghost"
                       icon={<Trash />}
-                      style={{ color: '#DC2626' }}
+                      style={{ color: 'var(--color-danger)' }}
                       title="Gỡ lịch chặn"
                       onClick={() => handleDeleteBlock(b.id)}
                     />

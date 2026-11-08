@@ -77,17 +77,17 @@ export default function LoginPage() {
                   width: 42,
                   height: 42,
                   borderRadius: 12,
-                  background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)',
+                  background: 'var(--gradient-primary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   boxShadow: '0 4px 12px rgba(255, 56, 92, 0.35)',
                 }}
               >
-                <HouseDoorFill style={{ fontSize: '1.4rem', color: '#FFFFFF' }} />
+                <HouseDoorFill style={{ fontSize: '1.4rem', color: 'var(--color-bg-surface)' }} />
               </div>
-              <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#FF385C', letterSpacing: '-0.02em' }}>
-                ODauDay <span style={{ fontWeight: 600, color: '#1E293B' }}>Stay</span>
+              <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>
+                ODauDay <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>Stay</span>
               </span>
             </Link>
 
@@ -96,9 +96,9 @@ export default function LoginPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.35rem',
-                background: '#FFF1F2',
-                border: '1px solid #FFE4E6',
-                color: '#E11D48',
+                background: 'var(--color-primary-soft)',
+                border: '1px solid var(--color-primary-border)',
+                color: 'var(--color-primary)',
                 borderRadius: '9999px',
                 padding: '0.25rem 0.85rem',
                 fontSize: '0.78rem',
@@ -113,14 +113,14 @@ export default function LoginPage() {
               style={{
                 fontSize: '1.65rem',
                 fontWeight: 800,
-                color: '#0F172A',
+                color: 'var(--color-text-primary)',
                 margin: '0 0 0.4rem',
                 letterSpacing: '-0.02em',
               }}
             >
               Chào mừng bạn trở lại! 🌿
             </h1>
-            <p style={{ margin: 0, color: '#64748B', fontSize: '0.92rem', lineHeight: 1.5 }}>
+            <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.92rem', lineHeight: 1.5 }}>
               Cùng ODauDay tiếp tục hành trình khám phá những điểm đến tuyệt vời.
             </p>
           </div>
@@ -157,7 +157,7 @@ export default function LoginPage() {
                 <label htmlFor="login-password" style={{ margin: 0 }}>
                   <span>Mật khẩu</span>
                 </label>
-                <span style={{ fontSize: '0.8rem', color: '#FF385C', fontWeight: 600, cursor: 'pointer' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--color-primary)', fontWeight: 600, cursor: 'pointer' }}>
                   Quên mật khẩu?
                 </span>
               </div>
@@ -199,7 +199,7 @@ export default function LoginPage() {
                       width: 18,
                       height: 18,
                       border: '2px solid rgba(255,255,255,0.3)',
-                      borderTopColor: '#FFFFFF',
+                      borderTopColor: 'var(--color-bg-surface)',
                       borderRadius: '50%',
                     }}
                     className="animate-spin"
@@ -217,18 +217,18 @@ export default function LoginPage() {
 
           {/* Quick Demo Section */}
           <div style={{ margin: '1.75rem 0 1.25rem', textAlign: 'center', position: 'relative' }}>
-            <div style={{ height: 1, background: '#E2E8F0', width: '100%' }} />
+            <div style={{ height: 1, background: 'var(--color-border-subtle)', width: '100%' }} />
             <span
               style={{
                 position: 'absolute',
                 top: -11,
                 left: '50%',
                 transform: 'translateX(-50%)',
-                background: '#FFFFFF',
+                background: 'var(--color-bg-surface)',
                 padding: '0 0.85rem',
                 fontSize: '0.78rem',
                 fontWeight: 600,
-                color: '#64748B',
+                color: 'var(--color-text-muted)',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -244,8 +244,8 @@ export default function LoginPage() {
               tabIndex={0}
             >
               <span style={{ fontSize: '1.25rem' }}>🎒</span>
-              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0F172A' }}>Khách thuê</span>
-              <span style={{ fontSize: '0.72rem', color: '#64748B' }}>guest.demo</span>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>Khách thuê</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>guest.demo</span>
             </div>
 
             <div
@@ -255,8 +255,8 @@ export default function LoginPage() {
               tabIndex={0}
             >
               <span style={{ fontSize: '1.25rem' }}>🏡</span>
-              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0F172A' }}>Chủ nhà</span>
-              <span style={{ fontSize: '0.72rem', color: '#64748B' }}>host.demo</span>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>Chủ nhà</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>host.demo</span>
             </div>
 
             <div
@@ -266,18 +266,18 @@ export default function LoginPage() {
               tabIndex={0}
             >
               <span style={{ fontSize: '1.25rem' }}>🛡️</span>
-              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0F172A' }}>Quản trị</span>
-              <span style={{ fontSize: '0.72rem', color: '#64748B' }}>admin</span>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>Quản trị</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>admin</span>
             </div>
           </div>
 
           {/* Switch to Register */}
-          <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: '#64748B' }}>
+          <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
             Bạn chưa có tài khoản?{' '}
             <Link
               to="/register"
               style={{
-                color: '#FF385C',
+                color: 'var(--color-primary)',
                 fontWeight: 700,
                 textDecoration: 'none',
               }}
@@ -288,7 +288,7 @@ export default function LoginPage() {
 
           {/* Security Assurance Badge */}
           <div className="auth-trust-badge">
-            <ShieldCheck style={{ fontSize: '1.05rem', color: '#10B981' }} />
+            <ShieldCheck style={{ fontSize: '1.05rem', color: 'var(--color-success)' }} />
             <span>Bảo vệ quyền riêng tư &amp; an toàn dữ liệu 100%</span>
           </div>
         </div>

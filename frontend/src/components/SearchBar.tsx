@@ -88,7 +88,7 @@ export default function SearchBar({
                 display: 'block',
                 fontSize: '0.75rem',
                 fontWeight: 800,
-                color: '#222222',
+                color: 'var(--color-text-primary)',
                 letterSpacing: '0.02em',
                 marginBottom: 2,
               }}
@@ -109,7 +109,7 @@ export default function SearchBar({
             />
           </div>
 
-          <div style={{ width: 1, height: 32, background: '#EBEBEB', margin: '0 1rem', flexShrink: 0 }} />
+          <div style={{ width: 1, height: 32, background: 'var(--color-border-subtle)', margin: '0 1rem', flexShrink: 0 }} />
 
           {/* Time / Dates with standard DateRangePicker */}
           <div style={{ flex: '1.4', minWidth: 200 }}>
@@ -125,7 +125,7 @@ export default function SearchBar({
             />
           </div>
 
-          <div style={{ width: 1, height: 32, background: '#EBEBEB', margin: '0 1rem', flexShrink: 0 }} />
+          <div style={{ width: 1, height: 32, background: 'var(--color-border-subtle)', margin: '0 1rem', flexShrink: 0 }} />
 
           {/* Guests */}
           <div style={{ flex: '0.8', minWidth: 100 }}>
@@ -135,7 +135,7 @@ export default function SearchBar({
                 display: 'block',
                 fontSize: '0.75rem',
                 fontWeight: 800,
-                color: '#222222',
+                color: 'var(--color-text-primary)',
                 letterSpacing: '0.02em',
                 marginBottom: 2,
               }}
@@ -151,7 +151,7 @@ export default function SearchBar({
                 fontSize: '0.88rem',
                 cursor: 'pointer',
                 width: '100%',
-                color: guests ? '#222222' : '#717171',
+                color: guests ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
                 fontWeight: guests ? 600 : 400,
               }}
             >
@@ -169,8 +169,8 @@ export default function SearchBar({
             type="submit"
             className="btn-primary"
             style={{
-              background: '#FF385C',
-              color: '#ffffff',
+              background: 'var(--color-primary)',
+              color: 'var(--color-bg-surface)',
               border: 'none',
               borderRadius: '50%',
               width: 48,
@@ -187,11 +187,11 @@ export default function SearchBar({
             aria-label="Bắt đầu tìm kiếm"
             onMouseEnter={e => {
               e.currentTarget.style.transform = 'scale(1.05)';
-              e.currentTarget.style.background = '#E00B41';
+              e.currentTarget.style.background = 'var(--color-primary-hover)';
             }}
             onMouseLeave={e => {
               e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.background = '#FF385C';
+              e.currentTarget.style.background = 'var(--color-primary)';
             }}
           >
             <Search style={{ fontSize: '1.05rem', strokeWidth: 1 }} />
@@ -221,7 +221,7 @@ export default function SearchBar({
       >
         {/* Destination */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', minWidth: 130, flex: '1' }}>
-          <GeoAlt style={{ color: '#FF385C', fontSize: '0.9rem', flexShrink: 0 }} />
+          <GeoAlt style={{ color: 'var(--color-primary)', fontSize: '0.9rem', flexShrink: 0 }} />
           <input
             type="text"
             placeholder="Điểm đến (Hà Nội, Sa Pa...)"
@@ -237,7 +237,7 @@ export default function SearchBar({
           />
         </div>
 
-        <div style={{ width: 1, height: 22, background: '#EBEBEB', flexShrink: 0, margin: '0 0.25rem' }} />
+        <div style={{ width: 1, height: 22, background: 'var(--color-border-subtle)', flexShrink: 0, margin: '0 0.25rem' }} />
 
         {/* Dates with standard DateRangePicker */}
         <div style={{ flexShrink: 0 }}>
@@ -252,11 +252,11 @@ export default function SearchBar({
           />
         </div>
 
-        <div style={{ width: 1, height: 22, background: '#EBEBEB', flexShrink: 0, margin: '0 0.25rem' }} />
+        <div style={{ width: 1, height: 22, background: 'var(--color-border-subtle)', flexShrink: 0, margin: '0 0.25rem' }} />
 
         {/* Guests */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', flexShrink: 0 }}>
-          <People style={{ color: '#717171', fontSize: '0.85rem', flexShrink: 0 }} />
+          <People style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', flexShrink: 0 }} />
           <select
             value={guests}
             onChange={e => setGuests(e.target.value)}
@@ -264,7 +264,7 @@ export default function SearchBar({
             style={{
               fontSize: '0.82rem',
               fontWeight: guests ? 600 : 400,
-              color: guests ? '#222222' : '#717171',
+              color: guests ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               width: '95px',
             }}
@@ -282,8 +282,8 @@ export default function SearchBar({
         <button
           type="submit"
           style={{
-            background: '#FF385C',
-            color: '#ffffff',
+            background: 'var(--color-primary)',
+            color: 'var(--color-bg-surface)',
             border: 'none',
             borderRadius: '50%',
             width: 32,
@@ -297,8 +297,8 @@ export default function SearchBar({
             transition: 'background 0.15s ease',
           }}
           aria-label="Tìm kiếm"
-          onMouseEnter={e => (e.currentTarget.style.background = '#E00B41')}
-          onMouseLeave={e => (e.currentTarget.style.background = '#FF385C')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-primary-hover)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'var(--color-primary)')}
         >
           <Search style={{ fontSize: '0.85rem' }} />
         </button>

@@ -216,7 +216,7 @@ function CalendarGrid({
                   style={{
                     fontSize: '0.78rem',
                     fontWeight: 700,
-                    color: idx >= 5 ? '#E11D48' : '#717171',
+                    color: idx >= 5 ? 'var(--color-primary)' : 'var(--color-text-secondary)',
                     padding: '4px 0',
                   }}
               >
@@ -265,22 +265,22 @@ function CalendarGrid({
 
             // Compute cell styles
             let bg = 'transparent';
-            let textColor = isCurrentMonth ? '#222222' : '#CBD5E1';
+            let textColor = isCurrentMonth ? 'var(--color-text-primary)' : 'var(--color-border-strong)';
             let borderRadius = '50%';
             let fontWeight: number | string = 500;
 
             if (isDisabled) {
               // Ngày bị vô hiệu hóa sẽ có màu xám mờ và gạch ngang
-              textColor = '#D1D5DB';
+              textColor = 'var(--color-text-disabled)';
               bg = 'transparent'; // Không tô màu nền cho ngày bị vô hiệu hóa (ngay cả khi nó nằm trong khoảng)
             } else if (isSelected) {
-              bg = '#FF385C';
-              textColor = '#FFFFFF';
+              bg = 'var(--color-primary)';
+              textColor = 'var(--color-bg-surface)';
               fontWeight = 700;
               borderRadius = '50%';
             } else if (isInRange) {
-              bg = '#FFF1F2';
-              textColor = '#E11D48';
+              bg = 'var(--color-primary-soft)';
+              textColor = 'var(--color-primary)';
               fontWeight = 600;
               borderRadius = '0';
             }
@@ -293,7 +293,7 @@ function CalendarGrid({
                       alignItems: 'center',
                       justifyContent: 'center',
                       position: 'relative',
-                      background: isInRange && !isDisabled ? '#FFF1F2' : 'transparent',
+                      background: isInRange && !isDisabled ? 'var(--color-primary-soft)' : 'transparent',
                       borderRadius: isRangeStart ? '50% 0 0 50%' : isRangeEnd ? '0 50% 50% 0' : undefined,
                     }}
                 >
@@ -309,7 +309,7 @@ function CalendarGrid({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        border: isToday && !isSelected ? '1px solid #FF385C' : 'none',
+                        border: isToday && !isSelected ? '1px solid var(--color-primary)' : 'none',
                         borderRadius: '50%',
                         background: bg,
                         color: textColor,
@@ -334,7 +334,7 @@ function CalendarGrid({
                               width: 4,
                               height: 4,
                               borderRadius: '50%',
-                              background: isDisabled ? '#D1D5DB' : '#FF385C',
+                              background: isDisabled ? 'var(--color-text-disabled)' : 'var(--color-primary)',
                             }}
                         />
                     )}
@@ -441,11 +441,11 @@ export function DatePicker({
   const calendarContent = (
       <div
           style={{
-            background: '#FFFFFF',
+            background: 'var(--color-bg-surface)',
             borderRadius: 16,
             padding: '1.25rem',
-            boxShadow: inline ? 'none' : '0 10px 30px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.06)',
-            border: inline ? '1px solid #E2E8F0' : '1px solid #EBEBEB',
+            boxShadow: inline ? 'none' : 'var(--shadow-dropdown)',
+            border: inline ? '1px solid var(--color-border-subtle)' : '1px solid var(--color-border-subtle)',
             width: 320,
             zIndex: inline ? 1 : 1050,
           }}
@@ -473,16 +473,16 @@ export function DatePicker({
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                color: '#222222',
+                color: 'var(--color-text-primary)',
                 transition: 'background 0.15s ease',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F1F5F9')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg-muted)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <ChevronLeft style={{ fontSize: '0.9rem' }} />
           </button>
 
-          <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#222222' }}>
+          <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
           {MONTH_NAMES_VN[viewMonth]} năm {viewYear}
         </span>
 
@@ -500,10 +500,10 @@ export function DatePicker({
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                color: '#222222',
+                color: 'var(--color-text-primary)',
                 transition: 'background 0.15s ease',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F1F5F9')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg-muted)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <ChevronRight style={{ fontSize: '0.9rem' }} />
@@ -529,27 +529,27 @@ export function DatePicker({
                 style={{
                   marginTop: '1rem',
                   paddingTop: '0.85rem',
-                  borderTop: '1px solid #F1F5F9',
+                  borderTop: '1px solid var(--color-bg-muted)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.4rem',
                   flexWrap: 'wrap',
                 }}
             >
-          <span style={{ fontSize: '0.75rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
             <ClockHistory /> Chọn nhanh:
           </span>
               <button
                   type="button"
                   onClick={() => setQuickDate(0)}
                   style={{
-                    background: '#F8FAFC',
-                    border: '1px solid #E2E8F0',
+                    background: 'var(--color-bg-app)',
+                    border: '1px solid var(--color-border-subtle)',
                     borderRadius: 6,
                     padding: '2px 8px',
                     fontSize: '0.75rem',
                     fontWeight: 600,
-                    color: '#334155',
+                    color: 'var(--color-text-secondary)',
                     cursor: 'pointer',
                   }}
               >
@@ -559,13 +559,13 @@ export function DatePicker({
                   type="button"
                   onClick={() => setQuickDate(1)}
                   style={{
-                    background: '#F8FAFC',
-                    border: '1px solid #E2E8F0',
+                    background: 'var(--color-bg-app)',
+                    border: '1px solid var(--color-border-subtle)',
                     borderRadius: 6,
                     padding: '2px 8px',
                     fontSize: '0.75rem',
                     fontWeight: 600,
-                    color: '#334155',
+                    color: 'var(--color-text-secondary)',
                     cursor: 'pointer',
                   }}
               >
@@ -575,13 +575,13 @@ export function DatePicker({
                   type="button"
                   onClick={() => setQuickDate(7)}
                   style={{
-                    background: '#F8FAFC',
-                    border: '1px solid #E2E8F0',
+                    background: 'var(--color-bg-app)',
+                    border: '1px solid var(--color-border-subtle)',
                     borderRadius: 6,
                     padding: '2px 8px',
                     fontSize: '0.75rem',
                     fontWeight: 600,
-                    color: '#334155',
+                    color: 'var(--color-text-secondary)',
                     cursor: 'pointer',
                   }}
               >
@@ -596,12 +596,12 @@ export function DatePicker({
     return (
         <div className={`app-datepicker-inline ${className}`} style={{ ...style }}>
           {label && (
-              <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.88rem', color: '#1E293B' }}>
-                {label} {required && <span style={{ color: '#E11D48' }}>*</span>}
+              <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.88rem', color: 'var(--color-text-primary)' }}>
+                {label} {required && <span style={{ color: 'var(--color-primary)' }}>*</span>}
               </label>
           )}
           {calendarContent}
-          {error && <span style={{ display: 'block', marginTop: '0.35rem', color: '#DC2626', fontSize: '0.8rem' }}>{error}</span>}
+          {error && <span style={{ display: 'block', marginTop: '0.35rem', color: 'var(--color-danger)', fontSize: '0.8rem' }}>{error}</span>}
         </div>
     );
   }
@@ -620,10 +620,10 @@ export function DatePicker({
                   marginBottom: '0.4rem',
                   fontWeight: 600,
                   fontSize: '0.88rem',
-                  color: '#1E293B',
+                  color: 'var(--color-text-primary)',
                 }}
             >
-              {label} {required && <span style={{ color: '#E11D48' }}>*</span>}
+              {label} {required && <span style={{ color: 'var(--color-primary)' }}>*</span>}
             </label>
         )}
 
@@ -637,22 +637,22 @@ export function DatePicker({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              border: error ? '1.5px solid #DC2626' : isOpen ? '1.5px solid #FF385C' : '1px solid #E2E8F0',
+              border: error ? '1.5px solid var(--color-danger)' : isOpen ? '1.5px solid var(--color-primary)' : '1px solid var(--color-border-subtle)',
               borderRadius: 12,
               padding: '0.65rem 0.95rem',
-              background: disabled ? '#F8FAFC' : '#FFFFFF',
+              background: disabled ? 'var(--color-bg-app)' : 'var(--color-bg-surface)',
               cursor: disabled ? 'not-allowed' : 'pointer',
-              boxShadow: isOpen ? '0 0 0 3px rgba(255, 56, 92, 0.12)' : 'none',
+              boxShadow: isOpen ? '0 0 0 3px var(--color-primary-soft)' : 'none',
               transition: 'all 0.15s ease',
               opacity: disabled ? 0.7 : 1,
             }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', overflow: 'hidden' }}>
-            <CalendarEvent style={{ color: isOpen ? '#FF385C' : '#64748B', fontSize: '1.05rem', flexShrink: 0 }} />
+            <CalendarEvent style={{ color: isOpen ? 'var(--color-primary)' : 'var(--color-text-muted)', fontSize: '1.05rem', flexShrink: 0 }} />
             <span
                 style={{
                   fontSize: '0.92rem',
-                  color: formattedDisplay ? '#1E293B' : '#94A3B8',
+                  color: formattedDisplay ? 'var(--color-text-primary)' : 'var(--color-text-disabled)',
                   fontWeight: formattedDisplay ? 600 : 400,
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
@@ -674,7 +674,7 @@ export function DatePicker({
                     border: 'none',
                     padding: 0,
                     cursor: 'pointer',
-                    color: '#94A3B8',
+                    color: 'var(--color-text-disabled)',
                     display: 'flex',
                     alignItems: 'center',
                     marginLeft: '0.5rem',
@@ -686,12 +686,12 @@ export function DatePicker({
         </div>
 
         {helperText && !error && (
-            <span style={{ display: 'block', marginTop: '0.35rem', color: '#64748B', fontSize: '0.8rem' }}>
+            <span style={{ display: 'block', marginTop: '0.35rem', color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>
           {helperText}
         </span>
         )}
         {error && (
-            <span style={{ display: 'block', marginTop: '0.35rem', color: '#DC2626', fontSize: '0.8rem', fontWeight: 500 }}>
+            <span style={{ display: 'block', marginTop: '0.35rem', color: 'var(--color-danger)', fontSize: '0.8rem', fontWeight: 500 }}>
           {error}
         </span>
         )}
@@ -823,11 +823,11 @@ export function DateRangePicker({
   const calendarContent = (
       <div
           style={{
-            background: '#FFFFFF',
+            background: 'var(--color-bg-surface)',
             borderRadius: 16,
             padding: '1.25rem',
-            boxShadow: inline ? 'none' : '0 10px 30px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.06)',
-            border: inline ? '1px solid #E2E8F0' : '1px solid #EBEBEB',
+            boxShadow: inline ? 'none' : 'var(--shadow-dropdown)',
+            border: inline ? '1px solid var(--color-border-subtle)' : '1px solid var(--color-border-subtle)',
             width: 330,
             zIndex: inline ? 1 : 1050,
           }}
@@ -855,13 +855,13 @@ export function DateRangePicker({
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                color: '#222222',
+                color: 'var(--color-text-primary)',
               }}
           >
             <ChevronLeft style={{ fontSize: '0.9rem' }} />
           </button>
 
-          <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#222222' }}>
+          <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
           {MONTH_NAMES_VN[viewMonth]} năm {viewYear}
         </span>
 
@@ -879,7 +879,7 @@ export function DateRangePicker({
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                color: '#222222',
+                color: 'var(--color-text-primary)',
               }}
           >
             <ChevronRight style={{ fontSize: '0.9rem' }} />
@@ -907,13 +907,13 @@ export function DateRangePicker({
             style={{
               marginTop: '0.85rem',
               paddingTop: '0.75rem',
-              borderTop: '1px solid #F1F5F9',
+              borderTop: '1px solid var(--color-bg-muted)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
             }}
         >
-        <span style={{ fontSize: '0.82rem', color: '#64748B' }}>
+        <span style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
           {value.start && value.end
               ? `Đã chọn: ${nightsCount} đêm lưu trú`
               : value.start
@@ -928,7 +928,7 @@ export function DateRangePicker({
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    color: '#FF385C',
+                    color: 'var(--color-primary)',
                     fontSize: '0.82rem',
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -956,13 +956,13 @@ export function DateRangePicker({
                   type="button"
                   onClick={() => setQuickRange(2)}
                   style={{
-                    background: '#F8FAFC',
-                    border: '1px solid #E2E8F0',
+                    background: 'var(--color-bg-app)',
+                    border: '1px solid var(--color-border-subtle)',
                     borderRadius: 6,
                     padding: '2px 8px',
                     fontSize: '0.75rem',
                     fontWeight: 600,
-                    color: '#334155',
+                    color: 'var(--color-text-secondary)',
                     cursor: 'pointer',
                   }}
               >
@@ -972,13 +972,13 @@ export function DateRangePicker({
                   type="button"
                   onClick={() => setQuickRange(3)}
                   style={{
-                    background: '#F8FAFC',
-                    border: '1px solid #E2E8F0',
+                    background: 'var(--color-bg-app)',
+                    border: '1px solid var(--color-border-subtle)',
                     borderRadius: 6,
                     padding: '2px 8px',
                     fontSize: '0.75rem',
                     fontWeight: 600,
-                    color: '#334155',
+                    color: 'var(--color-text-secondary)',
                     cursor: 'pointer',
                   }}
               >
@@ -988,13 +988,13 @@ export function DateRangePicker({
                   type="button"
                   onClick={() => setQuickRange(7)}
                   style={{
-                    background: '#F8FAFC',
-                    border: '1px solid #E2E8F0',
+                    background: 'var(--color-bg-app)',
+                    border: '1px solid var(--color-border-subtle)',
                     borderRadius: 6,
                     padding: '2px 8px',
                     fontSize: '0.75rem',
                     fontWeight: 600,
-                    color: '#334155',
+                    color: 'var(--color-text-secondary)',
                     cursor: 'pointer',
                   }}
               >
@@ -1009,8 +1009,8 @@ export function DateRangePicker({
     return (
         <div className={`app-daterangepicker-inline ${className}`} style={{ ...style }}>
           {label && (
-              <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.88rem', color: '#1E293B' }}>
-                {label} {required && <span style={{ color: '#E11D48' }}>*</span>}
+              <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.88rem', color: 'var(--color-text-primary)' }}>
+                {label} {required && <span style={{ color: 'var(--color-primary)' }}>*</span>}
               </label>
           )}
           {calendarContent}
@@ -1042,7 +1042,7 @@ export function DateRangePicker({
                 display: 'block',
                 fontSize: '0.75rem',
                 fontWeight: 800,
-                color: '#222222',
+                color: 'var(--color-text-primary)',
                 letterSpacing: '0.02em',
                 marginBottom: 2,
               }}
@@ -1051,25 +1051,25 @@ export function DateRangePicker({
           </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.88rem' }}>
               {!value.start && !value.end ? (
-                  <span style={{ color: '#717171', fontWeight: 400 }}>Thêm ngày</span>
+                  <span style={{ color: 'var(--color-text-secondary)', fontWeight: 400 }}>Thêm ngày</span>
               ) : value.start && !value.end ? (
                   <>
-                    <span style={{ fontWeight: 600, color: '#222222' }}>{formatDisplayDateVN(value.start)}</span>
-                    <span style={{ color: '#B0B0B0', fontSize: '0.8rem' }}>→</span>
-                    <span style={{ color: '#717171' }}>Thêm ngày trả</span>
+                    <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatDisplayDateVN(value.start)}</span>
+                    <span style={{ color: 'var(--color-text-disabled)', fontSize: '0.8rem' }}>→</span>
+                    <span style={{ color: 'var(--color-text-secondary)' }}>Thêm ngày trả</span>
                   </>
               ) : !value.start && value.end ? (
-                  <span style={{ fontWeight: 600, color: '#222222' }}>{formatDisplayDateVN(value.end)}</span>
+                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatDisplayDateVN(value.end)}</span>
               ) : (
                   <>
-                    <span style={{ fontWeight: 600, color: '#222222' }}>{formatDisplayDateVN(value.start)}</span>
-                    <span style={{ color: '#B0B0B0', fontSize: '0.8rem' }}>→</span>
-                    <span style={{ fontWeight: 600, color: '#222222' }}>{formatDisplayDateVN(value.end)}</span>
+                    <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatDisplayDateVN(value.start)}</span>
+                    <span style={{ color: 'var(--color-text-disabled)', fontSize: '0.8rem' }}>→</span>
+                    <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatDisplayDateVN(value.end)}</span>
                     {nightsCount > 0 && (
                         <span
                             style={{
-                              background: '#FFF1F2',
-                              color: '#E11D48',
+                              background: 'var(--color-primary-soft)',
+                              color: 'var(--color-primary)',
                               padding: '1px 6px',
                               borderRadius: 9999,
                               fontSize: '0.75rem',
@@ -1124,11 +1124,11 @@ export function DateRangePicker({
                 cursor: disabled ? 'not-allowed' : 'pointer',
                 fontSize: '0.82rem',
                 fontWeight: 500,
-                color: '#222222',
+                color: 'var(--color-text-primary)',
                 userSelect: 'none',
               }}
           >
-            <Calendar3 style={{ color: '#717171', fontSize: '0.85rem', flexShrink: 0 }} />
+            <Calendar3 style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', flexShrink: 0 }} />
             <span>
             {value.start && value.end
                 ? `${formatDisplayDateVN(value.start)} → ${formatDisplayDateVN(value.end)}`
@@ -1137,8 +1137,8 @@ export function DateRangePicker({
             {nightsCount > 0 && (
                 <span
                     style={{
-                      background: '#FFF1F2',
-                      color: '#E11D48',
+                      background: 'var(--color-primary-soft)',
+                      color: 'var(--color-primary)',
                       padding: '1px 5px',
                       borderRadius: 9999,
                       fontSize: '0.7rem',
@@ -1182,10 +1182,10 @@ export function DateRangePicker({
                   marginBottom: '0.4rem',
                   fontWeight: 600,
                   fontSize: '0.88rem',
-                  color: '#1E293B',
+                  color: 'var(--color-text-primary)',
                 }}
             >
-              {label} {required && <span style={{ color: '#E11D48' }}>*</span>}
+              {label} {required && <span style={{ color: 'var(--color-primary)' }}>*</span>}
             </label>
         )}
 
@@ -1199,31 +1199,31 @@ export function DateRangePicker({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              border: error ? '1.5px solid #DC2626' : isOpen ? '1.5px solid #FF385C' : '1px solid #E2E8F0',
+              border: error ? '1.5px solid var(--color-danger)' : isOpen ? '1.5px solid var(--color-primary)' : '1px solid var(--color-border-subtle)',
               borderRadius: 12,
               padding: '0.65rem 0.95rem',
-              background: disabled ? '#F8FAFC' : '#FFFFFF',
+              background: disabled ? 'var(--color-bg-app)' : 'var(--color-bg-surface)',
               cursor: disabled ? 'not-allowed' : 'pointer',
-              boxShadow: isOpen ? '0 0 0 3px rgba(255, 56, 92, 0.12)' : 'none',
+              boxShadow: isOpen ? '0 0 0 3px var(--color-primary-soft)' : 'none',
               transition: 'all 0.15s ease',
               opacity: disabled ? 0.7 : 1,
             }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', overflow: 'hidden' }}>
-            <CalendarEvent style={{ color: isOpen ? '#FF385C' : '#64748B', fontSize: '1.05rem', flexShrink: 0 }} />
+            <CalendarEvent style={{ color: isOpen ? 'var(--color-primary)' : 'var(--color-text-muted)', fontSize: '1.05rem', flexShrink: 0 }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.92rem' }}>
-            <span style={{ fontWeight: value.start ? 600 : 400, color: value.start ? '#1E293B' : '#94A3B8' }}>
+            <span style={{ fontWeight: value.start ? 600 : 400, color: value.start ? 'var(--color-text-primary)' : 'var(--color-text-disabled)' }}>
               {startDisplay}
             </span>
-              <span style={{ color: '#CBD5E1' }}>→</span>
-              <span style={{ fontWeight: value.end ? 600 : 400, color: value.end ? '#1E293B' : '#94A3B8' }}>
+              <span style={{ color: 'var(--color-border-strong)' }}>→</span>
+              <span style={{ fontWeight: value.end ? 600 : 400, color: value.end ? 'var(--color-text-primary)' : 'var(--color-text-disabled)' }}>
               {endDisplay}
             </span>
               {nightsCount > 0 && (
                   <span
                       style={{
-                        background: '#FFF1F2',
-                        color: '#E11D48',
+                        background: 'var(--color-primary-soft)',
+                        color: 'var(--color-primary)',
                         padding: '1px 6px',
                         borderRadius: 9999,
                         fontSize: '0.75rem',
@@ -1248,7 +1248,7 @@ export function DateRangePicker({
                     border: 'none',
                     padding: 0,
                     cursor: 'pointer',
-                    color: '#94A3B8',
+                    color: 'var(--color-text-disabled)',
                     display: 'flex',
                     alignItems: 'center',
                     marginLeft: '0.5rem',
@@ -1260,12 +1260,12 @@ export function DateRangePicker({
         </div>
 
         {helperText && !error && (
-            <span style={{ display: 'block', marginTop: '0.35rem', color: '#64748B', fontSize: '0.8rem' }}>
+            <span style={{ display: 'block', marginTop: '0.35rem', color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>
           {helperText}
         </span>
         )}
         {error && (
-            <span style={{ display: 'block', marginTop: '0.35rem', color: '#DC2626', fontSize: '0.8rem', fontWeight: 500 }}>
+            <span style={{ display: 'block', marginTop: '0.35rem', color: 'var(--color-danger)', fontSize: '0.8rem', fontWeight: 500 }}>
           {error}
         </span>
         )}

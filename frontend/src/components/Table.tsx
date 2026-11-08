@@ -31,7 +31,7 @@ export function Table({
         width: '100%',
         borderCollapse: 'collapse',
         fontSize: compact ? '0.82rem' : '0.88rem',
-        color: '#1E293B',
+        color: 'var(--color-text-primary)',
         ...style,
       }}
       {...rest}
@@ -63,8 +63,8 @@ export function TableHead({ children, style }: { children: ReactNode; style?: Re
   return (
     <thead
       style={{
-        background: '#F8FAFC',
-        borderBottom: '1px solid #E2E8F0',
+        background: 'var(--color-bg-app)',
+        borderBottom: '1px solid var(--color-border-subtle)',
         ...style,
       }}
     >
@@ -101,7 +101,7 @@ export function TableRow({
       onClick={onClick}
       className={className}
       style={{
-        borderBottom: '1px solid #F1F5F9',
+        borderBottom: '1px solid var(--color-bg-muted)',
         cursor: onClick ? 'pointer' : undefined,
         transition: 'background-color 0.15s ease',
         ...style,
@@ -131,7 +131,7 @@ export function TableHeaderCell({
         width,
         fontWeight: 700,
         fontSize: '0.8rem',
-        color: '#475569',
+        color: 'var(--color-text-secondary)',
         textTransform: 'uppercase',
         letterSpacing: '0.04em',
         whiteSpace: 'nowrap',

@@ -91,10 +91,10 @@ export default function HostBookingsPage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
           <div>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#222222' }}>
+            <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
               Quản lý &amp; Xử lý đơn đặt phòng
             </h1>
-            <p style={{ margin: 0, color: '#717171', fontSize: '0.95rem' }}>
+            <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.95rem' }}>
               Danh sách các yêu cầu lưu trú của khách thuộc các chỗ ở của chủ nhà (Tài khoản: <strong>host.demo</strong>).
             </p>
           </div>
@@ -129,12 +129,12 @@ export default function HostBookingsPage() {
             padding="none"
             title={
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <CalendarCheck style={{ color: '#FF385C', fontSize: '1.2rem' }} />
+                <CalendarCheck style={{ color: 'var(--color-primary)', fontSize: '1.2rem' }} />
                 <span>Danh sách đơn đặt phòng ({filteredBookings.length})</span>
               </div>
             }
         >
-          <div style={{ padding: '1rem 1.25rem 0.5rem', borderBottom: '1px solid #EBEBEB' }}>
+          <div style={{ padding: '1rem 1.25rem 0.5rem', borderBottom: '1px solid var(--color-border-subtle)' }}>
             <Tabs
                 variant="pills"
                 activeId={activeTab}
@@ -164,41 +164,41 @@ export default function HostBookingsPage() {
               <tbody>
               {isLoading ? (
                   <tr>
-                    <td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: '#717171' }}>
+                    <td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-secondary)' }}>
                       Đang tải dữ liệu từ máy chủ...
                     </td>
                   </tr>
               ) : filteredBookings.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: '#717171' }}>
+                    <td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-secondary)' }}>
                       Không có đơn đặt phòng nào trong mục này.
                     </td>
                   </tr>
               ) : (
                   filteredBookings.map(b => (
                       <tr key={b.code}>
-                        <td style={{ padding: '0.85rem 1rem', fontFamily: 'monospace', fontWeight: 700, color: '#222222' }}>
+                        <td style={{ padding: '0.85rem 1rem', fontFamily: 'monospace', fontWeight: 700, color: 'var(--color-text-primary)' }}>
                           #{b.code}
                         </td>
                         <td style={{ padding: '0.85rem 1rem' }}>
-                          <strong style={{ display: 'block', color: '#222222' }}>{b.guestName}</strong>
-                          <span style={{ fontSize: '0.78rem', color: '#717171' }}>
+                          <strong style={{ display: 'block', color: 'var(--color-text-primary)' }}>{b.guestName}</strong>
+                          <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
                         {b.guestPhone}
                       </span>
                         </td>
                         <td style={{ padding: '0.85rem 1rem' }}>
-                          <strong style={{ display: 'block', color: '#222222' }}>{b.roomName}</strong>
-                          <span style={{ fontSize: '0.78rem', color: '#717171' }}>
+                          <strong style={{ display: 'block', color: 'var(--color-text-primary)' }}>{b.roomName}</strong>
+                          <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
                         {b.propertyName}
                       </span>
                         </td>
                         <td style={{ padding: '0.85rem 1rem', fontSize: '0.88rem' }}>
                           {b.checkIn} → {b.checkOut}
-                          <span style={{ display: 'block', fontSize: '0.78rem', color: '#717171' }}>
+                          <span style={{ display: 'block', fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
                         {b.nights} đêm · {b.guests} khách
                       </span>
                         </td>
-                        <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#FF385C' }}>
+                        <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: 'var(--color-primary)' }}>
                           {formatVND(b.total)}
                         </td>
                         <td style={{ padding: '0.85rem 1rem' }}>

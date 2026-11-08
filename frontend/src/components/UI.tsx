@@ -24,17 +24,17 @@ export interface BreadcrumbItem {
 export function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
   return (
     <nav aria-label="Đường dẫn trang" style={{ marginBottom: '1.25rem' }}>
-      <p style={{ margin: 0, fontSize: '0.85rem', color: '#717171', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+      <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
         {items.map((item, i) => (
           <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
             {item.to ? (
-              <Link to={item.to} style={{ color: '#222222', textDecoration: 'underline' }}>
+              <Link to={item.to} style={{ color: 'var(--color-text-primary)', textDecoration: 'underline' }}>
                 {item.label}
               </Link>
             ) : (
-              <span style={{ color: '#717171' }}>{item.label}</span>
+              <span style={{ color: 'var(--color-text-secondary)' }}>{item.label}</span>
             )}
-            {i < items.length - 1 && <span style={{ color: '#B0B0B0' }}>›</span>}
+            {i < items.length - 1 && <span style={{ color: 'var(--color-text-muted)' }}>›</span>}
           </span>
         ))}
       </p>
@@ -45,10 +45,10 @@ export function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
 // ── Alert ──────────────────────────────────────────────────────────────
 export function Alert({ type = 'info', title, children }: { type?: 'info' | 'ok' | 'warn' | 'error'; title?: string; children: ReactNode }) {
   const alertStyles: Record<string, { bg: string; border: string; color: string }> = {
-    info: { bg: '#f0f9ff', border: '#bae6fd', color: '#0369a1' },
-    ok: { bg: '#f0fdf4', border: '#bbf7d0', color: '#15803d' },
-    warn: { bg: '#fffbeb', border: '#fde68a', color: '#b45309' },
-    error: { bg: '#fef2f2', border: '#fecaca', color: '#b91c1c' },
+    info: { bg: 'var(--color-info-bg)', border: 'var(--color-info-border)', color: 'var(--color-info)' },
+    ok: { bg: 'var(--color-success-bg)', border: 'var(--color-success-border)', color: 'var(--color-success)' },
+    warn: { bg: 'var(--color-warning-bg)', border: 'var(--color-warning-border)', color: 'var(--color-warning)' },
+    error: { bg: 'var(--color-danger-bg)', border: 'var(--color-danger-border)', color: 'var(--color-danger)' },
   };
 
   const currentStyle = alertStyles[type] || alertStyles.info;
@@ -128,7 +128,7 @@ export function PropertyCard({ property, checkIn, checkOut, guests, nights = 2 }
           aspectRatio: '20 / 19',
           borderRadius: '14px',
           overflow: 'hidden',
-          background: '#f1f5f9',
+          background: 'var(--color-bg-muted)',
           marginBottom: '0.65rem',
         }}
       >
@@ -154,7 +154,7 @@ export function PropertyCard({ property, checkIn, checkOut, guests, nights = 2 }
             left: 12,
             background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(4px)',
-            color: '#222222',
+            color: 'var(--color-text-primary)',
             padding: '4px 10px',
             borderRadius: '9999px',
             fontSize: '0.75rem',
@@ -200,8 +200,8 @@ export function PropertyCard({ property, checkIn, checkOut, guests, nights = 2 }
               display: 'block',
               height: 24,
               width: 24,
-              fill: isFavorite ? '#FF385C' : 'rgba(0, 0, 0, 0.45)',
-              stroke: '#ffffff',
+              fill: isFavorite ? 'var(--color-primary)' : 'rgba(0, 0, 0, 0.45)',
+              stroke: 'var(--color-bg-surface)',
               strokeWidth: 2,
               overflow: 'visible',
             }}
@@ -218,7 +218,7 @@ export function PropertyCard({ property, checkIn, checkOut, guests, nights = 2 }
             margin: 0,
             fontSize: '0.94rem',
             fontWeight: 600,
-            color: '#222222',
+            color: 'var(--color-text-primary)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -232,7 +232,7 @@ export function PropertyCard({ property, checkIn, checkOut, guests, nights = 2 }
           style={{
             margin: '0.2rem 0 0',
             fontSize: '0.88rem',
-            color: '#222222',
+            color: 'var(--color-text-primary)',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',

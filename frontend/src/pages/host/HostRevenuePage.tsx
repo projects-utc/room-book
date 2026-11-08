@@ -56,10 +56,10 @@ export default function HostRevenuePage() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', margin: '1rem 0 2rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#1E293B' }}>
+          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
             Báo cáo doanh thu &amp; Thống kê lưu trú
           </h1>
-          <p style={{ margin: 0, color: '#64748B', fontSize: '0.95rem' }}>
+          <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
             Dòng tiền chỉ được tổng hợp từ các đơn đặt phòng đã hoàn tất kỳ lưu trú thực tế (<code>COMPLETED</code>) theo quy tắc kế toán BR-08.
           </p>
         </div>
@@ -166,13 +166,13 @@ export default function HostRevenuePage() {
               {completedBookings.map(b => (
                 <TableRow key={b.code}>
                   <TableCell>
-                    <code style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: 4, fontSize: '0.88rem' }}>
+                    <code style={{ background: 'var(--color-bg-muted)', padding: '2px 6px', borderRadius: 4, fontSize: '0.88rem' }}>
                       {b.code}
                     </code>
                   </TableCell>
                   <TableCell bold>{b.guestName}</TableCell>
                   <TableCell>
-                    {b.propertyName} · <span style={{ color: '#64748B' }}>{b.roomName}</span>
+                    {b.propertyName} · <span style={{ color: 'var(--color-text-muted)' }}>{b.roomName}</span>
                   </TableCell>
                   <TableCell>
                     {b.checkIn} → {b.checkOut} ({b.nights} đêm)

@@ -78,7 +78,7 @@ export default function HostBookingDetailPage() {
         </div>
 
         {/* State Transitions Toolbar */}
-        <section className="panel" style={{ marginBottom: '1.5rem', background: '#f8fafc', border: '1px solid var(--line)' }}>
+        <section className="panel" style={{ marginBottom: '1.5rem', background: 'var(--color-bg-app)', border: '1px solid var(--line)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <strong style={{ display: 'block', fontSize: '0.95rem' }}>Thao tác chuyển trạng thái đơn:</strong>
@@ -100,7 +100,7 @@ export default function HostBookingDetailPage() {
                     <button
                         type="button"
                         className="btn btn-outline btn-sm"
-                        style={{ color: '#dc2626' }}
+                        style={{ color: 'var(--color-danger)' }}
                         onClick={() => handleStatusChange('REJECTED')}
                     >
                       <XCircle /> Từ chối yêu cầu

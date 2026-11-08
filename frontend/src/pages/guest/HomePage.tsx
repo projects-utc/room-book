@@ -90,7 +90,7 @@ export default function HomePage() {
             style={{
               fontSize: '1.45rem',
               fontWeight: 700,
-              color: '#222222',
+              color: 'var(--color-text-primary)',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.45rem',
@@ -98,8 +98,8 @@ export default function HomePage() {
               letterSpacing: '-0.02em',
               transition: 'color 0.15s ease',
             }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#FF385C')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#222222')}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primary)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-primary)')}
           >
             <span>{title}</span>
             <span style={{ fontSize: '1.2rem' }}>→</span>
@@ -115,22 +115,22 @@ export default function HomePage() {
                 width: 34,
                 height: 34,
                 borderRadius: '50%',
-                border: '1px solid #DDDDDD',
-                background: '#ffffff',
+                border: '1px solid var(--color-border-strong)',
+                background: 'var(--color-bg-surface)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#222222',
-                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+                color: 'var(--color-text-primary)',
+                boxShadow: 'var(--shadow-sm)',
                 transition: 'all 0.15s ease',
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.borderColor = '#222222';
+                e.currentTarget.style.borderColor = 'var(--color-text-primary)';
                 e.currentTarget.style.transform = 'scale(1.05)';
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.borderColor = '#DDDDDD';
+                e.currentTarget.style.borderColor = 'var(--color-border-strong)';
                 e.currentTarget.style.transform = 'scale(1)';
               }}
             >
@@ -145,22 +145,22 @@ export default function HomePage() {
                 width: 34,
                 height: 34,
                 borderRadius: '50%',
-                border: '1px solid #DDDDDD',
-                background: '#ffffff',
+                border: '1px solid var(--color-border-strong)',
+                background: 'var(--color-bg-surface)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#222222',
-                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+                color: 'var(--color-text-primary)',
+                boxShadow: 'var(--shadow-sm)',
                 transition: 'all 0.15s ease',
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.borderColor = '#222222';
+                e.currentTarget.style.borderColor = 'var(--color-text-primary)';
                 e.currentTarget.style.transform = 'scale(1.05)';
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.borderColor = '#DDDDDD';
+                e.currentTarget.style.borderColor = 'var(--color-border-strong)';
                 e.currentTarget.style.transform = 'scale(1)';
               }}
             >
@@ -256,7 +256,7 @@ export default function HomePage() {
             zIndex: 90,
             background: 'rgba(255, 255, 255, 0.96)',
             backdropFilter: 'blur(10px)',
-            border: '1px solid #DDDDDD',
+            border: '1px solid var(--color-border-strong)',
             boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)',
             borderRadius: '9999px',
             padding: '0.65rem 1.15rem 0.65rem 1.25rem',
@@ -265,7 +265,7 @@ export default function HomePage() {
             gap: '0.6rem',
             fontSize: '0.88rem',
             fontWeight: 600,
-            color: '#222222',
+            color: 'var(--color-text-primary)',
             animation: 'fadeIn 0.3s ease',
           }}
         >
@@ -279,7 +279,7 @@ export default function HomePage() {
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
-              color: '#717171',
+              color: 'var(--color-text-secondary)',
               padding: '2px',
               display: 'flex',
               alignItems: 'center',

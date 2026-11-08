@@ -73,7 +73,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   return (
-    <div className="admin-root" style={{ display: 'flex', minHeight: '100vh', background: '#F8FAFC', color: '#0F172A', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+    <div className="admin-root" style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-bg-app)', color: 'var(--color-text-primary)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
       {/* Mobile Backdrop */}
       {sidebarOpen && (
         <div
@@ -87,8 +87,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}
         style={{
           width: 270,
-          background: '#0F172A',
-          color: '#E2E8F0',
+          background: 'var(--color-secondary-hover)',
+          color: 'var(--color-border-subtle)',
           display: 'flex',
           flexDirection: 'column',
           position: 'sticky',
@@ -108,22 +108,22 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 width: 38,
                 height: 38,
                 borderRadius: 10,
-                background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)',
+                background: 'var(--gradient-primary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#FFF',
+                color: 'var(--color-text-inverse)',
                 fontSize: '1.25rem',
-                boxShadow: '0 4px 12px rgba(255, 56, 92, 0.4)',
+                boxShadow: 'var(--shadow-primary)',
               }}
             >
               <HouseDoorFill />
             </div>
             <div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
-                ODauDay <span style={{ color: '#FF385C' }}>Admin</span>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-text-inverse)', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+                ODauDay <span style={{ color: 'var(--color-primary)' }}>Admin</span>
               </div>
-              <div style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                 Hệ thống Quản trị sàn
               </div>
             </div>
@@ -138,7 +138,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 style={{
                   fontSize: '0.68rem',
                   fontWeight: 700,
-                  color: '#64748B',
+                  color: 'var(--color-text-muted)',
                   letterSpacing: '0.08em',
                   padding: '0 0.75rem 0.45rem',
                   textTransform: 'uppercase',
@@ -163,15 +163,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         textDecoration: 'none',
                         fontSize: '0.88rem',
                         fontWeight: active ? 700 : 500,
-                        color: active ? '#FFFFFF' : '#94A3B8',
+                        color: active ? 'var(--color-text-inverse)' : 'var(--color-text-muted)',
                         background: active
                           ? 'linear-gradient(90deg, rgba(255, 56, 92, 0.22) 0%, rgba(255, 56, 92, 0.08) 100%)'
                           : 'transparent',
-                        borderLeft: active ? '3.5px solid #FF385C' : '3.5px solid transparent',
+                        borderLeft: active ? '3.5px solid var(--color-primary)' : '3.5px solid transparent',
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      <span style={{ fontSize: '1.1rem', color: active ? '#FF385C' : '#64748B' }}>{item.icon}</span>
+                      <span style={{ fontSize: '1.1rem', color: active ? 'var(--color-primary)' : 'var(--color-text-muted)' }}>{item.icon}</span>
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -191,12 +191,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               justifyContent: 'space-between',
               padding: '0.65rem 0.85rem',
               borderRadius: 10,
-              background: '#1E293B',
-              color: '#38BDF8',
+              background: 'var(--color-secondary)',
+              color: 'var(--color-info)',
               textDecoration: 'none',
               fontSize: '0.84rem',
               fontWeight: 600,
-              border: '1px solid rgba(56, 189, 248, 0.2)',
+              border: '1px solid var(--color-border-subtle)',
               transition: 'all 0.2s ease',
             }}
           >
@@ -204,7 +204,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <Globe style={{ fontSize: '1rem' }} />
               <span>Xem trang Khách</span>
             </span>
-            <span style={{ fontSize: '0.72rem', background: '#0284C7', color: '#FFF', padding: '0.15rem 0.45rem', borderRadius: 6, fontWeight: 700 }}>
+            <span style={{ fontSize: '0.72rem', background: 'var(--color-info)', color: 'var(--color-text-inverse)', padding: '0.15rem 0.45rem', borderRadius: 6, fontWeight: 700 }}>
               /client
             </span>
           </Link>
@@ -218,8 +218,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 width: 36,
                 height: 36,
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #FF385C 0%, #D70466 100%)',
-                color: '#FFF',
+                background: 'var(--gradient-primary)',
+                color: 'var(--color-text-inverse)',
                 fontWeight: 700,
                 fontSize: '0.95rem',
                 display: 'flex',
@@ -231,10 +231,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               {(currentUser?.fullName || currentUser?.username || 'A').charAt(0).toUpperCase()}
             </div>
             <div style={{ minWidth: 0, lineHeight: 1.25 }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#F8FAFC', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-bg-app)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {currentUser?.fullName || 'Quản trị viên'}
               </div>
-              <div style={{ fontSize: '0.72rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <ShieldCheck /> Super Admin
               </div>
             </div>
@@ -245,7 +245,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             style={{
               background: 'transparent',
               border: 'none',
-              color: '#94A3B8',
+              color: 'var(--color-text-muted)',
               cursor: 'pointer',
               padding: '0.35rem',
               borderRadius: 6,
@@ -266,8 +266,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <header
           style={{
             height: 64,
-            background: '#FFFFFF',
-            borderBottom: '1px solid #E2E8F0',
+            background: 'var(--color-bg-surface)',
+            borderBottom: '1px solid var(--color-border-subtle)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -285,7 +285,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               onClick={() => setSidebarOpen(!sidebarOpen)}
               style={{
                 background: 'transparent',
-                border: '1px solid #CBD5E1',
+                border: '1px solid var(--color-border-strong)',
                 borderRadius: 8,
                 padding: '0.35rem 0.55rem',
                 cursor: 'pointer',
@@ -295,9 +295,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <List style={{ fontSize: '1.25rem' }} />
             </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem' }}>
-              <span style={{ color: '#64748B' }}>Admin Portal</span>
-              <span style={{ color: '#CBD5E1' }}>/</span>
-              <span style={{ color: '#0F172A', fontWeight: 700 }}>
+              <span style={{ color: 'var(--color-text-muted)' }}>Admin Portal</span>
+              <span style={{ color: 'var(--color-border-strong)' }}>/</span>
+              <span style={{ color: 'var(--color-text-primary)', fontWeight: 700 }}>
                 {location.pathname === '/admin' || location.pathname === '/admin/dashboard'
                   ? 'Tổng quan hệ thống'
                   : location.pathname.includes('/users')
@@ -323,16 +323,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.4rem',
-                background: '#ECFDF5',
-                border: '1px solid #A7F3D0',
-                color: '#065F46',
+                background: 'var(--color-success-bg)',
+                border: '1px solid var(--color-success-border)',
+                color: 'var(--color-success)',
                 borderRadius: '9999px',
                 padding: '0.25rem 0.75rem',
                 fontSize: '0.78rem',
                 fontWeight: 600,
               }}
             >
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block' }} />
               <span>Hệ thống: Trực tuyến</span>
             </div>
 
@@ -343,9 +343,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.4rem',
-                background: '#F1F5F9',
-                color: '#334155',
-                border: '1px solid #CBD5E1',
+                background: 'var(--color-bg-muted)',
+                color: 'var(--color-text-secondary)',
+                border: '1px solid var(--color-border-subtle)',
                 borderRadius: 8,
                 padding: '0.4rem 0.85rem',
                 fontSize: '0.82rem',
@@ -353,7 +353,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 textDecoration: 'none',
               }}
             >
-              <Globe style={{ color: '#FF385C' }} />
+              <Globe style={{ color: 'var(--color-primary)' }} />
               <span>Giao diện Khách (/client)</span>
             </Link>
 
@@ -364,8 +364,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   width: 34,
                   height: 34,
                   borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)',
-                  color: '#FFF',
+                  background: 'var(--gradient-primary)',
+                  color: 'var(--color-text-inverse)',
                   fontWeight: 700,
                   fontSize: '0.88rem',
                   display: 'flex',
@@ -375,7 +375,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               >
                 {(currentUser?.fullName || 'A').charAt(0).toUpperCase()}
               </div>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1E293B' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
                 {currentUser?.username || 'admin'}
               </span>
             </div>
@@ -395,10 +395,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <div className="logout-avatar-glow">
               <BoxArrowRight />
             </div>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.5rem' }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-text-primary)', margin: '0 0 0.5rem' }}>
               Đăng xuất Quản trị viên?
             </h2>
-            <p style={{ margin: 0, color: '#64748B', fontSize: '0.9rem', lineHeight: 1.5 }}>
+            <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
               Bạn có chắc chắn muốn rời khỏi phiên làm việc Quản trị viên không?
             </p>
             <div className="logout-actions">

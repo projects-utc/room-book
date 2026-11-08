@@ -62,7 +62,7 @@ export default function SearchResultsPage() {
       {/* Top Filter & Toggle Bar */}
       <div
         style={{
-          borderBottom: '1px solid #EBEBEB',
+          borderBottom: '1px solid var(--color-border-subtle)',
           paddingBottom: '1.25rem',
           marginBottom: '1.75rem',
         }}
@@ -95,7 +95,7 @@ export default function SearchResultsPage() {
               <button
                 type="button"
                 style={{
-                  border: '1px solid #DDDDDD',
+                  border: '1px solid var(--color-border-strong)',
                   borderRadius: '9999px',
                   padding: '0.6rem 1.25rem',
                   display: 'flex',
@@ -103,9 +103,9 @@ export default function SearchResultsPage() {
                   gap: '0.5rem',
                   fontSize: '0.85rem',
                   fontWeight: 600,
-                  background: '#ffffff',
+                  background: 'var(--color-bg-surface)',
                   cursor: 'pointer',
-                  color: '#222',
+                  color: 'var(--color-text-primary)',
                 }}
                 onClick={() => setShowFilters(!showFilters)}
               >
@@ -119,13 +119,13 @@ export default function SearchResultsPage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.6rem',
-                  border: '1px solid #DDDDDD',
+                  border: '1px solid var(--color-border-strong)',
                   borderRadius: '9999px',
                   padding: '0.5rem 1rem',
                   fontSize: '0.85rem',
                   fontWeight: 600,
-                  background: '#ffffff',
-                  color: '#222',
+                  background: 'var(--color-bg-surface)',
+                  color: 'var(--color-text-primary)',
                 }}
               >
                 <span>Hiển thị tổng giá trước thuế</span>
@@ -133,7 +133,7 @@ export default function SearchResultsPage() {
                   type="checkbox"
                   checked={showTaxes}
                   onChange={e => setShowTaxes(e.target.checked)}
-                  style={{ width: 16, height: 16, accentColor: '#222', cursor: 'pointer' }}
+                  style={{ width: 16, height: 16, accentColor: 'var(--color-text-primary)', cursor: 'pointer' }}
                 />
               </div>
             </div>
@@ -145,7 +145,7 @@ export default function SearchResultsPage() {
               style={{
                 marginTop: '1.25rem',
                 padding: '1.25rem',
-                background: '#F7F7F7',
+                background: 'var(--color-bg-app)',
                 borderRadius: '16px',
                 display: 'flex',
                 gap: '2rem',
@@ -154,7 +154,7 @@ export default function SearchResultsPage() {
               }}
             >
               <div>
-                <span style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: '#222' }}>
+                <span style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--color-text-primary)' }}>
                   Loại hình chỗ ở:
                 </span>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -165,9 +165,9 @@ export default function SearchResultsPage() {
                       style={{
                         padding: '0.4rem 1rem',
                         borderRadius: '9999px',
-                        border: type === t ? '1px solid #222222' : '1px solid #DDDDDD',
-                        background: type === t ? '#222222' : '#ffffff',
-                        color: type === t ? '#ffffff' : '#222222',
+                        border: type === t ? '1px solid var(--color-text-primary)' : '1px solid var(--color-border-strong)',
+                        background: type === t ? 'var(--color-text-primary)' : 'var(--color-bg-surface)',
+                        color: type === t ? 'var(--color-bg-surface)' : 'var(--color-text-primary)',
                         fontSize: '0.85rem',
                         fontWeight: 600,
                         cursor: 'pointer',
@@ -181,9 +181,9 @@ export default function SearchResultsPage() {
               </div>
 
               <div style={{ minWidth: 260 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.4rem', color: '#222' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--color-text-primary)' }}>
                   <span>Mức giá tối đa:</span>
-                  <span style={{ color: '#FF385C' }}>
+                  <span style={{ color: 'var(--color-primary)' }}>
                     {new Intl.NumberFormat('vi-VN').format(maxPrice)} ₫
                   </span>
                 </div>
@@ -194,7 +194,7 @@ export default function SearchResultsPage() {
                   step="100000"
                   value={maxPrice}
                   onChange={e => setMaxPrice(Number(e.target.value))}
-                  style={{ width: '100%', accentColor: '#FF385C', cursor: 'pointer' }}
+                  style={{ width: '100%', accentColor: 'var(--color-primary)', cursor: 'pointer' }}
                 />
               </div>
 
@@ -209,7 +209,7 @@ export default function SearchResultsPage() {
                   fontWeight: 600,
                   fontSize: '0.85rem',
                   cursor: 'pointer',
-                  color: '#222',
+                  color: 'var(--color-text-primary)',
                 }}
                 onClick={() => {
                   setType('Tất cả');
@@ -238,12 +238,12 @@ export default function SearchResultsPage() {
       {/* Results Header */}
       {!isDateError && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <h1 style={{ fontSize: '1.45rem', fontWeight: 700, margin: 0, color: '#222' }}>
+          <h1 style={{ fontSize: '1.45rem', fontWeight: 700, margin: 0, color: 'var(--color-text-primary)' }}>
             {properties.length > 0
               ? `Hơn ${properties.length} chỗ ở ${kw ? `tại "${kw}"` : 'ở Việt Nam'}`
               : 'Không tìm thấy chỗ ở nào'}
           </h1>
-          <p style={{ margin: '0.25rem 0 0', color: '#717171', fontSize: '0.9rem' }}>
+          <p style={{ margin: '0.25rem 0 0', color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
             Giá đã bao gồm mọi khoản phí theo tiêu chuẩn hiển thị ODauDay Stay
           </p>
         </div>
@@ -252,9 +252,9 @@ export default function SearchResultsPage() {
       {/* Empty State */}
       {isEmpty && (
         <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-          <HouseDoor style={{ fontSize: '3rem', color: '#B0B0B0', marginBottom: '1rem' }} />
-          <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: '#222' }}>Không có chỗ ở nào khớp với tiêu chí</h3>
-          <p style={{ color: '#717171', maxWidth: 450, margin: '0 auto 1.5rem', lineHeight: 1.6 }}>
+          <HouseDoor style={{ fontSize: '3rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }} />
+          <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>Không có chỗ ở nào khớp với tiêu chí</h3>
+          <p style={{ color: 'var(--color-text-secondary)', maxWidth: 450, margin: '0 auto 1.5rem', lineHeight: 1.6 }}>
             Hãy thử tìm kiếm với các địa điểm nổi tiếng như "Hồ Tây" hoặc "Ba Vì", hoặc đặt lại bộ lọc giá.
           </p>
           <button

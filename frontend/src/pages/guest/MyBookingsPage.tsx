@@ -89,9 +89,9 @@ export default function MyBookingsPage() {
             gap: 5,
             padding: '5px 12px',
             borderRadius: 999,
-            background: '#FFFBEB',
-            color: '#B45309',
-            border: '1px solid #FDE68A',
+            background: 'var(--color-warning-bg)',
+            color: 'var(--color-warning)',
+            border: '1px solid var(--color-warning-border)',
             fontSize: '0.78rem',
             fontWeight: 700
           }}>
@@ -106,9 +106,9 @@ export default function MyBookingsPage() {
             gap: 5,
             padding: '5px 12px',
             borderRadius: 999,
-            background: '#EFF6FF',
-            color: '#1D4ED8',
-            border: '1px solid #BFDBFE',
+            background: 'var(--color-info-bg)',
+            color: 'var(--color-info)',
+            border: '1px solid var(--color-info-border)',
             fontSize: '0.78rem',
             fontWeight: 700
           }}>
@@ -123,9 +123,9 @@ export default function MyBookingsPage() {
             gap: 5,
             padding: '5px 12px',
             borderRadius: 999,
-            background: '#ECFDF5',
-            color: '#047857',
-            border: '1px solid #A7F3D0',
+            background: 'var(--color-success-bg)',
+            color: 'var(--color-success)',
+            border: '1px solid var(--color-success-border)',
             fontSize: '0.78rem',
             fontWeight: 700
           }}>
@@ -140,9 +140,9 @@ export default function MyBookingsPage() {
             gap: 5,
             padding: '5px 12px',
             borderRadius: 999,
-            background: '#F1F5F9',
-            color: '#334155',
-            border: '1px solid #CBD5E1',
+            background: 'var(--color-bg-muted)',
+            color: 'var(--color-text-secondary)',
+            border: '1px solid var(--color-border-strong)',
             fontSize: '0.78rem',
             fontWeight: 700
           }}>
@@ -158,9 +158,9 @@ export default function MyBookingsPage() {
             gap: 5,
             padding: '5px 12px',
             borderRadius: 999,
-            background: '#FEF2F2',
-            color: '#B91C1C',
-            border: '1px solid #FECACA',
+            background: 'var(--color-danger-bg)',
+            color: 'var(--color-danger)',
+            border: '1px solid var(--color-danger-border)',
             fontSize: '0.78rem',
             fontWeight: 700
           }}>
@@ -180,10 +180,10 @@ export default function MyBookingsPage() {
     <div style={{ maxWidth: 1120, margin: '2rem auto 5rem', padding: '0 1.5rem' }}>
       {/* ── Top Header Section ── */}
       <div style={{
-        background: 'linear-gradient(135deg, #FFF1F2 0%, #FFFFFF 60%, #F8FAFC 100%)',
+        background: 'linear-gradient(135deg, var(--color-primary-soft) 0%, var(--color-bg-surface) 60%, var(--color-bg-app) 100%)',
         borderRadius: 24,
         padding: '2.25rem 2.5rem',
-        border: '1px solid #FFE4E6',
+        border: '1px solid var(--color-primary-border)',
         boxShadow: '0 4px 20px rgba(225, 29, 72, 0.04)',
         marginBottom: '2rem',
         display: 'flex',
@@ -193,14 +193,14 @@ export default function MyBookingsPage() {
         gap: '1.5rem'
       }}>
         <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 999, background: '#FFF1F2', color: '#E11D48', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 999, background: 'var(--color-primary-soft)', color: 'var(--color-primary)', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>
             <span>Kỳ nghỉ của tôi</span>
           </div>
-          <h1 style={{ fontSize: '2.15rem', fontWeight: 800, margin: '0 0 0.5rem', color: '#0F172A', letterSpacing: '-0.02em' }}>
+          <h1 style={{ fontSize: '2.15rem', fontWeight: 800, margin: '0 0 0.5rem', color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
             Chuyến đi của bạn
           </h1>
-          <p style={{ margin: 0, color: '#64748B', fontSize: '0.98rem' }}>
-            Chào mừng trở lại, <strong>{currentUser?.fullName || username}</strong>! Bạn có <strong style={{ color: '#E11D48' }}>{upcomingCount}</strong> chuyến đi sắp tới.
+          <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.98rem' }}>
+            Chào mừng trở lại, <strong>{currentUser?.fullName || username}</strong>! Bạn có <strong style={{ color: 'var(--color-primary)' }}>{upcomingCount}</strong> chuyến đi sắp tới.
           </p>
         </div>
 
@@ -208,8 +208,8 @@ export default function MyBookingsPage() {
           type="button"
           onClick={() => navigate('/')}
           style={{
-            background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)',
-            color: '#ffffff',
+            background: 'var(--gradient-primary)',
+            color: 'var(--color-bg-surface)',
             border: 'none',
             borderRadius: 14,
             padding: '0.85rem 1.6rem',
@@ -234,8 +234,8 @@ export default function MyBookingsPage() {
         <div
           onClick={() => setActiveTab('UPCOMING')}
           style={{
-            background: activeTab === 'UPCOMING' ? '#FFF1F2' : '#ffffff',
-            border: activeTab === 'UPCOMING' ? '2px solid #E11D48' : '1px solid #E2E8F0',
+            background: activeTab === 'UPCOMING' ? 'var(--color-primary-soft)' : 'var(--color-bg-surface)',
+            border: activeTab === 'UPCOMING' ? '2px solid var(--color-primary)' : '1px solid var(--color-border-subtle)',
             borderRadius: 16,
             padding: '1.15rem 1.25rem',
             cursor: 'pointer',
@@ -246,20 +246,20 @@ export default function MyBookingsPage() {
             boxShadow: activeTab === 'UPCOMING' ? '0 4px 16px rgba(225, 29, 72, 0.08)' : '0 1px 3px rgba(0,0,0,0.02)'
           }}
         >
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#EFF6FF', color: '#1D4ED8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--color-info-bg)', color: 'var(--color-info)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
             <CalendarCheck />
           </div>
           <div>
-            <span style={{ fontSize: '0.8rem', color: '#64748B', display: 'block', fontWeight: 600 }}>Sắp tới & Chờ duyệt</span>
-            <strong style={{ fontSize: '1.35rem', color: '#0F172A' }}>{upcomingCount}</strong>
+            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Sắp tới & Chờ duyệt</span>
+            <strong style={{ fontSize: '1.35rem', color: 'var(--color-text-primary)' }}>{upcomingCount}</strong>
           </div>
         </div>
 
         <div
           onClick={() => setActiveTab('COMPLETED')}
           style={{
-            background: activeTab === 'COMPLETED' ? '#F0FDF4' : '#ffffff',
-            border: activeTab === 'COMPLETED' ? '2px solid #16A34A' : '1px solid #E2E8F0',
+            background: activeTab === 'COMPLETED' ? 'var(--color-success-bg)' : 'var(--color-bg-surface)',
+            border: activeTab === 'COMPLETED' ? '2px solid var(--color-success)' : '1px solid var(--color-border-subtle)',
             borderRadius: 16,
             padding: '1.15rem 1.25rem',
             cursor: 'pointer',
@@ -270,20 +270,20 @@ export default function MyBookingsPage() {
             boxShadow: activeTab === 'COMPLETED' ? '0 4px 16px rgba(22, 163, 74, 0.08)' : '0 1px 3px rgba(0,0,0,0.02)'
           }}
         >
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#ECFDF5', color: '#047857', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--color-success-bg)', color: 'var(--color-success)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
             <CheckCircleFill />
           </div>
           <div>
-            <span style={{ fontSize: '0.8rem', color: '#64748B', display: 'block', fontWeight: 600 }}>Đã hoàn thành</span>
-            <strong style={{ fontSize: '1.35rem', color: '#0F172A' }}>{completedCount}</strong>
+            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Đã hoàn thành</span>
+            <strong style={{ fontSize: '1.35rem', color: 'var(--color-text-primary)' }}>{completedCount}</strong>
           </div>
         </div>
 
         <div
           onClick={() => setActiveTab('CANCELLED')}
           style={{
-            background: activeTab === 'CANCELLED' ? '#FEF2F2' : '#ffffff',
-            border: activeTab === 'CANCELLED' ? '2px solid #DC2626' : '1px solid #E2E8F0',
+            background: activeTab === 'CANCELLED' ? 'var(--color-danger-bg)' : 'var(--color-bg-surface)',
+            border: activeTab === 'CANCELLED' ? '2px solid var(--color-danger)' : '1px solid var(--color-border-subtle)',
             borderRadius: 16,
             padding: '1.15rem 1.25rem',
             cursor: 'pointer',
@@ -294,20 +294,20 @@ export default function MyBookingsPage() {
             boxShadow: activeTab === 'CANCELLED' ? '0 4px 16px rgba(220, 38, 38, 0.08)' : '0 1px 3px rgba(0,0,0,0.02)'
           }}
         >
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#FEF2F2', color: '#B91C1C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--color-danger-bg)', color: 'var(--color-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
             <XCircleFill />
           </div>
           <div>
-            <span style={{ fontSize: '0.8rem', color: '#64748B', display: 'block', fontWeight: 600 }}>Đã hủy</span>
-            <strong style={{ fontSize: '1.35rem', color: '#0F172A' }}>{cancelledCount}</strong>
+            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Đã hủy</span>
+            <strong style={{ fontSize: '1.35rem', color: 'var(--color-text-primary)' }}>{cancelledCount}</strong>
           </div>
         </div>
 
         <div
           onClick={() => setActiveTab('ALL')}
           style={{
-            background: activeTab === 'ALL' ? '#F8FAFC' : '#ffffff',
-            border: activeTab === 'ALL' ? '2px solid #0F172A' : '1px solid #E2E8F0',
+            background: activeTab === 'ALL' ? 'var(--color-bg-app)' : 'var(--color-bg-surface)',
+            border: activeTab === 'ALL' ? '2px solid var(--color-text-primary)' : '1px solid var(--color-border-subtle)',
             borderRadius: 16,
             padding: '1.15rem 1.25rem',
             cursor: 'pointer',
@@ -318,12 +318,12 @@ export default function MyBookingsPage() {
             boxShadow: activeTab === 'ALL' ? '0 4px 16px rgba(15, 23, 42, 0.08)' : '0 1px 3px rgba(0,0,0,0.02)'
           }}
         >
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F1F5F9', color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--color-bg-muted)', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
             <HouseDoor />
           </div>
           <div>
-            <span style={{ fontSize: '0.8rem', color: '#64748B', display: 'block', fontWeight: 600 }}>Tất cả chuyến đi</span>
-            <strong style={{ fontSize: '1.35rem', color: '#0F172A' }}>{myBookings.length}</strong>
+            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Tất cả chuyến đi</span>
+            <strong style={{ fontSize: '1.35rem', color: 'var(--color-text-primary)' }}>{myBookings.length}</strong>
           </div>
         </div>
       </div>
@@ -335,7 +335,7 @@ export default function MyBookingsPage() {
           flex: '1 1 320px',
           maxWidth: 420
         }}>
-          <Search style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', fontSize: '1rem' }} />
+          <Search style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)', fontSize: '1rem' }} />
           <input
             type="text"
             placeholder="Tìm theo tên chỗ nghỉ, mã đơn #ODD..."
@@ -345,25 +345,25 @@ export default function MyBookingsPage() {
               width: '100%',
               padding: '0.7rem 1rem 0.7rem 2.5rem',
               borderRadius: 12,
-              border: '1px solid #E2E8F0',
-              background: '#ffffff',
+              border: '1px solid var(--color-border-subtle)',
+              background: 'var(--color-bg-surface)',
               fontSize: '0.9rem',
-              color: '#0F172A',
+              color: 'var(--color-text-primary)',
               outline: 'none',
               transition: 'border-color 0.2s, box-shadow 0.2s'
             }}
             onFocus={e => {
-              e.currentTarget.style.borderColor = '#E11D48';
+              e.currentTarget.style.borderColor = 'var(--color-primary)';
               e.currentTarget.style.boxShadow = '0 0 0 3px rgba(225, 29, 72, 0.12)';
             }}
             onBlur={e => {
-              e.currentTarget.style.borderColor = '#E2E8F0';
+              e.currentTarget.style.borderColor = 'var(--color-border-subtle)';
               e.currentTarget.style.boxShadow = 'none';
             }}
           />
         </div>
 
-        <span style={{ fontSize: '0.88rem', color: '#64748B' }}>
+        <span style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)' }}>
           Đang hiển thị <strong>{filteredBookings.length}</strong> / {myBookings.length} chuyến đi
         </span>
       </div>
@@ -371,20 +371,20 @@ export default function MyBookingsPage() {
       {/* ── Trips Cards List ── */}
       {filteredBookings.length === 0 ? (
         <div style={{
-          background: '#ffffff',
+          background: 'var(--color-bg-surface)',
           borderRadius: 24,
           padding: '4.5rem 2rem',
           textAlign: 'center',
-          border: '1px dashed #CBD5E1',
+          border: '1px dashed var(--color-border-strong)',
           boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
         }}>
-          <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#FFF1F2', color: '#E11D48', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '2.5rem' }}>
+          <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--color-primary-soft)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '2.5rem' }}>
             <HouseDoor />
           </div>
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: '0 0 0.5rem', color: '#0F172A' }}>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: '0 0 0.5rem', color: 'var(--color-text-primary)' }}>
             Chưa tìm thấy chuyến đi nào
           </h2>
-          <p style={{ color: '#64748B', maxWidth: 440, margin: '0 auto 1.75rem', lineHeight: 1.6, fontSize: '0.95rem' }}>
+          <p style={{ color: 'var(--color-text-muted)', maxWidth: 440, margin: '0 auto 1.75rem', lineHeight: 1.6, fontSize: '0.95rem' }}>
             {searchQuery
               ? `Không có chuyến đi nào phù hợp với từ khóa "${searchQuery}". Hãy thử tìm kiếm bằng từ khóa khác.`
               : 'Đã đến lúc chuẩn bị hành lý và lên kế hoạch cho kỳ nghỉ dưỡng mơ ước cùng ODauDay Stay!'}
@@ -393,8 +393,8 @@ export default function MyBookingsPage() {
             type="button"
             onClick={() => { setSearchQuery(''); navigate('/'); }}
             style={{
-              background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)',
-              color: '#ffffff',
+              background: 'var(--gradient-primary)',
+              color: 'var(--color-bg-surface)',
               border: 'none',
               borderRadius: 12,
               padding: '0.8rem 1.8rem',
@@ -420,8 +420,8 @@ export default function MyBookingsPage() {
                 key={b.code}
                 className="my-trip-card"
                 style={{
-                  background: '#ffffff',
-                  border: '1px solid #E2E8F0',
+                  background: 'var(--color-bg-surface)',
+                  border: '1px solid var(--color-border-subtle)',
                   borderRadius: 20,
                   overflow: 'hidden',
                   boxShadow: '0 4px 18px rgba(0, 0, 0, 0.04)',
@@ -431,12 +431,12 @@ export default function MyBookingsPage() {
                 onMouseEnter={e => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
                   e.currentTarget.style.boxShadow = '0 10px 28px rgba(0, 0, 0, 0.08)';
-                  e.currentTarget.style.borderColor = '#CBD5E1';
+                  e.currentTarget.style.borderColor = 'var(--color-border-strong)';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = '0 4px 18px rgba(0, 0, 0, 0.04)';
-                  e.currentTarget.style.borderColor = '#E2E8F0';
+                  e.currentTarget.style.borderColor = 'var(--color-border-subtle)';
                 }}
               >
                 {/* ── Left: Property Photo ── */}
@@ -470,7 +470,7 @@ export default function MyBookingsPage() {
                     left: 12,
                     background: 'rgba(15, 23, 42, 0.85)',
                     backdropFilter: 'blur(4px)',
-                    color: '#ffffff',
+                    color: 'var(--color-bg-surface)',
                     padding: '4px 10px',
                     borderRadius: 8,
                     fontSize: '0.74rem',
@@ -487,7 +487,7 @@ export default function MyBookingsPage() {
                     left: 12,
                     background: 'rgba(255, 255, 255, 0.95)',
                     backdropFilter: 'blur(4px)',
-                    color: '#0F172A',
+                    color: 'var(--color-text-primary)',
                     padding: '4px 10px',
                     borderRadius: 999,
                     fontSize: '0.76rem',
@@ -504,7 +504,7 @@ export default function MyBookingsPage() {
                     {/* Status Pill & Date created */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.6rem', flexWrap: 'wrap' }}>
                       {getStatusBadge(b.status)}
-                      <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
                         Đặt ngày {b.createdAt || 'Gần đây'}
                       </span>
                     </div>
@@ -516,22 +516,22 @@ export default function MyBookingsPage() {
                         margin: '0 0 0.35rem',
                         fontSize: '1.3rem',
                         fontWeight: 800,
-                        color: '#0F172A',
+                        color: 'var(--color-text-primary)',
                         cursor: 'pointer',
                         lineHeight: 1.3
                       }}
-                      onMouseEnter={e => (e.currentTarget.style.color = '#E11D48')}
-                      onMouseLeave={e => (e.currentTarget.style.color = '#0F172A')}
+                      onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primary)')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-primary)')}
                     >
                       {b.propertyName}
                     </h3>
 
                     {/* City & Address */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#64748B', fontSize: '0.88rem', marginBottom: '0.85rem' }}>
-                      <GeoAltFill style={{ color: '#E11D48', fontSize: '0.9rem', flexShrink: 0 }} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-muted)', fontSize: '0.88rem', marginBottom: '0.85rem' }}>
+                      <GeoAltFill style={{ color: 'var(--color-primary)', fontSize: '0.9rem', flexShrink: 0 }} />
                       <span>{city}</span>
                       <span>·</span>
-                      <span style={{ fontWeight: 600, color: '#334155' }}>Hạng phòng: {b.roomName}</span>
+                      <span style={{ fontWeight: 600, color: 'var(--color-text-secondary)' }}>Hạng phòng: {b.roomName}</span>
                     </div>
 
                     {/* Checkin Checkout Time Frame */}
@@ -539,34 +539,34 @@ export default function MyBookingsPage() {
                       display: 'grid',
                       gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
                       gap: '0.75rem',
-                      background: '#F8FAFC',
+                      background: 'var(--color-bg-app)',
                       padding: '0.85rem 1.15rem',
                       borderRadius: 14,
-                      border: '1px solid #E2E8F0',
+                      border: '1px solid var(--color-border-subtle)',
                       fontSize: '0.86rem'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <CalendarCheck style={{ color: '#E11D48', fontSize: '1.1rem', flexShrink: 0 }} />
+                        <CalendarCheck style={{ color: 'var(--color-primary)', fontSize: '1.1rem', flexShrink: 0 }} />
                         <div>
-                          <span style={{ display: 'block', fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Nhận - Trả phòng</span>
-                          <strong style={{ color: '#0F172A' }}>{b.checkIn} → {b.checkOut}</strong>
+                          <span style={{ display: 'block', fontSize: '0.72rem', color: 'var(--color-text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Nhận - Trả phòng</span>
+                          <strong style={{ color: 'var(--color-text-primary)' }}>{b.checkIn} → {b.checkOut}</strong>
                         </div>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <PeopleFill style={{ color: '#0284C7', fontSize: '1.1rem', flexShrink: 0 }} />
+                        <PeopleFill style={{ color: 'var(--color-info)', fontSize: '1.1rem', flexShrink: 0 }} />
                         <div>
-                          <span style={{ display: 'block', fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Số khách</span>
-                          <strong style={{ color: '#0F172A' }}>{b.guests} khách lưu trú</strong>
+                          <span style={{ display: 'block', fontSize: '0.72rem', color: 'var(--color-text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Số khách</span>
+                          <strong style={{ color: 'var(--color-text-primary)' }}>{b.guests} khách lưu trú</strong>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Guest Name & contact */}
-                  <div style={{ fontSize: '0.84rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ fontSize: '0.84rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span>Đại diện đặt phòng:</span>
-                    <strong style={{ color: '#1E293B' }}>{b.guestName}</strong>
+                    <strong style={{ color: 'var(--color-text-primary)' }}>{b.guestName}</strong>
                     <span>({b.guestPhone})</span>
                   </div>
                 </div>
@@ -574,8 +574,8 @@ export default function MyBookingsPage() {
                 {/* ── Right: Pricing & Action Buttons ── */}
                 <div style={{
                   padding: '1.5rem 1.75rem',
-                  borderLeft: '1px solid #F1F5F9',
-                  background: '#FCFDFF',
+                  borderLeft: '1px solid var(--color-bg-muted)',
+                  background: 'var(--color-bg-app)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -584,13 +584,13 @@ export default function MyBookingsPage() {
                   textAlign: 'right'
                 }}>
                   <div>
-                    <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
                       Tổng tiền thanh toán
                     </span>
-                    <strong style={{ fontSize: '1.55rem', color: '#E11D48', fontWeight: 800, display: 'block', margin: '0.2rem 0 0.15rem' }}>
+                    <strong style={{ fontSize: '1.55rem', color: 'var(--color-primary)', fontWeight: 800, display: 'block', margin: '0.2rem 0 0.15rem' }}>
                       {formatVND(b.total)}
                     </strong>
-                    <span style={{ fontSize: '0.78rem', color: '#059669', fontWeight: 600, display: 'block' }}>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--color-success)', fontWeight: 600, display: 'block' }}>
                       Miễn phí phí dịch vụ
                     </span>
                   </div>
@@ -604,8 +604,8 @@ export default function MyBookingsPage() {
                         width: '100%',
                         padding: '0.65rem 1.15rem',
                         borderRadius: 10,
-                        background: '#0F172A',
-                        color: '#ffffff',
+                        background: 'var(--color-text-primary)',
+                        color: 'var(--color-bg-surface)',
                         border: 'none',
                         fontSize: '0.88rem',
                         fontWeight: 700,
@@ -616,8 +616,8 @@ export default function MyBookingsPage() {
                         gap: 6,
                         transition: 'background 0.2s ease',
                       }}
-                      onMouseEnter={e => (e.currentTarget.style.background = '#1E293B')}
-                      onMouseLeave={e => (e.currentTarget.style.background = '#0F172A')}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-text-primary)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'var(--color-text-primary)')}
                     >
                       Chi tiết <ArrowRight style={{ fontSize: '0.85rem' }} />
                     </button>
@@ -630,9 +630,9 @@ export default function MyBookingsPage() {
                           width: '100%',
                           padding: '0.6rem 1rem',
                           borderRadius: 10,
-                          background: '#FFF1F2',
-                          color: '#E11D48',
-                          border: '1px solid #FECDD3',
+                          background: 'var(--color-primary-soft)',
+                          color: 'var(--color-primary)',
+                          border: '1px solid var(--color-primary-border)',
                           fontSize: '0.84rem',
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -654,9 +654,9 @@ export default function MyBookingsPage() {
                           width: '100%',
                           padding: '0.6rem 1rem',
                           borderRadius: 10,
-                          background: '#FFFBEB',
-                          color: '#B45309',
-                          border: '1px solid #FDE68A',
+                          background: 'var(--color-warning-bg)',
+                          color: 'var(--color-warning)',
+                          border: '1px solid var(--color-warning-border)',
                           fontSize: '0.84rem',
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -666,7 +666,7 @@ export default function MyBookingsPage() {
                           gap: 6,
                         }}
                       >
-                        <StarFill style={{ color: '#F59E0B' }} /> Xem đánh giá
+                        <StarFill style={{ color: 'var(--color-warning)' }} /> Xem đánh giá
                       </button>
                     )}
 
@@ -678,9 +678,9 @@ export default function MyBookingsPage() {
                           width: '100%',
                           padding: '0.6rem 1rem',
                           borderRadius: 10,
-                          background: '#F8FAFC',
-                          color: '#475569',
-                          border: '1px solid #E2E8F0',
+                          background: 'var(--color-bg-app)',
+                          color: 'var(--color-text-secondary)',
+                          border: '1px solid var(--color-border-subtle)',
                           fontSize: '0.84rem',
                           fontWeight: 600,
                           cursor: 'pointer',
@@ -703,8 +703,8 @@ export default function MyBookingsPage() {
                           padding: '0.55rem 0.9rem',
                           borderRadius: 10,
                           background: 'transparent',
-                          color: '#DC2626',
-                          border: '1px solid #FCA5A5',
+                          color: 'var(--color-danger)',
+                          border: '1px solid var(--color-danger-border)',
                           fontSize: '0.82rem',
                           fontWeight: 600,
                           cursor: 'pointer',
@@ -715,7 +715,7 @@ export default function MyBookingsPage() {
                           transition: 'all 0.15s ease'
                         }}
                         onMouseEnter={e => {
-                          e.currentTarget.style.background = '#FEF2F2';
+                          e.currentTarget.style.background = 'var(--color-danger-bg)';
                         }}
                         onMouseLeave={e => {
                           e.currentTarget.style.background = 'transparent';

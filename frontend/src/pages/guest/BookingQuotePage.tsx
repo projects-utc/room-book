@@ -239,7 +239,7 @@ export default function BookingQuotePage() {
         <div style={{ maxWidth: 1080, margin: '2rem auto 4rem', padding: '0 1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
                 <Button variant="outline" size="sm" icon={<ChevronLeft />} onClick={() => navigate(-1)} />
-                <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: 0, color: '#1E293B' }}>Yêu cầu đặt phòng / chỗ ở</h1>
+                <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: 0, color: 'var(--color-text-primary)' }}>Yêu cầu đặt phòng / chỗ ở</h1>
             </div>
 
             <form onSubmit={handleSubmit}>
@@ -266,23 +266,23 @@ export default function BookingQuotePage() {
                                         justifyContent: 'space-between',
                                         gap: '1rem',
                                         padding: '1.25rem',
-                                        border: paymentMethod === 'cod' ? '2px solid #E11D48' : '1px solid #E2E8F0',
+                                        border: paymentMethod === 'cod' ? '2px solid var(--color-primary)' : '1px solid var(--color-border-subtle)',
                                         borderRadius: 14,
                                         cursor: 'pointer',
-                                        background: paymentMethod === 'cod' ? '#FFF1F2' : '#ffffff',
+                                        background: paymentMethod === 'cod' ? 'var(--color-primary-soft)' : 'var(--color-bg-surface)',
                                         boxShadow: paymentMethod === 'cod' ? '0 4px 12px rgba(225, 29, 72, 0.08)' : 'none',
                                         transition: 'all 0.2s ease'
                                     }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
                                         <input type="radio" name="payMethod" checked={paymentMethod === 'cod'} onChange={() => {}} style={{ display: 'none' }} />
-                                        <CashCoin style={{ fontSize: '1.6rem', color: paymentMethod === 'cod' ? '#E11D48' : '#059669', flexShrink: 0, marginTop: 2, transition: 'color 0.2s' }} />
+                                        <CashCoin style={{ fontSize: '1.6rem', color: paymentMethod === 'cod' ? 'var(--color-primary)' : 'var(--color-success)', flexShrink: 0, marginTop: 2, transition: 'color 0.2s' }} />
                                         <div>
-                                            <strong style={{ display: 'block', fontSize: '0.98rem', color: paymentMethod === 'cod' ? '#BE123C' : '#1E293B', marginBottom: 4 }}>Thanh toán tiền mặt khi nhận phòng (COD / Cọc 30%)</strong>
-                                            <span style={{ fontSize: '0.84rem', color: '#64748B', lineHeight: 1.4, display: 'block' }}>Đặt cọc trước để giữ chỗ, thanh toán phần còn lại khi nhận phòng.</span>
+                                            <strong style={{ display: 'block', fontSize: '0.98rem', color: paymentMethod === 'cod' ? 'var(--color-danger)' : 'var(--color-text-primary)', marginBottom: 4 }}>Thanh toán tiền mặt khi nhận phòng (COD / Cọc 30%)</strong>
+                                            <span style={{ fontSize: '0.84rem', color: 'var(--color-text-muted)', lineHeight: 1.4, display: 'block' }}>Đặt cọc trước để giữ chỗ, thanh toán phần còn lại khi nhận phòng.</span>
                                         </div>
                                     </div>
-                                    {paymentMethod === 'cod' && <CheckCircleFill style={{ color: '#E11D48', fontSize: '1.2rem', flexShrink: 0 }} />}
+                                    {paymentMethod === 'cod' && <CheckCircleFill style={{ color: 'var(--color-primary)', fontSize: '1.2rem', flexShrink: 0 }} />}
                                 </label>
 
                                 {/* Selectable Card: Thanh toán Ngân hàng */}
@@ -294,29 +294,29 @@ export default function BookingQuotePage() {
                                         justifyContent: 'space-between',
                                         gap: '1rem',
                                         padding: '1.25rem',
-                                        border: paymentMethod === 'bank' ? '2px solid #E11D48' : '1px solid #E2E8F0',
+                                        border: paymentMethod === 'bank' ? '2px solid var(--color-primary)' : '1px solid var(--color-border-subtle)',
                                         borderRadius: 14,
                                         cursor: 'pointer',
-                                        background: paymentMethod === 'bank' ? '#FFF1F2' : '#ffffff',
+                                        background: paymentMethod === 'bank' ? 'var(--color-primary-soft)' : 'var(--color-bg-surface)',
                                         boxShadow: paymentMethod === 'bank' ? '0 4px 12px rgba(225, 29, 72, 0.08)' : 'none',
                                         transition: 'all 0.2s ease'
                                     }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
                                         <input type="radio" name="payMethod" checked={paymentMethod === 'bank'} onChange={() => {}} style={{ display: 'none' }} />
-                                        <CreditCard style={{ fontSize: '1.6rem', color: paymentMethod === 'bank' ? '#E11D48' : '#1E293B', flexShrink: 0, marginTop: 2, transition: 'color 0.2s' }} />
+                                        <CreditCard style={{ fontSize: '1.6rem', color: paymentMethod === 'bank' ? 'var(--color-primary)' : 'var(--color-text-primary)', flexShrink: 0, marginTop: 2, transition: 'color 0.2s' }} />
                                         <div>
-                                            <strong style={{ display: 'block', fontSize: '0.98rem', color: paymentMethod === 'bank' ? '#BE123C' : '#1E293B', marginBottom: 4 }}>Chuyển khoản qua mã QR hoặc Ngân hàng (Thanh toán Full)</strong>
-                                            <span style={{ fontSize: '0.84rem', color: '#64748B', lineHeight: 1.4, display: 'block' }}>Hoàn tất thanh toán trực tuyến an toàn.</span>
+                                            <strong style={{ display: 'block', fontSize: '0.98rem', color: paymentMethod === 'bank' ? 'var(--color-danger)' : 'var(--color-text-primary)', marginBottom: 4 }}>Chuyển khoản qua mã QR hoặc Ngân hàng (Thanh toán Full)</strong>
+                                            <span style={{ fontSize: '0.84rem', color: 'var(--color-text-muted)', lineHeight: 1.4, display: 'block' }}>Hoàn tất thanh toán trực tuyến an toàn.</span>
                                         </div>
                                     </div>
-                                    {paymentMethod === 'bank' && <CheckCircleFill style={{ color: '#E11D48', fontSize: '1.2rem', flexShrink: 0 }} />}
+                                    {paymentMethod === 'bank' && <CheckCircleFill style={{ color: 'var(--color-primary)', fontSize: '1.2rem', flexShrink: 0 }} />}
                                 </label>
                             </div>
 
                             {/* Hộp QR & Ngân hàng */}
-                            <div style={{ marginTop: '1.5rem', padding: '1.25rem', borderRadius: 14, border: '1px solid #E2E8F0', background: '#F8FAFC' }}>
-                                <div style={{ display: 'flex', background: '#E2E8F0', padding: 4, borderRadius: 10, marginBottom: '1.15rem' }}>
+                            <div style={{ marginTop: '1.5rem', padding: '1.25rem', borderRadius: 14, border: '1px solid var(--color-border-subtle)', background: 'var(--color-bg-app)' }}>
+                                <div style={{ display: 'flex', background: 'var(--color-border-subtle)', padding: 4, borderRadius: 10, marginBottom: '1.15rem' }}>
                                     <button
                                         type="button"
                                         onClick={() => setBankSubMode('QR_CODE')}
@@ -328,8 +328,8 @@ export default function BookingQuotePage() {
                                             fontSize: '0.84rem',
                                             fontWeight: 600,
                                             cursor: 'pointer',
-                                            backgroundColor: bankSubMode === 'QR_CODE' ? '#ffffff' : 'transparent',
-                                            color: '#1E293B',
+                                            backgroundColor: bankSubMode === 'QR_CODE' ? 'var(--color-bg-surface)' : 'transparent',
+                                            color: 'var(--color-text-primary)',
                                             boxShadow: bankSubMode === 'QR_CODE' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                                             transition: 'all 0.2s'
                                         }}
@@ -347,8 +347,8 @@ export default function BookingQuotePage() {
                                             fontSize: '0.84rem',
                                             fontWeight: 600,
                                             cursor: 'pointer',
-                                            backgroundColor: bankSubMode === 'BANK_REDIRECT' ? '#ffffff' : 'transparent',
-                                            color: '#1E293B',
+                                            backgroundColor: bankSubMode === 'BANK_REDIRECT' ? 'var(--color-bg-surface)' : 'transparent',
+                                            color: 'var(--color-text-primary)',
                                             boxShadow: bankSubMode === 'BANK_REDIRECT' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                                             transition: 'all 0.2s'
                                         }}
@@ -363,10 +363,10 @@ export default function BookingQuotePage() {
                                             <div
                                                 style={{
                                                     display: 'inline-block',
-                                                    background: '#ffffff',
+                                                    background: 'var(--color-bg-surface)',
                                                     padding: '0.85rem',
                                                     borderRadius: 12,
-                                                    border: '1px solid #F1F5F9',
+                                                    border: '1px solid var(--color-bg-muted)',
                                                     boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
                                                 }}
                                             >
@@ -388,11 +388,11 @@ export default function BookingQuotePage() {
                                                         width: '100%',
                                                         padding: '0.4rem 0.85rem',
                                                         borderRadius: 6,
-                                                        backgroundColor: '#FFF1F2',
-                                                        color: '#E11D48',
+                                                        backgroundColor: 'var(--color-primary-soft)',
+                                                        color: 'var(--color-primary)',
                                                         fontSize: '0.76rem',
                                                         fontWeight: 600,
-                                                        border: '1px solid #FECDD3',
+                                                        border: '1px solid var(--color-primary-border)',
                                                         cursor: 'pointer',
                                                     }}
                                                 >
@@ -403,20 +403,20 @@ export default function BookingQuotePage() {
 
                                         <div
                                             style={{
-                                                background: '#ffffff',
+                                                background: 'var(--color-bg-surface)',
                                                 borderRadius: 10,
                                                 padding: '0.85rem 1rem',
-                                                border: '1px solid #E2E8F0',
+                                                border: '1px solid var(--color-border-subtle)',
                                                 fontSize: '0.84rem',
                                             }}
                                         >
                                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                                                <span style={{ color: '#64748B' }}>Chủ TK:</span>
-                                                <strong style={{ color: '#1E293B' }}>{receiverAccount.accountName}</strong>
+                                                <span style={{ color: 'var(--color-text-muted)' }}>Chủ TK:</span>
+                                                <strong style={{ color: 'var(--color-text-primary)' }}>{receiverAccount.accountName}</strong>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                                                <span style={{ color: '#64748B' }}>Ngân hàng:</span>
-                                                <strong style={{ color: '#1E293B' }}>{receiverAccount.bankName}</strong>
+                                                <span style={{ color: 'var(--color-text-muted)' }}>Ngân hàng:</span>
+                                                <strong style={{ color: 'var(--color-text-primary)' }}>{receiverAccount.bankName}</strong>
                                             </div>
                                             <div
                                                 style={{
@@ -426,9 +426,9 @@ export default function BookingQuotePage() {
                                                     marginBottom: 6,
                                                 }}
                                             >
-                                                <span style={{ color: '#64748B' }}>STK:</span>
+                                                <span style={{ color: 'var(--color-text-muted)' }}>STK:</span>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                    <strong style={{ color: '#1E293B' }}>{receiverAccount.accountNo}</strong>
+                                                    <strong style={{ color: 'var(--color-text-primary)' }}>{receiverAccount.accountNo}</strong>
                                                     <button
                                                         type="button"
                                                         onClick={() => handleCopy(receiverAccount.accountNo, 'STK')}
@@ -436,8 +436,8 @@ export default function BookingQuotePage() {
                                                             fontSize: '0.72rem',
                                                             padding: '2px 8px',
                                                             borderRadius: 4,
-                                                            border: '1px solid #CBD5E1',
-                                                            background: '#F8FAFC',
+                                                            border: '1px solid var(--color-border-strong)',
+                                                            background: 'var(--color-bg-app)',
                                                             cursor: 'pointer',
                                                         }}
                                                     >
@@ -446,9 +446,9 @@ export default function BookingQuotePage() {
                                                 </div>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <span style={{ color: '#64748B' }}>Nội dung:</span>
+                                                <span style={{ color: 'var(--color-text-muted)' }}>Nội dung:</span>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                    <strong style={{ color: '#E11D48' }}>{receiverAccount.content}</strong>
+                                                    <strong style={{ color: 'var(--color-primary)' }}>{receiverAccount.content}</strong>
                                                     <button
                                                         type="button"
                                                         onClick={() => handleCopy(receiverAccount.content, 'CONTENT')}
@@ -456,8 +456,8 @@ export default function BookingQuotePage() {
                                                             fontSize: '0.72rem',
                                                             padding: '2px 8px',
                                                             borderRadius: 4,
-                                                            border: '1px solid #CBD5E1',
-                                                            background: '#F8FAFC',
+                                                            border: '1px solid var(--color-border-strong)',
+                                                            background: 'var(--color-bg-app)',
                                                             cursor: 'pointer',
                                                         }}
                                                     >
@@ -469,7 +469,7 @@ export default function BookingQuotePage() {
                                     </div>
                                 ) : (
                                     <div>
-                                        <div style={{ fontSize: '0.84rem', color: '#64748B', marginBottom: '0.75rem' }}>
+                                        <div style={{ fontSize: '0.84rem', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>
                                             Chọn ngân hàng bạn muốn sử dụng để tiếp tục thanh toán.
                                         </div>
                                         <div
@@ -497,8 +497,8 @@ export default function BookingQuotePage() {
                                                             minWidth: 0,
                                                             minHeight: 58,
                                                             borderRadius: 12,
-                                                            border: isSelected ? '2px solid #E11D48' : '1px solid #E2E8F0',
-                                                            backgroundColor: isSelected ? '#FFF1F2' : '#ffffff',
+                                                            border: isSelected ? '2px solid var(--color-primary)' : '1px solid var(--color-border-subtle)',
+                                                            backgroundColor: isSelected ? 'var(--color-primary-soft)' : 'var(--color-bg-surface)',
                                                             textAlign: 'left',
                                                             cursor: 'pointer',
                                                             display: 'flex',
@@ -517,10 +517,10 @@ export default function BookingQuotePage() {
                                                                         objectFit: 'contain',
                                                                         flex: '0 0 42px',
                                                                         display: 'block',
-                                                                        background: '#ffffff',
+                                                                        background: 'var(--color-bg-surface)',
                                                                         borderRadius: 7,
                                                                         padding: 4,
-                                                                        border: '1px solid #e2e8f0',
+                                                                        border: '1px solid var(--color-border-subtle)',
                                                                     }}
                                                                     onError={(e) => {
                                                                         const image = e.currentTarget;
@@ -529,20 +529,20 @@ export default function BookingQuotePage() {
                                                                         if (fallback) fallback.style.display = 'flex';
                                                                     }}
                                                                 />
-                                                                <div style={{ display: 'none', width: 42, height: 30, flex: '0 0 42px', alignItems: 'center', justifyContent: 'center', borderRadius: 7, background: '#F1F5F9', color: '#475569', fontSize: '0.68rem', fontWeight: 800, border: '1px solid #E2E8F0' }}>
+                                                                <div style={{ display: 'none', width: 42, height: 30, flex: '0 0 42px', alignItems: 'center', justifyContent: 'center', borderRadius: 7, background: 'var(--color-bg-muted)', color: 'var(--color-text-secondary)', fontSize: '0.68rem', fontWeight: 800, border: '1px solid var(--color-border-subtle)' }}>
                                                                     {bank.code}
                                                                 </div>
                                                             </>
                                                         ) : (
-                                                            <div style={{ width: 42, height: 30, flex: '0 0 42px', background: '#e2e8f0', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>
+                                                            <div style={{ width: 42, height: 30, flex: '0 0 42px', background: 'var(--color-border-subtle)', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>
                                                                 {bank.code}
                                                             </div>
                                                         )}
                                                         <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
-                                                            <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#1E293B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                            <div style={{ fontWeight: 700, fontSize: '0.84rem', color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                                 {bank.shortName}
                                                             </div>
-                                                            <div style={{ fontSize: '0.7rem', color: '#64748B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                            <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                                 {bank.name}
                                                             </div>
                                                         </div>
@@ -554,8 +554,8 @@ export default function BookingQuotePage() {
                                 )}
                             </div>
 
-                            <div style={{ marginTop: '0.85rem', padding: '0.75rem 1rem', background: '#F8FAFC', border: '1px dashed #CBD5E1', borderRadius: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem' }}>
-                                <span style={{ fontWeight: 600, color: '#475569' }}>Mô phỏng Test:</span>
+                            <div style={{ marginTop: '0.85rem', padding: '0.75rem 1rem', background: 'var(--color-bg-app)', border: '1px dashed var(--color-border-strong)', borderRadius: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem' }}>
+                                <span style={{ fontWeight: 600, color: 'var(--color-text-secondary)' }}>Mô phỏng Test:</span>
                                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                                     <button
                                         type="button"
@@ -563,9 +563,9 @@ export default function BookingQuotePage() {
                                         style={{
                                             padding: '0.35rem 0.75rem',
                                             borderRadius: 6,
-                                            border: '1px solid #15803D',
-                                            background: simulateOutcome === 'SUCCESS' ? '#15803D' : 'transparent',
-                                            color: simulateOutcome === 'SUCCESS' ? '#ffffff' : '#15803D',
+                                            border: '1px solid var(--color-success)',
+                                            background: simulateOutcome === 'SUCCESS' ? 'var(--color-success)' : 'transparent',
+                                            color: simulateOutcome === 'SUCCESS' ? 'var(--color-bg-surface)' : 'var(--color-success)',
                                             fontWeight: 600,
                                             fontSize: '0.75rem',
                                             cursor: 'pointer',
@@ -580,9 +580,9 @@ export default function BookingQuotePage() {
                                         style={{
                                             padding: '0.35rem 0.75rem',
                                             borderRadius: 6,
-                                            border: '1px solid #B91C1C',
-                                            background: simulateOutcome === 'FAILED' ? '#B91C1C' : 'transparent',
-                                            color: simulateOutcome === 'FAILED' ? '#ffffff' : '#B91C1C',
+                                            border: '1px solid var(--color-danger)',
+                                            background: simulateOutcome === 'FAILED' ? 'var(--color-danger)' : 'transparent',
+                                            color: simulateOutcome === 'FAILED' ? 'var(--color-bg-surface)' : 'var(--color-danger)',
                                             fontWeight: 600,
                                             fontSize: '0.75rem',
                                             cursor: 'pointer',
@@ -596,11 +596,11 @@ export default function BookingQuotePage() {
                         </Card>
 
                         <Card title="Chính sách hủy phòng">
-                            <p style={{ color: '#64748B', fontSize: '0.92rem', lineHeight: 1.6, margin: 0 }}>Hủy miễn phí trước 48 giờ so với thời điểm nhận phòng. Sau thời gian này, việc hủy phòng sẽ tuân theo thỏa thuận trực tiếp cùng chủ nhà.</p>
+                            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.92rem', lineHeight: 1.6, margin: 0 }}>Hủy miễn phí trước 48 giờ so với thời điểm nhận phòng. Sau thời gian này, việc hủy phòng sẽ tuân theo thỏa thuận trực tiếp cùng chủ nhà.</p>
                         </Card>
 
                         <div style={{ marginTop: '2rem' }}>
-                            <p style={{ fontSize: '0.8rem', color: '#64748B', lineHeight: 1.6, marginBottom: '1rem' }}>
+                            <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '1rem' }}>
                                 Bằng cách nhấn xác nhận ở cột bên phải, bạn đồng ý với Nội quy nhà của Chủ nhà, Các quy tắc nền tảng của ODauDay Stay và Điều khoản dịch vụ.
                             </p>
                         </div>
@@ -609,16 +609,16 @@ export default function BookingQuotePage() {
                     {/* CỘT PHẢI */}
                     <aside style={{ position: 'sticky', top: '6rem' }}>
                         <Card variant="elevated">
-                            <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '1.25rem', marginBottom: '1rem' }}>
+                            <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--color-border-subtle)', paddingBottom: '1.25rem', marginBottom: '1rem' }}>
                                 <img src={property.image} alt={property.name} style={{ width: 92, height: 84, borderRadius: 10, objectFit: 'cover' }} />
                                 <div>
-                                    <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block' }}>{property.type} · {property.city}</span>
+                                    <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block' }}>{property.type} · {property.city}</span>
                                     <strong style={{ fontSize: '0.98rem', display: 'block', margin: '0.2rem 0' }}>{property.name}</strong>
-                                    <span style={{ fontSize: '0.84rem', color: '#475569', display: 'block' }}>Hạng phòng: {room.name}</span>
+                                    <span style={{ fontSize: '0.84rem', color: 'var(--color-text-secondary)', display: 'block' }}>Hạng phòng: {room.name}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.82rem', marginTop: 4 }}>
-                                        <StarFill style={{ fontSize: '0.75rem', color: '#E11D48' }} />
+                                        <StarFill style={{ fontSize: '0.75rem', color: 'var(--color-primary)' }} />
                                         <strong>{property.rating ? property.rating.toFixed(2) : '4.80'}</strong>
-                                        <span style={{ color: '#64748B' }}>(18 đánh giá)</span>
+                                        <span style={{ color: 'var(--color-text-muted)' }}>(18 đánh giá)</span>
                                     </div>
                                 </div>
                             </div>
@@ -634,9 +634,9 @@ export default function BookingQuotePage() {
                                         gap: 8,
                                         padding: '7px 12px',
                                         borderRadius: 999,
-                                        background: 'linear-gradient(135deg, #ECFDF5, #D1FAE5)',
-                                        border: '1px solid #A7F3D0',
-                                        color: '#047857',
+                                        background: 'linear-gradient(135deg, var(--color-success-bg), var(--color-success-border))',
+                                        border: '1px solid var(--color-success-border)',
+                                        color: 'var(--color-success)',
                                         fontSize: '0.78rem',
                                         fontWeight: 700,
                                         cursor: 'help',
@@ -644,57 +644,57 @@ export default function BookingQuotePage() {
                                         transition: 'all 0.2s ease',
                                     }}
                                 >
-                                    <ShieldCheck style={{ fontSize: '1rem', color: '#059669', flexShrink: 0 }} />
+                                    <ShieldCheck style={{ fontSize: '1rem', color: 'var(--color-success)', flexShrink: 0 }} />
                                     <span>Bảo vệ quyền lợi khách hàng</span>
-                                    <span style={{ width: 16, height: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', background: '#A7F3D0', color: '#047857', fontSize: 11, fontWeight: 800 }}>i</span>
+                                    <span style={{ width: 16, height: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', background: 'var(--color-success-border)', color: 'var(--color-success)', fontSize: 11, fontWeight: 800 }}>i</span>
                                 </div>
                             </div>
 
-                            <div style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 55%, #FFF1F2 100%)', borderRadius: 16, padding: '1rem', border: '1px solid #E2E8F0', marginBottom: '1.25rem', fontSize: '0.85rem' }}>
+                            <div style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, var(--color-bg-app) 0%, var(--color-bg-muted) 55%, var(--color-primary-soft) 100%)', borderRadius: 16, padding: '1rem', border: '1px solid var(--color-border-subtle)', marginBottom: '1.25rem', fontSize: '0.85rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: '0.9rem' }}>
-                                    <strong style={{ color: '#0F172A', fontSize: '0.95rem' }}>Thông tin kỳ nghỉ</strong>
-                                    <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.04em', color: '#BE123C', background: 'rgba(255,255,255,0.8)', border: '1px solid #FECDD3', borderRadius: 999, padding: '4px 8px' }}>YOUR STAY</span>
+                                    <strong style={{ color: 'var(--color-text-primary)', fontSize: '0.95rem' }}>Thông tin kỳ nghỉ</strong>
+                                    <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.04em', color: 'var(--color-danger)', background: 'rgba(255,255,255,0.8)', border: '1px solid var(--color-primary-border)', borderRadius: 999, padding: '4px 8px' }}>YOUR STAY</span>
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.78)', border: '1px solid rgba(226,232,240,0.9)', borderRadius: 12, padding: '0.75rem' }}>
                                     <div style={{ minWidth: 0 }}>
-                                        <span style={{ display: 'block', color: '#64748B', fontSize: '0.72rem', marginBottom: 4 }}>NHẬN PHÒNG</span>
-                                        <strong style={{ display: 'block', color: '#0F172A', fontSize: '0.9rem' }}>{checkIn}</strong>
+                                        <span style={{ display: 'block', color: 'var(--color-text-muted)', fontSize: '0.72rem', marginBottom: 4 }}>NHẬN PHÒNG</span>
+                                        <strong style={{ display: 'block', color: 'var(--color-text-primary)', fontSize: '0.9rem' }}>{checkIn}</strong>
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#E11D48', fontSize: '0.68rem', fontWeight: 700 }}>
-                                        <span style={{ width: 28, height: 1, background: '#FDA4AF' }} />
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'var(--color-primary)', fontSize: '0.68rem', fontWeight: 700 }}>
+                                        <span style={{ width: 28, height: 1, background: 'var(--color-primary-border)' }} />
                                         <span style={{ whiteSpace: 'nowrap', margin: '4px 0' }}>{nights} ĐÊM</span>
-                                        <span style={{ width: 28, height: 1, background: '#FDA4AF' }} />
+                                        <span style={{ width: 28, height: 1, background: 'var(--color-primary-border)' }} />
                                     </div>
                                     <div style={{ minWidth: 0, textAlign: 'right' }}>
-                                        <span style={{ display: 'block', color: '#64748B', fontSize: '0.72rem', marginBottom: 4 }}>TRẢ PHÒNG</span>
-                                        <strong style={{ display: 'block', color: '#0F172A', fontSize: '0.9rem' }}>{checkOut}</strong>
+                                        <span style={{ display: 'block', color: 'var(--color-text-muted)', fontSize: '0.72rem', marginBottom: 4 }}>TRẢ PHÒNG</span>
+                                        <strong style={{ display: 'block', color: 'var(--color-text-primary)', fontSize: '0.9rem' }}>{checkOut}</strong>
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: '0.75rem', padding: '0.2rem 0.1rem 0' }}>
-                                    <span style={{ color: '#64748B' }}>Số lượng khách</span>
-                                    <strong style={{ color: '#1E293B' }}>{guests} khách <span style={{ color: '#94A3B8', fontWeight: 500 }}>/ tối đa {room.capacity}</span></strong>
+                                    <span style={{ color: 'var(--color-text-muted)' }}>Số lượng khách</span>
+                                    <strong style={{ color: 'var(--color-text-primary)' }}>{guests} khách <span style={{ color: 'var(--color-text-muted)', fontWeight: 500 }}>/ tối đa {room.capacity}</span></strong>
                                 </div>
                             </div>
 
-                            <h3 style={{ fontSize: '1.02rem', fontWeight: 750, margin: '0 0 0.8rem', color: '#0F172A' }}>Chi tiết thanh toán</h3>
+                            <h3 style={{ fontSize: '1.02rem', fontWeight: 750, margin: '0 0 0.8rem', color: 'var(--color-text-primary)' }}>Chi tiết thanh toán</h3>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.88rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748B' }}><span>Giá phòng · {nights} đêm</span><strong style={{ color: '#334155' }}>{formatVND(subtotal)}</strong></div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748B' }}><span>Phí dịch vụ</span><strong style={{ color: '#059669' }}>Miễn phí</strong></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-muted)' }}><span>Giá phòng · {nights} đêm</span><strong style={{ color: 'var(--color-text-secondary)' }}>{formatVND(subtotal)}</strong></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-muted)' }}><span>Phí dịch vụ</span><strong style={{ color: 'var(--color-success)' }}>Miễn phí</strong></div>
                                 {paymentMethod === 'cod' ? (
-                                    <div style={{ marginTop: 4, padding: '0.85rem 0.9rem', borderRadius: 12, background: 'linear-gradient(120deg, #FFFBEB, #FFF7ED)', border: '1px solid #FCD34D' }}>
+                                    <div style={{ marginTop: 4, padding: '0.85rem 0.9rem', borderRadius: 12, background: 'linear-gradient(120deg, var(--color-warning-bg), var(--color-primary-soft))', border: '1px solid var(--color-warning)' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                                            <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#92400E' }}>Cần đặt cọc ngay (30%)</span>
-                                            <strong style={{ fontSize: '1.12rem', color: '#E11D48', whiteSpace: 'nowrap' }}>{formatVND(depositAmount)}</strong>
+                                            <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--color-warning)' }}>Cần đặt cọc ngay (30%)</span>
+                                            <strong style={{ fontSize: '1.12rem', color: 'var(--color-primary)', whiteSpace: 'nowrap' }}>{formatVND(depositAmount)}</strong>
                                         </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: '0.78rem', color: '#92400E', marginTop: 7 }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: '0.78rem', color: 'var(--color-warning)', marginTop: 7 }}>
                                             <span>Còn lại khi nhận phòng (70%)</span><strong>{formatVND(remainingAtHotel)}</strong>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div style={{ marginTop: 4, padding: '0.85rem 0.9rem', borderRadius: 12, background: 'linear-gradient(120deg, #FFF1F2, #FFF7F8)', border: '1px solid #FECDD3' }}>
+                                    <div style={{ marginTop: 4, padding: '0.85rem 0.9rem', borderRadius: 12, background: 'linear-gradient(120deg, var(--color-primary-soft), var(--color-primary-soft))', border: '1px solid var(--color-primary-border)' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                                            <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#BE123C' }}>Tổng thanh toán</span>
-                                            <strong style={{ fontSize: '1.12rem', color: '#E11D48', whiteSpace: 'nowrap' }}>{formatVND(totalAmount)}</strong>
+                                            <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--color-danger)' }}>Tổng thanh toán</span>
+                                            <strong style={{ fontSize: '1.12rem', color: 'var(--color-primary)', whiteSpace: 'nowrap' }}>{formatVND(totalAmount)}</strong>
                                         </div>
                                     </div>
                                 )}

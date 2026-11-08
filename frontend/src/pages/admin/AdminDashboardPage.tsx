@@ -73,38 +73,38 @@ export default function AdminDashboardPage() {
       {/* Top Welcome Banner */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+          background: 'linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-text-primary) 100%)',
           borderRadius: 20,
           padding: '2rem 2.25rem',
-          color: '#FFFFFF',
+          color: 'var(--color-bg-surface)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '1.25rem',
-          boxShadow: '0 10px 30px rgba(15, 23, 42, 0.15)',
+          boxShadow: 'var(--shadow-lg)',
         }}
       >
         <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255, 56, 92, 0.2)', border: '1px solid rgba(255, 56, 92, 0.4)', borderRadius: 9999, padding: '0.2rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, color: '#FECDD3', marginBottom: '0.65rem' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255, 56, 92, 0.2)', border: '1px solid rgba(255, 56, 92, 0.4)', borderRadius: 9999, padding: '0.2rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-primary-border)', marginBottom: '0.65rem' }}>
             <ShieldCheck /> TRUNG TÂM ĐIỀU HÀNH &amp; GIÁM SÁT TOÀN SÀN
           </div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0 0 0.4rem', letterSpacing: '-0.02em', color: '#FFF' }}>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0 0 0.4rem', letterSpacing: '-0.02em', color: 'var(--color-bg-surface)' }}>
             Chào mừng trở lại, Quản trị viên! 🌿
           </h1>
-          <p style={{ margin: 0, color: '#94A3B8', fontSize: '0.92rem', maxWidth: 650, lineHeight: 1.5 }}>
+          <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.92rem', maxWidth: 650, lineHeight: 1.5 }}>
             Toàn bộ các chỉ số kinh doanh, giao dịch đặt phòng và hoạt động của người dùng đang được cập nhật liên tục theo thời gian thực.
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <Link to="/client" style={{ textDecoration: 'none' }}>
-            <Button variant="outline" size="sm" style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#FFFFFF', background: 'rgba(255,255,255,0.06)' }}>
+            <Button variant="outline" size="sm" style={{ borderColor: 'rgba(255,255,255,0.3)', color: 'var(--color-bg-surface)', background: 'rgba(255,255,255,0.06)' }}>
               <Globe /> Xem trang Khách
             </Button>
           </Link>
           <Link to="/admin/promotions" style={{ textDecoration: 'none' }}>
-            <Button variant="primary" size="sm" style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)' }}>
+            <Button variant="primary" size="sm" style={{ background: 'var(--gradient-primary)' }}>
               <TicketPerforatedFill /> Tạo mã giảm giá
             </Button>
           </Link>
@@ -154,46 +154,46 @@ export default function AdminDashboardPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem', fontWeight: 600 }}>
-                <span style={{ color: '#0F172A' }}>Hoàn tất kỳ lưu trú (COMPLETED)</span>
-                <span style={{ color: '#10B981' }}>{completedBookings.length} đơn ({bookings.length ? Math.round((completedBookings.length / bookings.length) * 100) : 0}%)</span>
+                <span style={{ color: 'var(--color-text-primary)' }}>Hoàn tất kỳ lưu trú (COMPLETED)</span>
+                <span style={{ color: 'var(--color-success)' }}>{completedBookings.length} đơn ({bookings.length ? Math.round((completedBookings.length / bookings.length) * 100) : 0}%)</span>
               </div>
-              <div style={{ height: 8, background: '#F1F5F9', borderRadius: 9999, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${bookings.length ? (completedBookings.length / bookings.length) * 100 : 0}%`, background: '#10B981', borderRadius: 9999 }} />
-              </div>
-            </div>
-
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem', fontWeight: 600 }}>
-                <span style={{ color: '#0F172A' }}>Đã xác nhận &amp; Đang ở (CONFIRMED / CHECKED_IN)</span>
-                <span style={{ color: '#0284C7' }}>{confirmedBookings.length} đơn</span>
-              </div>
-              <div style={{ height: 8, background: '#F1F5F9', borderRadius: 9999, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${bookings.length ? (confirmedBookings.length / bookings.length) * 100 : 0}%`, background: '#0284C7', borderRadius: 9999 }} />
+              <div style={{ height: 8, background: 'var(--color-bg-muted)', borderRadius: 9999, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${bookings.length ? (completedBookings.length / bookings.length) * 100 : 0}%`, background: 'var(--color-success)', borderRadius: 9999 }} />
               </div>
             </div>
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem', fontWeight: 600 }}>
-                <span style={{ color: '#0F172A' }}>Chờ chủ nhà duyệt (PENDING)</span>
-                <span style={{ color: '#D97706' }}>{pendingBookings.length} đơn</span>
+                <span style={{ color: 'var(--color-text-primary)' }}>Đã xác nhận &amp; Đang ở (CONFIRMED / CHECKED_IN)</span>
+                <span style={{ color: 'var(--color-info)' }}>{confirmedBookings.length} đơn</span>
               </div>
-              <div style={{ height: 8, background: '#F1F5F9', borderRadius: 9999, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${bookings.length ? (pendingBookings.length / bookings.length) * 100 : 0}%`, background: '#F59E0B', borderRadius: 9999 }} />
+              <div style={{ height: 8, background: 'var(--color-bg-muted)', borderRadius: 9999, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${bookings.length ? (confirmedBookings.length / bookings.length) * 100 : 0}%`, background: 'var(--color-info)', borderRadius: 9999 }} />
               </div>
             </div>
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem', fontWeight: 600 }}>
-                <span style={{ color: '#0F172A' }}>Đã hủy (CANCELLED)</span>
-                <span style={{ color: '#64748B' }}>{cancelledBookings.length} đơn</span>
+                <span style={{ color: 'var(--color-text-primary)' }}>Chờ chủ nhà duyệt (PENDING)</span>
+                <span style={{ color: 'var(--color-warning)' }}>{pendingBookings.length} đơn</span>
               </div>
-              <div style={{ height: 8, background: '#F1F5F9', borderRadius: 9999, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${bookings.length ? (cancelledBookings.length / bookings.length) * 100 : 0}%`, background: '#94A3B8', borderRadius: 9999 }} />
+              <div style={{ height: 8, background: 'var(--color-bg-muted)', borderRadius: 9999, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${bookings.length ? (pendingBookings.length / bookings.length) * 100 : 0}%`, background: 'var(--color-warning)', borderRadius: 9999 }} />
               </div>
             </div>
 
-            <div style={{ paddingTop: '0.5rem', borderTop: '1px solid #F1F5F9', display: 'flex', justifyContent: 'flex-end' }}>
-              <Link to="/admin/bookings" style={{ fontSize: '0.84rem', fontWeight: 700, color: '#FF385C', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem', fontWeight: 600 }}>
+                <span style={{ color: 'var(--color-text-primary)' }}>Đã hủy (CANCELLED)</span>
+                <span style={{ color: 'var(--color-text-muted)' }}>{cancelledBookings.length} đơn</span>
+              </div>
+              <div style={{ height: 8, background: 'var(--color-bg-muted)', borderRadius: 9999, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${bookings.length ? (cancelledBookings.length / bookings.length) * 100 : 0}%`, background: 'var(--color-text-muted)', borderRadius: 9999 }} />
+              </div>
+            </div>
+
+            <div style={{ paddingTop: '0.5rem', borderTop: '1px solid var(--color-bg-muted)', display: 'flex', justifyContent: 'flex-end' }}>
+              <Link to="/admin/bookings" style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--color-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <span>Quản lý toàn bộ đơn đặt</span>
                 <ArrowUpRight />
               </Link>
@@ -212,18 +212,18 @@ export default function AdminDashboardPage() {
                 gap: '0.35rem',
                 padding: '1rem',
                 borderRadius: 12,
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
+                background: 'var(--color-bg-app)',
+                border: '1px solid var(--color-border-subtle)',
                 textDecoration: 'none',
-                color: '#0F172A',
+                color: 'var(--color-text-primary)',
                 transition: 'all 0.2s ease',
               }}
             >
-              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#E0E7FF', color: '#4338CA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: 'var(--color-info-bg)', color: 'var(--color-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
                 <PeopleFill />
               </div>
               <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Người dùng &amp; RBAC</div>
-              <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Khóa/mở khóa &amp; phân quyền</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>Khóa/mở khóa &amp; phân quyền</div>
             </Link>
 
             <Link
@@ -234,18 +234,18 @@ export default function AdminDashboardPage() {
                 gap: '0.35rem',
                 padding: '1rem',
                 borderRadius: 12,
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
+                background: 'var(--color-bg-app)',
+                border: '1px solid var(--color-border-subtle)',
                 textDecoration: 'none',
-                color: '#0F172A',
+                color: 'var(--color-text-primary)',
                 transition: 'all 0.2s ease',
               }}
             >
-              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#DCFCE7', color: '#15803D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: 'var(--color-success-bg)', color: 'var(--color-success)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
                 <Building />
               </div>
               <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Chỗ ở &amp; Phòng</div>
-              <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Duyệt danh sách &amp; bảng giá</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>Duyệt danh sách &amp; bảng giá</div>
             </Link>
 
             <Link
@@ -256,18 +256,18 @@ export default function AdminDashboardPage() {
                 gap: '0.35rem',
                 padding: '1rem',
                 borderRadius: 12,
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
+                background: 'var(--color-bg-app)',
+                border: '1px solid var(--color-border-subtle)',
                 textDecoration: 'none',
-                color: '#0F172A',
+                color: 'var(--color-text-primary)',
                 transition: 'all 0.2s ease',
               }}
             >
-              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#FFE4E6', color: '#E11D48', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: 'var(--color-primary-border)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
                 <TicketPerforatedFill />
               </div>
               <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Mã giảm giá</div>
-              <div style={{ fontSize: '0.78rem', color: '#64748B' }}>{activePromoCount} mã đang kích hoạt</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{activePromoCount} mã đang kích hoạt</div>
             </Link>
 
             <Link
@@ -278,18 +278,18 @@ export default function AdminDashboardPage() {
                 gap: '0.35rem',
                 padding: '1rem',
                 borderRadius: 12,
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
+                background: 'var(--color-bg-app)',
+                border: '1px solid var(--color-border-subtle)',
                 textDecoration: 'none',
-                color: '#0F172A',
+                color: 'var(--color-text-primary)',
                 transition: 'all 0.2s ease',
               }}
             >
-              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#F1F5F9', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: 'var(--color-bg-muted)', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
                 <ClockHistory />
               </div>
               <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Nhật ký kiểm toán</div>
-              <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Lịch sử thao tác an toàn</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>Lịch sử thao tác an toàn</div>
             </Link>
           </div>
         </Card>
@@ -299,10 +299,10 @@ export default function AdminDashboardPage() {
       <Card
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: '#0F172A' }}>
+            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>
               Đơn đặt phòng mới nhất cần theo dõi
             </span>
-            <Link to="/admin/bookings" style={{ fontSize: '0.82rem', color: '#FF385C', fontWeight: 700, textDecoration: 'none' }}>
+            <Link to="/admin/bookings" style={{ fontSize: '0.82rem', color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}>
               Xem tất cả ({bookings.length}) →
             </Link>
           </div>
@@ -324,22 +324,22 @@ export default function AdminDashboardPage() {
             {bookings.slice(0, 5).map((b) => (
               <TableRow key={b.code}>
                 <TableCell>
-                  <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0F172A' }}>{b.code}</span>
+                  <span style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--color-text-primary)' }}>{b.code}</span>
                 </TableCell>
                 <TableCell>
                   <div style={{ fontWeight: 600 }}>{b.guestName}</div>
-                  <div style={{ fontSize: '0.78rem', color: '#64748B' }}>{b.guestPhone}</div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{b.guestPhone}</div>
                 </TableCell>
                 <TableCell>
-                  <div style={{ fontWeight: 600, color: '#0F172A' }}>{b.propertyName}</div>
-                  <div style={{ fontSize: '0.78rem', color: '#64748B' }}>{b.roomName}</div>
+                  <div style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{b.propertyName}</div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{b.roomName}</div>
                 </TableCell>
                 <TableCell>
                   <div style={{ fontSize: '0.85rem' }}>{b.checkIn} → {b.checkOut}</div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{b.nights} đêm · {b.guests} khách</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{b.nights} đêm · {b.guests} khách</div>
                 </TableCell>
                 <TableCell>
-                  <span style={{ fontWeight: 700, color: '#FF385C' }}>{formatVND(b.total)}</span>
+                  <span style={{ fontWeight: 700, color: 'var(--color-primary)' }}>{formatVND(b.total)}</span>
                 </TableCell>
                 <TableCell>{statusBadge(b.status)}</TableCell>
                 <TableCell align="right">
@@ -359,10 +359,10 @@ export default function AdminDashboardPage() {
       <Card
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: '#0F172A' }}>
+            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>
               Nhật ký kiểm toán &amp; can thiệp hệ thống (UC-10 / Audit Log)
             </span>
-            <Link to="/admin/audit-logs" style={{ fontSize: '0.82rem', color: '#FF385C', fontWeight: 700, textDecoration: 'none' }}>
+            <Link to="/admin/audit-logs" style={{ fontSize: '0.82rem', color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}>
               Xem toàn bộ log →
             </Link>
           </div>
@@ -378,8 +378,8 @@ export default function AdminDashboardPage() {
                 justifyContent: 'space-between',
                 padding: '0.75rem 1rem',
                 borderRadius: 10,
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
+                background: 'var(--color-bg-app)',
+                border: '1px solid var(--color-border-subtle)',
                 gap: '1rem',
                 flexWrap: 'wrap',
               }}
@@ -393,30 +393,30 @@ export default function AdminDashboardPage() {
                     fontWeight: 700,
                     background:
                       log.action === 'LOCK'
-                        ? '#FEE2E2'
+                        ? 'var(--color-danger-bg)'
                         : log.action === 'CHANGE_ROLE'
-                        ? '#E0E7FF'
+                        ? 'var(--color-info-bg)'
                         : log.action === 'CREATE_PROMO'
-                        ? '#FFE4E6'
-                        : '#DCFCE7',
+                        ? 'var(--color-primary-border)'
+                        : 'var(--color-success-bg)',
                     color:
                       log.action === 'LOCK'
-                        ? '#B91C1C'
+                        ? 'var(--color-danger)'
                         : log.action === 'CHANGE_ROLE'
-                        ? '#4338CA'
+                        ? 'var(--color-secondary)'
                         : log.action === 'CREATE_PROMO'
-                        ? '#BE123C'
-                        : '#15803D',
+                        ? 'var(--color-danger)'
+                        : 'var(--color-success)',
                   }}
                 >
                   {log.action}
                 </span>
                 <div>
-                  <span style={{ fontWeight: 700, color: '#0F172A', fontSize: '0.88rem' }}>{log.target}</span>: {log.details}
+                  <span style={{ fontWeight: 700, color: 'var(--color-text-primary)', fontSize: '0.88rem' }}>{log.target}</span>: {log.details}
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem', color: '#64748B' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
                 <span>Bởi: <strong>{log.performedBy}</strong></span>
                 <span>·</span>
                 <span>{log.timestamp}</span>

@@ -106,9 +106,9 @@ export function Header() {
                     aria-label="ODauDay Stay Trang chủ"
                     style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', textDecoration: 'none' }}
                 >
-                    <HouseDoorFill style={{ fontSize: '1.9rem', color: '#FF385C' }} />
-                    <span style={{ fontSize: '1.45rem', fontWeight: 800, color: '#FF385C', letterSpacing: '-0.03em' }}>
-            ODauDay <span style={{ fontWeight: 600, color: '#222222' }}>Stay</span>
+                    <HouseDoorFill style={{ fontSize: '1.9rem', color: 'var(--color-primary)' }} />
+                    <span style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--color-primary)', letterSpacing: '-0.03em' }}>
+            ODauDay <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>Stay</span>
           </span>
                 </Link>
 
@@ -127,27 +127,27 @@ export function Header() {
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    border: '1px solid #DDDDDD',
+                                    border: '1px solid var(--color-border-strong)',
                                     borderRadius: '9999px',
-                                    boxShadow: '0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05)',
+                                    boxShadow: 'var(--shadow-search)',
                                     padding: '0.45rem 0.65rem 0.45rem 1.25rem',
                                     cursor: 'pointer',
-                                    background: '#ffffff',
+                                    background: 'var(--color-bg-surface)',
                                 }}
                             >
-                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#222222', fontWeight: 600, fontSize: '0.88rem' }}>
-                  <HouseDoor style={{ fontSize: '1rem', color: '#FF385C' }} />
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-text-primary)', fontWeight: 600, fontSize: '0.88rem' }}>
+                  <HouseDoor style={{ fontSize: '1rem', color: 'var(--color-primary)' }} />
                   <span>Địa điểm bất kỳ</span>
                 </span>
-                                <span className="search-pill-divider" style={{ width: 1, height: 20, background: '#EBEBEB', margin: '0 0.85rem' }} />
-                                <span style={{ color: '#222222', fontSize: '0.88rem', fontWeight: 600 }}>Thời gian bất kỳ</span>
-                                <span className="search-pill-divider" style={{ width: 1, height: 20, background: '#EBEBEB', margin: '0 0.85rem' }} />
-                                <span style={{ color: '#717171', fontSize: '0.88rem' }}>Thêm khách</span>
+                                <span className="search-pill-divider" style={{ width: 1, height: 20, background: 'var(--color-border-subtle)', margin: '0 0.85rem' }} />
+                                <span style={{ color: 'var(--color-text-primary)', fontSize: '0.88rem', fontWeight: 600 }}>Thời gian bất kỳ</span>
+                                <span className="search-pill-divider" style={{ width: 1, height: 20, background: 'var(--color-border-subtle)', margin: '0 0.85rem' }} />
+                                <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.88rem' }}>Thêm khách</span>
                                 <button
                                     type="button"
                                     style={{
-                                        background: '#FF385C',
-                                        color: '#ffffff',
+                                        background: 'var(--color-primary)',
+                                        color: 'var(--color-text-inverse)',
                                         border: 'none',
                                         borderRadius: '50%',
                                         width: 34,
@@ -178,9 +178,9 @@ export function Header() {
                                         gap: '0.45rem',
                                         fontSize: '0.95rem',
                                         fontWeight: activeTab === 'all' ? 700 : 500,
-                                        color: activeTab === 'all' ? '#222222' : '#717171',
+                                        color: activeTab === 'all' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
                                         padding: '0.5rem 0',
-                                        borderBottom: activeTab === 'all' ? '2px solid #222222' : '2px solid transparent',
+                                        borderBottom: activeTab === 'all' ? '2px solid var(--color-text-primary)' : '2px solid transparent',
                                         cursor: 'pointer',
                                     }}
                                 >
@@ -199,9 +199,9 @@ export function Header() {
                                         gap: '0.45rem',
                                         fontSize: '0.95rem',
                                         fontWeight: activeTab === 'stays' ? 700 : 500,
-                                        color: activeTab === 'stays' ? '#222222' : '#717171',
+                                        color: activeTab === 'stays' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
                                         padding: '0.5rem 0',
-                                        borderBottom: activeTab === 'stays' ? '2px solid #222222' : '2px solid transparent',
+                                        borderBottom: activeTab === 'stays' ? '2px solid var(--color-text-primary)' : '2px solid transparent',
                                         cursor: 'pointer',
                                     }}
                                 >
@@ -220,9 +220,9 @@ export function Header() {
                                         gap: '0.45rem',
                                         fontSize: '0.95rem',
                                         fontWeight: activeTab === 'experiences' ? 700 : 500,
-                                        color: activeTab === 'experiences' ? '#222222' : '#717171',
+                                        color: activeTab === 'experiences' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
                                         padding: '0.5rem 0',
-                                        borderBottom: activeTab === 'experiences' ? '2px solid #222222' : '2px solid transparent',
+                                        borderBottom: activeTab === 'experiences' ? '2px solid var(--color-text-primary)' : '2px solid transparent',
                                         cursor: 'pointer',
                                     }}
                                 >
@@ -241,9 +241,9 @@ export function Header() {
                                         gap: '0.45rem',
                                         fontSize: '0.95rem',
                                         fontWeight: activeTab === 'services' ? 700 : 500,
-                                        color: activeTab === 'services' ? '#222222' : '#717171',
+                                        color: activeTab === 'services' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
                                         padding: '0.5rem 0',
-                                        borderBottom: activeTab === 'services' ? '2px solid #222222' : '2px solid transparent',
+                                        borderBottom: activeTab === 'services' ? '2px solid var(--color-text-primary)' : '2px solid transparent',
                                         cursor: 'pointer',
                                     }}
                                 >
@@ -267,16 +267,16 @@ export function Header() {
                                 gap: '0.4rem',
                                 fontWeight: 700,
                                 fontSize: '0.85rem',
-                                color: '#FFFFFF',
-                                background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+                                color: 'var(--color-text-inverse)',
+                                background: 'linear-gradient(135deg, var(--color-secondary-hover) 0%, var(--color-secondary) 100%)',
                                 padding: '0.5rem 0.95rem',
                                 borderRadius: '9999px',
                                 textDecoration: 'none',
-                                border: '1px solid #334155',
-                                boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                                border: '1px solid var(--color-border-strong)',
+                                boxShadow: 'var(--shadow-sm)',
                             }}
                         >
-                            <Speedometer2 style={{ color: '#FF385C' }} />
+                            <Speedometer2 style={{ color: 'var(--color-primary)' }} />
                             <span>Vào Quản trị</span>
                         </Link>
                     ) : (
@@ -286,7 +286,7 @@ export function Header() {
                             style={{
                                 fontWeight: 600,
                                 fontSize: '0.88rem',
-                                color: '#222222',
+                                color: 'var(--color-text-primary)',
                                 padding: '0.65rem 1rem',
                                 borderRadius: '9999px',
                                 textDecoration: 'none',
@@ -314,7 +314,7 @@ export function Header() {
                             cursor: 'pointer',
                         }}
                     >
-                        <Globe style={{ fontSize: '1.05rem', color: '#222' }} />
+                        <Globe style={{ fontSize: '1.05rem', color: 'var(--color-text-primary)' }} />
                     </button>
 
                     {/* User Profile Pill */}
@@ -329,22 +329,22 @@ export function Header() {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '0.75rem',
-                            border: '1px solid #DDDDDD',
+                            border: '1px solid var(--color-border-strong)',
                             borderRadius: '9999px',
                             padding: '0.35rem 0.6rem 0.35rem 0.85rem',
                             cursor: 'pointer',
-                            background: '#ffffff',
+                            background: 'var(--color-bg-surface)',
                             transition: 'box-shadow 0.2s',
                         }}
                     >
-                        <List style={{ fontSize: '1.15rem', color: '#222' }} />
+                        <List style={{ fontSize: '1.15rem', color: 'var(--color-text-primary)' }} />
                         <div
                             style={{
                                 width: 30,
                                 height: 30,
                                 borderRadius: '50%',
-                                background: '#717171',
-                                color: '#ffffff',
+                                background: 'var(--color-text-muted)',
+                                color: 'var(--color-text-inverse)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -364,10 +364,10 @@ export function Header() {
                                 right: 0,
                                 top: '52px',
                                 width: '240px',
-                                backgroundColor: '#ffffff',
+                                backgroundColor: 'var(--color-bg-surface)',
                                 borderRadius: '12px',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                                border: '1px solid #E2E8F0',
+                                boxShadow: 'var(--shadow-dropdown)',
+                                border: '1px solid var(--color-border-subtle)',
                                 padding: '8px 0',
                                 zIndex: 1000,
                             }}
@@ -390,7 +390,7 @@ export function Header() {
                                         to="/my-bookings"
                                         className="dropdown-item bold"
                                         onClick={() => setMenuOpen(false)}
-                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
                                     >
                                         <BagCheck /> Chuyến đi của tôi
                                     </Link>
@@ -399,25 +399,25 @@ export function Header() {
                                         to="/search"
                                         className="dropdown-item"
                                         onClick={() => setMenuOpen(false)}
-                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
                                     >
-                                        <HeartFill style={{ color: '#FF385C' }} /> Danh sách yêu thích
+                                        <HeartFill style={{ color: 'var(--color-primary)' }} /> Danh sách yêu thích
                                     </Link>
 
                                     {currentUser.role === ROLES.HOST && (
                                         <>
-                                            <div className="dropdown-divider" style={{ height: 1, background: '#E2E8F0', margin: '4px 0' }} />
-                                            <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: '#64748B' }}>Khu vực Chủ nhà</div>
-                                            <Link to="/host/properties" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
+                                            <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
+                                            <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)' }}>Khu vực Chủ nhà</div>
+                                            <Link to="/host/properties" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
                                                 <Building /> Chỗ ở của tôi
                                             </Link>
-                                            <Link to="/host/rooms" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
+                                            <Link to="/host/rooms" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
                                                 <DoorOpen /> Hạng phòng & Lịch chặn
                                             </Link>
-                                            <Link to="/host/bookings" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
+                                            <Link to="/host/bookings" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
                                                 <CalendarCheck /> Quản lý đơn
                                             </Link>
-                                            <Link to="/host/revenue" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
+                                            <Link to="/host/revenue" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
                                                 <GraphUpArrow /> Doanh thu
                                             </Link>
                                         </>
@@ -425,27 +425,27 @@ export function Header() {
 
                                     {currentUser.role === ROLES.ADMIN && (
                                         <>
-                                            <div className="dropdown-divider" style={{ height: 1, background: '#E2E8F0', margin: '4px 0' }} />
-                                            <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: '#64748B' }}>Quản trị viên</div>
-                                            <Link to="/admin" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#FF385C', fontWeight: 700 }}>
+                                            <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
+                                            <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)' }}>Quản trị viên</div>
+                                            <Link to="/admin" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-primary)', fontWeight: 700 }}>
                                                 <Speedometer2 /> Bảng điều khiển Quản trị
                                             </Link>
-                                            <Link to="/admin/users" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
+                                            <Link to="/admin/users" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
                                                 <PeopleFill /> Quản lý tài khoản & RBAC
                                             </Link>
-                                            <Link to="/admin/properties" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
+                                            <Link to="/admin/properties" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
                                                 <Building /> Quản lý chỗ ở toàn sàn
                                             </Link>
-                                            <Link to="/admin/bookings" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
+                                            <Link to="/admin/bookings" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
                                                 <CalendarCheck /> Quản lý đơn đặt phòng
                                             </Link>
                                         </>
                                     )}
 
-                                    <div className="dropdown-divider" style={{ height: 1, background: '#E2E8F0', margin: '4px 0' }} />
+                                    <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
 
                                     {/* Dev / Tester Quick Role Switcher */}
-                                    <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: '#64748B' }}>Chuyển vai trò thử nghiệm</div>
+                                    <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)' }}>Chuyển vai trò thử nghiệm</div>
                                     <div style={{ display: 'flex', gap: '0.25rem', padding: '0.25rem 1rem 0.5rem', flexWrap: 'wrap' }}>
                                         <button
                                             type="button"
@@ -473,17 +473,17 @@ export function Header() {
                                         type="button"
                                         className="dropdown-item"
                                         onClick={handleResetData}
-                                        style={{ fontSize: '0.8rem', color: 'var(--ink-secondary)', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                        style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
                                     >
                                         <ArrowCounterclockwise /> Khôi phục CSDL mẫu
                                     </button>
 
-                                    <div className="dropdown-divider" style={{ height: 1, background: '#E2E8F0', margin: '4px 0' }} />
+                                    <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
                                     <button
                                         type="button"
                                         className="dropdown-item"
                                         onClick={handleOpenLogout}
-                                        style={{ color: '#EF4444', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}
+                                        style={{ color: 'var(--color-danger)', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}
                                     >
                                         <BoxArrowRight /> Đăng xuất
                                     </button>
@@ -494,7 +494,7 @@ export function Header() {
                                         to="/login"
                                         className="dropdown-item bold"
                                         onClick={() => setMenuOpen(false)}
-                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222', fontWeight: 700 }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)', fontWeight: 700 }}
                                     >
                                         <BoxArrowInRight /> Đăng nhập
                                     </Link>
@@ -502,24 +502,24 @@ export function Header() {
                                         to="/register"
                                         className="dropdown-item"
                                         onClick={() => setMenuOpen(false)}
-                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
                                     >
                                         Đăng ký
                                     </Link>
-                                    <div className="dropdown-divider" style={{ height: 1, background: '#E2E8F0', margin: '4px 0' }} />
+                                    <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
                                     <Link
                                         to="/register"
                                         className="dropdown-item"
                                         onClick={() => setMenuOpen(false)}
-                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
                                     >
                                         Cho thuê chỗ ở qua ODauDay
                                     </Link>
-                                    <a href="#help" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
+                                    <a href="#help" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
                                         Trung tâm trợ giúp
                                     </a>
-                                    <div className="dropdown-divider" style={{ height: 1, background: '#E2E8F0', margin: '4px 0' }} />
-                                    <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: '#64748B' }}>Đăng nhập nhanh thử nghiệm</div>
+                                    <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
+                                    <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)' }}>Đăng nhập nhanh thử nghiệm</div>
                                     <div style={{ display: 'flex', gap: '0.25rem', padding: '0.25rem 1rem 0.5rem', flexWrap: 'wrap' }}>
                                         <button
                                             type="button"
@@ -571,14 +571,14 @@ export function Header() {
                             style={{
                                 fontSize: '1.4rem',
                                 fontWeight: 800,
-                                color: '#0F172A',
+                                color: 'var(--color-text-primary)',
                                 margin: '0 0 0.5rem',
                                 letterSpacing: '-0.02em',
                             }}
                         >
                             Tạm biệt bạn nhé! 🌿
                         </h2>
-                        <p style={{ margin: 0, color: '#64748B', fontSize: '0.92rem', lineHeight: 1.5 }}>
+                        <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.92rem', lineHeight: 1.5 }}>
                             Bạn có chắc chắn muốn đăng xuất khỏi thiết bị này không?
                         </p>
 
@@ -589,8 +589,8 @@ export function Header() {
                                     width: 44,
                                     height: 44,
                                     borderRadius: '50%',
-                                    background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)',
-                                    color: '#FFFFFF',
+                                    background: 'var(--gradient-primary)',
+                                    color: 'var(--color-text-inverse)',
                                     fontWeight: 700,
                                     fontSize: '1.1rem',
                                     display: 'flex',
@@ -602,10 +602,10 @@ export function Header() {
                                 {(currentUser?.fullName || currentUser?.username || 'U').charAt(0).toUpperCase()}
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontWeight: 700, fontSize: '0.92rem', color: '#0F172A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                     {currentUser?.fullName || currentUser?.username}
                                 </div>
-                                <div style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                                <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
                                     {currentUser?.role === 'HOST'
                                         ? '🏡 Đối tác Chủ nhà'
                                         : currentUser?.role === 'ADMIN'
@@ -618,9 +618,9 @@ export function Header() {
                         <div
                             style={{
                                 fontSize: '0.8rem',
-                                color: '#10B981',
-                                background: '#ECFDF5',
-                                border: '1px solid #A7F3D0',
+                                color: 'var(--color-success)',
+                                background: 'var(--color-success-bg)',
+                                border: '1px solid var(--color-success-border)',
                                 borderRadius: '10px',
                                 padding: '0.55rem 0.75rem',
                                 display: 'flex',
@@ -659,12 +659,12 @@ export function Header() {
 // ── Footer (ODauDay Stay + Airbnb Clean 4-Column Layout) ────────────────────
 export function Footer() {
     return (
-        <footer className="site-footer" style={{ borderTop: '1px solid #EBEBEB', background: '#F7F7F7', padding: '3rem 2.5rem 1.5rem', marginTop: 'auto' }}>
+        <footer className="site-footer" style={{ borderTop: '1px solid var(--color-border-subtle)', background: 'var(--color-bg-app)', padding: '3rem 2.5rem 1.5rem', marginTop: 'auto' }}>
             <div style={{ maxWidth: 1760, margin: '0 auto' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem', borderBottom: '1px solid #DDDDDD', paddingBottom: '2.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem', borderBottom: '1px solid var(--color-border-subtle)', paddingBottom: '2.5rem' }}>
                     <div>
-                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: '#222' }}>Hỗ trợ</p>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: '#222' }}>
+                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: 'var(--color-text-primary)' }}>Hỗ trợ</p>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
                             <li><a href="#help">Trung tâm trợ giúp</a></li>
                             <li><a href="#aircover">Bảo đảm ODauDay Cover</a></li>
                             <li><a href="#antidiscrimination">Chống phân biệt đối xử</a></li>
@@ -675,8 +675,8 @@ export function Footer() {
                     </div>
 
                     <div>
-                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: '#222' }}>Đón tiếp khách</p>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: '#222' }}>
+                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: 'var(--color-text-primary)' }}>Đón tiếp khách</p>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
                             <li><Link to="/register">Cho thuê chỗ ở trên ODauDay</Link></li>
                             <li><Link to="/host/properties">Bảo vệ cho Chủ nhà</Link></li>
                             <li><a href="#host-resources">Tài nguyên về đón tiếp khách</a></li>
@@ -686,8 +686,8 @@ export function Footer() {
                     </div>
 
                     <div>
-                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: '#222' }}>ODauDay Stay</p>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: '#222' }}>
+                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: 'var(--color-text-primary)' }}>ODauDay Stay</p>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
                             <li><a href="#newsroom">Trang tin tức &amp; Xu hướng</a></li>
                             <li><a href="#new-features">Tính năng mới</a></li>
                             <li><a href="#careers">Cơ hội nghề nghiệp</a></li>
@@ -697,8 +697,8 @@ export function Footer() {
                     </div>
 
                     <div>
-                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: '#222' }}>Điều khoản &amp; Chính sách</p>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: '#222' }}>
+                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: 'var(--color-text-primary)' }}>Điều khoản &amp; Chính sách</p>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
                             <li><a href="#privacy">Chính sách quyền riêng tư</a></li>
                             <li><a href="#terms">Điều khoản dịch vụ</a></li>
                             <li><a href="#sitemap">Sơ đồ trang web</a></li>
@@ -707,7 +707,7 @@ export function Footer() {
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.5rem', flexWrap: 'wrap', gap: '1rem', fontSize: '0.88rem', color: '#222' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.5rem', flexWrap: 'wrap', gap: '1rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                         <span>© 2026 ODauDay Stay, Inc.</span>
                         <span>·</span>
