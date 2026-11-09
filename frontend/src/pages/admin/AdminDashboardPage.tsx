@@ -150,7 +150,7 @@ export default function AdminDashboardPage() {
       {/* Middle Grid: Booking Lifecycle Progress & Quick Shortcuts */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.5rem' }}>
         {/* Booking Distribution */}
-        <Card title="Tiến trình & Vòng đời Đơn đặt phòng (UC-03 / UC-08)">
+        <Card title="Tiến trình & Vòng đời Đơn đặt phòng">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem', fontWeight: 600 }}>
@@ -288,7 +288,7 @@ export default function AdminDashboardPage() {
               <div style={{ width: 34, height: 34, borderRadius: 8, background: 'var(--color-bg-muted)', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
                 <ClockHistory />
               </div>
-              <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Nhật ký kiểm toán</div>
+              <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Nhật ký hoạt động</div>
               <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>Lịch sử thao tác an toàn</div>
             </Link>
           </div>
@@ -360,7 +360,7 @@ export default function AdminDashboardPage() {
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>
-              Nhật ký kiểm toán &amp; can thiệp hệ thống (UC-10 / Audit Log)
+              Nhật ký hoạt động &amp; can thiệp hệ thống
             </span>
             <Link to="/admin/audit-logs" style={{ fontSize: '0.82rem', color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}>
               Xem toàn bộ log →

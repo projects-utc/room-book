@@ -77,7 +77,7 @@ export default function AdminAuditLogsPage() {
       {/* Page Header */}
       <div>
         <h1 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
-          Nhật ký Kiểm toán &amp; Giám sát Hệ thống (UC-10 / Audit Trail)
+          Nhật ký Hoạt động &amp; Giám sát Hệ thống
         </h1>
         <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.92rem' }}>
           Lưu trữ toàn bộ các thao tác nhạy cảm, quyền hạn quản trị và can thiệp nghiệp vụ để đảm bảo tính minh bạch, tuân thủ an toàn dữ liệu.
@@ -87,7 +87,7 @@ export default function AdminAuditLogsPage() {
       {/* 4 Stat Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
         <StatCard
-          label="Tổng bản ghi kiểm toán"
+          label="Tổng nhật ký ghi nhận"
           value={`${logs.length} sự kiện`}
           description="Được ghi nhận tự động vào cơ sở dữ liệu"
           variant="highlight"
@@ -117,7 +117,7 @@ export default function AdminAuditLogsPage() {
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
             <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>
-              Danh sách sự kiện kiểm toán ({filtered.length} kết quả)
+              Danh sách nhật ký hoạt động ({filtered.length} kết quả)
             </span>
           </div>
         }
@@ -137,7 +137,7 @@ export default function AdminAuditLogsPage() {
               { value: 'ALL', label: 'Tất cả hành động' },
               { value: 'LOCK', label: 'Khóa tài khoản' },
               { value: 'UNLOCK', label: 'Mở khóa tài khoản' },
-              { value: 'CHANGE_ROLE', label: 'Đổi vai trò RBAC' },
+              { value: 'CHANGE_ROLE', label: 'Đổi vai trò' },
               { value: 'CANCEL_BOOKING', label: 'Can thiệp hủy đơn' },
               { value: 'TOGGLE_PROPERTY', label: 'Khóa/Mở chỗ ở' },
               { value: 'CREATE_PROMO', label: 'Tạo mã giảm giá' },
@@ -147,7 +147,7 @@ export default function AdminAuditLogsPage() {
 
         {filtered.length === 0 ? (
           <EmptyState
-            title="Không tìm thấy bản ghi kiểm toán nào"
+            title="Không tìm thấy bản ghi hoạt động nào"
             description="Hãy thử thay đổi từ khóa tìm kiếm hoặc bỏ bớt các bộ lọc hành động."
           />
         ) : (

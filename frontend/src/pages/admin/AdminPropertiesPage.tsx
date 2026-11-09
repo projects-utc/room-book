@@ -112,7 +112,7 @@ export default function AdminPropertiesPage() {
       {/* Header */}
       <div>
         <h1 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
-          Quản lý Chỗ ở &amp; Homestay toàn sàn (UC-06 / Properties)
+          Quản lý Chỗ ở &amp; Homestay toàn sàn
         </h1>
         <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.92rem' }}>
           Kiểm duyệt, quản lý hiển thị, giá niêm yết và trạng thái hoạt động của toàn bộ cơ sở lưu trú trên nền tảng.

@@ -667,8 +667,8 @@ export function DatePicker({
               <button
                   type="button"
                   onClick={handleClear}
-                  title="Xóa ngày đã chọn"
-                  aria-label="Xóa ngày"
+                  title="Chọn lại ngày"
+                  aria-label="Chọn lại ngày"
                   style={{
                     background: 'transparent',
                     border: 'none',
@@ -918,7 +918,7 @@ export function DateRangePicker({
               ? `Đã chọn: ${nightsCount} đêm lưu trú`
               : value.start
                   ? 'Vui lòng chọn ngày trả phòng'
-                  : 'Chọn ngày bắt đầu chuyến đi'}
+                  : 'Vui lòng chọn ngày nhận phòng'}
         </span>
 
           {(value.start || value.end) && (
@@ -936,7 +936,7 @@ export function DateRangePicker({
                     padding: 0,
                   }}
               >
-                Đặt lại
+                Chọn lại ngày
               </button>
           )}
         </div>
@@ -1051,36 +1051,36 @@ export function DateRangePicker({
           </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.88rem' }}>
               {!value.start && !value.end ? (
-                  <span style={{ color: 'var(--color-text-secondary)', fontWeight: 400 }}>Thêm ngày</span>
+                <span style={{ color: 'var(--color-text-secondary)', fontWeight: 400 }}>Chọn ngày</span>
               ) : value.start && !value.end ? (
-                  <>
-                    <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatDisplayDateVN(value.start)}</span>
-                    <span style={{ color: 'var(--color-text-disabled)', fontSize: '0.8rem' }}>→</span>
-                    <span style={{ color: 'var(--color-text-secondary)' }}>Thêm ngày trả</span>
-                  </>
+                <>
+                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatDisplayDateVN(value.start)}</span>
+                  <span style={{ color: 'var(--color-text-disabled)', fontSize: '0.8rem' }}>→</span>
+                  <span style={{ color: 'var(--color-text-secondary)' }}>Chọn ngày trả phòng</span>
+                </>
               ) : !value.start && value.end ? (
-                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatDisplayDateVN(value.end)}</span>
+                <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatDisplayDateVN(value.end)}</span>
               ) : (
-                  <>
-                    <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatDisplayDateVN(value.start)}</span>
-                    <span style={{ color: 'var(--color-text-disabled)', fontSize: '0.8rem' }}>→</span>
-                    <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatDisplayDateVN(value.end)}</span>
-                    {nightsCount > 0 && (
-                        <span
-                            style={{
-                              background: 'var(--color-primary-soft)',
-                              color: 'var(--color-primary)',
-                              padding: '1px 6px',
-                              borderRadius: 9999,
-                              fontSize: '0.75rem',
-                              fontWeight: 700,
-                              marginLeft: '0.2rem',
-                            }}
-                        >
-                    {nightsCount} đêm
-                  </span>
-                    )}
-                  </>
+                <>
+                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatDisplayDateVN(value.start)}</span>
+                  <span style={{ color: 'var(--color-text-disabled)', fontSize: '0.8rem' }}>→</span>
+                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{formatDisplayDateVN(value.end)}</span>
+                  {nightsCount > 0 && (
+                    <span
+                      style={{
+                        background: 'var(--color-primary-soft)',
+                        color: 'var(--color-primary)',
+                        padding: '1px 6px',
+                        borderRadius: 9999,
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        marginLeft: '0.2rem',
+                      }}
+                    >
+                      {nightsCount} đêm
+                    </span>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -1132,7 +1132,7 @@ export function DateRangePicker({
             <span>
             {value.start && value.end
                 ? `${formatDisplayDateVN(value.start)} → ${formatDisplayDateVN(value.end)}`
-                : 'Thời gian bất kỳ'}
+                : 'Chọn ngày'}
           </span>
             {nightsCount > 0 && (
                 <span
@@ -1145,7 +1145,7 @@ export function DateRangePicker({
                       fontWeight: 700,
                     }}
                 >
-              {nightsCount}đ
+              {nightsCount} đêm
             </span>
             )}
           </div>
@@ -1241,8 +1241,8 @@ export function DateRangePicker({
               <button
                   type="button"
                   onClick={handleClear}
-                  title="Xóa khoảng ngày"
-                  aria-label="Xóa khoảng ngày"
+                  title="Chọn lại ngày"
+                  aria-label="Chọn lại ngày"
                   style={{
                     background: 'transparent',
                     border: 'none',

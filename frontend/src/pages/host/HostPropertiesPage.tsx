@@ -99,7 +99,7 @@ export default function HostPropertiesPage() {
           icon={<PlusLg />}
           onClick={() => setShowAddModal(true)}
         >
-          Đăng ký cơ sở mới
+          Thêm chỗ ở mới
         </Button>
       </div>
 
@@ -130,7 +130,7 @@ export default function HostPropertiesPage() {
       <Modal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
-        title="Đăng ký cơ sở lưu trú mới"
+        title="Thêm chỗ ở mới"
         subtitle="Thêm chỗ ở homestay hoặc biệt thự vào danh sách quản lý của bạn"
         size="lg"
       >
@@ -232,7 +232,7 @@ export default function HostPropertiesPage() {
             <span>Danh sách cơ sở lưu trú ({properties.length})</span>
           </div>
         }
-        headerRight={<Badge variant="active"><ShieldCheck /> Xác thực chủ quyền</Badge>}
+        headerRight={<Badge variant="active"><ShieldCheck /> Chủ sở hữu</Badge>}
       >
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0" style={{ width: '100%' }}>
@@ -240,7 +240,7 @@ export default function HostPropertiesPage() {
               <tr>
                 <th style={{ padding: '0.85rem 1rem' }}>Cơ sở lưu trú</th>
                 <th style={{ padding: '0.85rem 1rem' }}>Loại hình</th>
-                <th style={{ padding: '0.85rem 1rem' }}>Địa chỉ tọa lạc</th>
+                <th style={{ padding: '0.85rem 1rem' }}>Địa chỉ</th>
                 <th style={{ padding: '0.85rem 1rem' }}>Giá từ</th>
                 <th style={{ padding: '0.85rem 1rem' }}>Trạng thái</th>
                 <th style={{ textAlign: 'right', padding: '0.85rem 1rem' }}>Thao tác</th>

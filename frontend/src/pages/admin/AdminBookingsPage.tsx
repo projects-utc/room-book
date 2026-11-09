@@ -138,7 +138,7 @@ export default function AdminBookingsPage() {
       {/* Page Title */}
       <div>
         <h1 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
-          Quản lý Toàn bộ Đơn đặt phòng (UC-03 / UC-08 / Bookings)
+          Quản lý Đơn đặt phòng toàn sàn
         </h1>
         <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.92rem' }}>
           Theo dõi vòng đời kỳ nghỉ, kiểm soát dòng tiền giao dịch và xử lý các tranh chấp, khiếu nại phát sinh giữa khách và chủ nhà.
@@ -156,7 +156,7 @@ export default function AdminBookingsPage() {
         <StatCard
             label="Đơn đã hoàn tất"
             value={`${completedCount} đơn`}
-            description="Kỳ lưu trú kết thúc (Đã thu phí sàn)"
+            description="Khách đã trả phòng và hoàn tất thanh toán"
             trendDirection="up"
         />
         <StatCard
@@ -392,7 +392,7 @@ export default function AdminBookingsPage() {
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{ background: 'var(--color-danger-bg)', border: '1px solid var(--color-danger-border)', padding: '0.85rem 1rem', borderRadius: 10, color: 'var(--color-danger)', fontSize: '0.88rem', lineHeight: 1.45 }}>
-              <strong>Lưu ý:</strong> Thao tác này sẽ hủy đơn ngay lập tức, giải phóng phòng và được ghi lại trong <strong>Nhật ký kiểm toán hệ thống (Audit Log)</strong>.
+              <strong>Lưu ý:</strong> Thao tác này sẽ hủy đơn ngay lập tức, giải phóng phòng và được ghi lại trong <strong>Nhật ký hoạt động hệ thống</strong>.
             </div>
 
             <InputField

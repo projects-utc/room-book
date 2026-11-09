@@ -45,7 +45,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     {
       group: 'GIÁM SÁT & BẢO MẬT',
       items: [
-        { path: '/admin/audit-logs', label: 'Nhật ký kiểm toán', icon: <JournalText /> },
+        { path: '/admin/audit-logs', label: 'Nhật ký hoạt động', icon: <JournalText /> },
       ],
     },
   ];
@@ -309,7 +309,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   : location.pathname.includes('/promotions')
                   ? 'Mã giảm giá & Voucher'
                   : location.pathname.includes('/audit-logs')
-                  ? 'Nhật ký kiểm toán'
+                  ? 'Nhật ký hoạt động'
                   : 'Quản trị'}
               </span>
             </div>

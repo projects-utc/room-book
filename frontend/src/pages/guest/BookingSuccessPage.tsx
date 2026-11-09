@@ -155,7 +155,7 @@ export default function BookingSuccessPage() {
                         marginBottom: '0.75rem',
                     }}
                 >
-                    Xem những đơn đã đặt
+                    Xem đơn đặt phòng của tôi
                 </button>
 
                 <button

@@ -107,7 +107,7 @@ export default function AdminPromotionsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
-            Quản lý Mã giảm giá &amp; Voucher Khuyến mại (UC-07 / Promotions)
+            Quản lý Mã giảm giá &amp; Voucher Khuyến mại
           </h1>
           <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.92rem' }}>
             Tạo lập các chiến dịch kích cầu du lịch, phân bổ ngân sách giảm giá và kiểm soát lượt sử dụng đồng thời.

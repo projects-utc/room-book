@@ -60,7 +60,7 @@ export default function HostRevenuePage() {
             Báo cáo doanh thu &amp; Thống kê lưu trú
           </h1>
           <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
-            Dòng tiền chỉ được tổng hợp từ các đơn đặt phòng đã hoàn tất kỳ lưu trú thực tế (<code>COMPLETED</code>) theo quy tắc kế toán BR-08.
+            Doanh thu được tổng hợp từ các đơn đặt phòng đã hoàn tất kỳ lưu trú thực tế.
           </p>
         </div>
         <Button variant="outline" icon={<FileEarmarkSpreadsheet />} onClick={handleExportCSV}>
@@ -126,9 +126,9 @@ export default function HostRevenuePage() {
           icon={<CheckCircle />}
         />
         <StatCard
-          label="Đơn loại trừ không tính (TC-14)"
+          label="Đơn chưa tính doanh thu"
           value={`${cancelledBookings.length + pendingBookings.length} đơn`}
-          sublabel="Bao gồm đơn đã hủy & đơn chờ duyệt"
+          sublabel="Bao gồm đơn đã hủy & đơn chờ xác nhận"
           accent="warn"
           icon={<ExclamationCircle />}
         />
@@ -136,7 +136,7 @@ export default function HostRevenuePage() {
 
       {/* Completed Bookings Revenue Table Card */}
       <Card
-        title="Chi tiết danh sách đơn được ghi nhận vào doanh thu (BR-08)"
+        title="Danh sách đơn đã ghi nhận doanh thu"
         headerRight={
           <Badge variant="success" dot icon={<DoorClosed />}>
             COMPLETED
