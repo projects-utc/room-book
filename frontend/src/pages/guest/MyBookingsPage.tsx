@@ -30,15 +30,57 @@ export default function MyBookingsPage() {
   const [activeTab, setActiveTab] = useState<'UPCOMING' | 'COMPLETED' | 'CANCELLED' | 'ALL'>('UPCOMING');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [myBookings, setMyBookings] = useState<Booking[]>(() => store.getMyBookings(username));
+  // Tập hợp các mã đơn đã có đánh giá (từ local store + API)
+  const [reviewedCodes, setReviewedCodes] = useState<Set<string>>(() => {
+    const set = new Set<string>();
+    store.getAllReviews().forEach(r => {
+      if (r.bookingCode) set.add(r.bookingCode);
+    });
+    return set;
+  });
+
+  const normalizeBookingList = (list: Booking[], extraReviewedCodes?: Set<string>): Booking[] => {
+    return list.map(b => {
+      const isRev = Boolean(
+        b.isReviewed === true ||
+        (b as any).is_reviewed === true ||
+        (b as any).is_reviewed === 1 ||
+        store.isBookingReviewed(b.code) ||
+        (extraReviewedCodes && extraReviewedCodes.has(b.code)) ||
+        reviewedCodes.has(b.code)
+      );
+      return {
+        ...b,
+        isReviewed: isRev,
+        is_reviewed: isRev,
+      };
+    });
+  };
+
+  const [myBookings, setMyBookings] = useState<Booking[]>(() => {
+    return normalizeBookingList(store.getMyBookings(username));
+  });
 
   useEffect(() => {
+    // 1. Tải danh sách đánh giá từ backend để đồng bộ chính xác các đơn đã đánh giá
+    stayApi.getReviews().then(res => {
+      if (res.success && Array.isArray(res.data)) {
+        const set = new Set<string>(reviewedCodes);
+        res.data.forEach(r => {
+          if (r.bookingCode) set.add(r.bookingCode);
+        });
+        setReviewedCodes(set);
+        setMyBookings(prev => normalizeBookingList(prev, set));
+      }
+    }).catch(() => { });
+
+    // 2. Tải danh sách đơn đặt phòng của người dùng
     if (username) {
       stayApi.getBookings(username).then(res => {
         if (res.success && res.data && res.data.length > 0) {
-          setMyBookings(res.data);
+          setMyBookings(normalizeBookingList(res.data));
         }
-      }).catch(() => {});
+      }).catch(() => { });
     }
   }, [username]);
 
@@ -69,7 +111,7 @@ export default function MyBookingsPage() {
   const handleCancelBooking = (code: string) => {
     if (window.confirm(`Bạn có chắc chắn muốn hủy đơn đặt phòng #${code}?`)) {
       const res = store.cancelBooking(code);
-      stayApi.cancelBooking(code).catch(() => {});
+      stayApi.cancelBooking(code).catch(() => { });
       if (res.success) {
         addToast(`Đã hủy thành công đơn #${code}`, 'success');
         setMyBookings(prev => prev.map(b => b.code === code ? { ...b, status: 'CANCELLED' } : b));
@@ -622,7 +664,8 @@ export default function MyBookingsPage() {
                       Chi tiết <ArrowRight style={{ fontSize: '0.85rem' }} />
                     </button>
 
-                    {b.status === 'COMPLETED' && !b.isReviewed && (
+                    {/* Nếu đơn đã hoàn thành và CHƯA đánh giá -> Hiển thị nút "Viết đánh giá" */}
+                    {b.status === 'COMPLETED' && !b.isReviewed && !(b as any).is_reviewed && !store.isBookingReviewed(b.code) && !reviewedCodes.has(b.code) && (
                       <button
                         type="button"
                         onClick={() => navigate(`/review?bookingCode=${b.code}`)}
@@ -646,17 +689,18 @@ export default function MyBookingsPage() {
                       </button>
                     )}
 
-                    {b.status === 'COMPLETED' && b.isReviewed && (
+                    {/* Nếu đơn đã hoàn thành và ĐÃ ĐÁNH GIÁ -> TUYỆT ĐỐI KHÔNG hiện "Viết đánh giá", chỉ hiện "Xem đánh giá" & "Đặt lại" */}
+                    {b.status === 'COMPLETED' && Boolean(b.isReviewed || (b as any).is_reviewed || store.isBookingReviewed(b.code) || reviewedCodes.has(b.code)) && (
                       <button
                         type="button"
-                        onClick={() => navigate(`/property/${b.propertyId || 1}#reviews`)}
+                        onClick={() => navigate(`/property/${b.propertyId || 1}?highlight=${b.code}#reviews`)}
                         style={{
                           width: '100%',
                           padding: '0.6rem 1rem',
                           borderRadius: 10,
-                          background: 'var(--color-warning-bg)',
-                          color: 'var(--color-warning)',
-                          border: '1px solid var(--color-warning-border)',
+                          background: 'var(--color-star-bg)',
+                          color: 'var(--color-star-hover)',
+                          border: '1px solid #FDE68A',
                           fontSize: '0.84rem',
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -666,11 +710,11 @@ export default function MyBookingsPage() {
                           gap: 6,
                         }}
                       >
-                        <StarFill style={{ color: 'var(--color-warning)' }} /> Xem đánh giá
+                        <StarFill style={{ color: 'var(--color-star)' }} /> Xem đánh giá
                       </button>
                     )}
 
-                    {b.status === 'COMPLETED' && b.isReviewed && (
+                    {b.status === 'COMPLETED' && Boolean(b.isReviewed || (b as any).is_reviewed || store.isBookingReviewed(b.code) || reviewedCodes.has(b.code)) && (
                       <button
                         type="button"
                         onClick={() => navigate(`/property/${b.propertyId || 1}`)}

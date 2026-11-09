@@ -147,9 +147,17 @@ export const stayApi = {
     return fetchJson<Review[]>('/api/reviews');
   },
 
-  async submitReview(review: Partial<Review>) {
+  async submitReview(review: Partial<Review>, extraHeaders?: Record<string, string>) {
+    const headers: Record<string, string> = { ...extraHeaders };
+    if (review.guestUsername && !headers['X-User-Name']) {
+      headers['X-User-Name'] = review.guestUsername;
+    }
+    if (review.guestName && !headers['X-Full-Name']) {
+      headers['X-Full-Name'] = review.guestName;
+    }
     return fetchJson<Review>('/api/reviews', {
       method: 'POST',
+      headers,
       body: JSON.stringify(review),
     });
   },

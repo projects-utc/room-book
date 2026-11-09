@@ -80,8 +80,17 @@ public class BookingService {
                     double subtotal = pricePerNight * nights;
                     booking.setPricePerNight(pricePerNight);
                     booking.setSubtotal(subtotal);
-                    booking.setServiceFee(0.0);
-                    booking.setTotal(subtotal);
+
+                    double serviceFee = (booking.getServiceFee() != null) ? booking.getServiceFee() : 0.0;
+                    booking.setServiceFee(serviceFee);
+
+                    // Nếu FE đã truyền total hợp lệ (có thể đã áp dụng mã Voucher / Khuyến mại),
+                    // ưu tiên giữ nguyên số tiền đã giảm giá từ FE để không ghi đè làm mất voucher khi lưu vào Database.
+                    // Chỉ tính lại total = subtotal + serviceFee khi FE không truyền, total <= 0,
+                    // hoặc total > subtotal + serviceFee (không hợp lệ vì voucher không làm tăng giá).
+                    if (booking.getTotal() == null || booking.getTotal() <= 0 || booking.getTotal() > (subtotal + serviceFee)) {
+                        booking.setTotal(subtotal + serviceFee);
+                    }
                 }
             }
         } catch (Exception e) {

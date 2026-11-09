@@ -181,6 +181,7 @@ export default function BookingQuotePage() {
                     serviceFee: 0,
                     total: totalAmount,
                     paymentMethod: dbMethod,
+                    payment_method: dbMethod,
                     status: 'PENDING'
                 };
 
@@ -617,8 +618,14 @@ export default function BookingQuotePage() {
                                     <span style={{ fontSize: '0.84rem', color: 'var(--color-text-secondary)', display: 'block' }}>Hạng phòng: {room.name}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.82rem', marginTop: 4 }}>
                                         <StarFill style={{ fontSize: '0.75rem', color: 'var(--color-primary)' }} />
-                                        <strong>{property.rating ? property.rating.toFixed(2) : '4.80'}</strong>
-                                        <span style={{ color: 'var(--color-text-muted)' }}>(18 đánh giá)</span>
+                                        {property.rating && property.rating > 0 ? (
+                                            <>
+                                                <strong>{property.rating.toFixed(1)}</strong>
+                                                <span style={{ color: 'var(--color-text-muted)' }}>({property.reviewsCount ?? property.reviewCount ?? 0} đánh giá)</span>
+                                            </>
+                                        ) : (
+                                            <strong>Mới</strong>
+                                        )}
                                     </div>
                                 </div>
                             </div>

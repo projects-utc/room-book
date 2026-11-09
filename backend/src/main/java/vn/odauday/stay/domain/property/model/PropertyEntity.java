@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -65,6 +66,21 @@ public class PropertyEntity {
 
     @Column(length = 50)
     private String badge;
+
+    @Column(name = "is_hot")
+    @JsonProperty("isHot")
+    @Builder.Default
+    private Boolean isHot = false;
+
+    @Column(name = "views_7d")
+    @JsonProperty("views7d")
+    @Builder.Default
+    private Long views7d = 0L;
+
+    @Column(name = "is_trending")
+    @JsonProperty("isTrending")
+    @Builder.Default
+    private Boolean isTrending = false;
 
     @JsonIgnore
     @Column(name = "amenities_raw", length = 1000)

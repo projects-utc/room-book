@@ -99,12 +99,27 @@ export function Header() {
     return (
         <header className="site-header" style={{ padding: isHome && !isScrolled ? '0.85rem 2.5rem 1rem' : '0.85rem 2.5rem' }}>
             <div className="header-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: 1760, margin: '0 auto' }}>
-                {/* Logo: ODauDay Stay with HouseDoorFill icon */}
+                {/* Logo: ODauDay Stay with HouseDoorFill icon (Điều hướng quay về Trang chủ / Danh sách phòng) */}
                 <Link
                     to="/"
                     className="brand"
                     aria-label="ODauDay Stay Trang chủ"
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', textDecoration: 'none' }}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.45rem',
+                        textDecoration: 'none',
+                        cursor: 'pointer',
+                        transition: 'opacity 0.15s ease, transform 0.15s ease',
+                    }}
+                    onMouseEnter={e => {
+                        e.currentTarget.style.opacity = '0.92';
+                        e.currentTarget.style.transform = 'scale(1.02)';
+                    }}
+                    onMouseLeave={e => {
+                        e.currentTarget.style.opacity = '1';
+                        e.currentTarget.style.transform = 'scale(1)';
+                    }}
                 >
                     <HouseDoorFill style={{ fontSize: '1.9rem', color: 'var(--color-primary)' }} />
                     <span style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--color-primary)', letterSpacing: '-0.03em' }}>
@@ -317,6 +332,38 @@ export function Header() {
                         <Globe style={{ fontSize: '1.05rem', color: 'var(--color-text-primary)' }} />
                     </button>
 
+                    {/* Wishlist Heart Icon Button */}
+                    <Link
+                        to="/wishlist"
+                        className="icon-btn"
+                        title="Danh sách yêu thích"
+                        aria-label="Xem danh sách yêu thích"
+                        style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: '50%',
+                            border: 'none',
+                            background: 'transparent',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            textDecoration: 'none',
+                            color: 'var(--color-primary, #FF385C)',
+                            transition: 'background 0.2s, transform 0.15s ease',
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.backgroundColor = 'var(--color-primary-soft, #FFF1F2)';
+                            e.currentTarget.style.transform = 'scale(1.08)';
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                    >
+                        <HeartFill style={{ fontSize: '1.1rem' }} />
+                    </Link>
+
                     {/* User Profile Pill */}
                     <div
                         className="user-menu-pill"
@@ -386,9 +433,19 @@ export function Header() {
                     </span>
                                     </div>
 
+                                    {/* 1. Mục Trang chủ ở vị trí trên cùng của Dropdown Menu (ngay trên "Chuyến đi của tôi") */}
+                                    <Link
+                                        to="/"
+                                        className="dropdown-item bold"
+                                        onClick={() => setMenuOpen(false)}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)', fontWeight: 600 }}
+                                    >
+                                        <HouseDoor style={{ fontSize: '1.05rem', color: 'var(--color-primary)' }} /> Trang chủ
+                                    </Link>
+
                                     <Link
                                         to="/my-bookings"
-                                        className="dropdown-item bold"
+                                        className="dropdown-item"
                                         onClick={() => setMenuOpen(false)}
                                         style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
                                     >
@@ -396,7 +453,7 @@ export function Header() {
                                     </Link>
 
                                     <Link
-                                        to="/search"
+                                        to="/wishlist"
                                         className="dropdown-item"
                                         onClick={() => setMenuOpen(false)}
                                         style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
@@ -490,6 +547,15 @@ export function Header() {
                                 </>
                             ) : (
                                 <>
+                                    <Link
+                                        to="/"
+                                        className="dropdown-item bold"
+                                        onClick={() => setMenuOpen(false)}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)', fontWeight: 600 }}
+                                    >
+                                        <HouseDoor style={{ fontSize: '1.05rem', color: 'var(--color-primary)' }} /> Trang chủ
+                                    </Link>
+                                    <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
                                     <Link
                                         to="/login"
                                         className="dropdown-item bold"

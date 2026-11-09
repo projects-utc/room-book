@@ -19,4 +19,8 @@ public class CreateReviewRequest {
     private Integer rating;
 
     private String comment;
+
+    private String guestUsername;
+
+    private String guestName;
 }

@@ -53,6 +53,11 @@
   --color-warning-bg: #FFFBEB;
   --color-warning-border: #FDE68A;
 
+  /* Star Rating (Shopee / Vibrant Gold #FFB800) */
+  --color-star: #FFB800;
+  --color-star-hover: #F59E0B;
+  --color-star-bg: #FFFBEB;
+
   --color-danger: #B91C1C;
   --color-danger-bg: #FEF2F2;
   --color-danger-border: #FECACA;
@@ -2272,3 +2277,14 @@ textarea::placeholder {
     transform: translateX(0) !important;
   }
 }
+
+/* Tailwind utility helpers for Carousel & Grid */
+.flex { display: flex; }
+.flex-none { flex: none; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.overflow-x-auto { overflow-x: auto; }
+.snap-x { scroll-snap-type: x mandatory; }
+.snap-mandatory { scroll-snap-type: x mandatory; }
+.snap-start { scroll-snap-align: start; }
+.scroll-smooth { scroll-behavior: smooth; }

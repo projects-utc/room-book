@@ -324,7 +324,9 @@ export const ODDStore = {
       status: 'PENDING',
       createdAt: new Date().toISOString().slice(0, 10),
       isReviewed: false,
+      is_reviewed: false,
       paymentMethod: payload.paymentMethod || 'CASH',
+      payment_method: payload.paymentMethod || 'CASH',
     };
 
     data.bookings.push(newBooking);
@@ -340,22 +342,60 @@ export const ODDStore = {
   // Sync booking trả về từ API vào local store (tránh gọi lại BE lần 2)
   syncBookingFromApi(booking: Booking): void {
     const data = loadData();
-    const exists = data.bookings.find(b => b.code === booking.code);
-    if (!exists) {
-      data.bookings.push(booking);
-      saveData(data);
+    const existsIdx = data.bookings.findIndex(b => b.code === booking.code);
+    const normalizedReviewed = Boolean(
+      booking.isReviewed === true ||
+      (booking as any).is_reviewed === true ||
+      (booking as any).is_reviewed === 1 ||
+      (Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === booking.code))
+    );
+    const normalizedMethod = booking.paymentMethod || booking.payment_method || 'CASH';
+    const normalizedBooking: Booking = {
+      ...booking,
+      paymentMethod: normalizedMethod,
+      payment_method: normalizedMethod,
+      isReviewed: normalizedReviewed,
+      is_reviewed: normalizedReviewed
+    };
+    if (existsIdx === -1) {
+      data.bookings.push(normalizedBooking);
+    } else {
+      data.bookings[existsIdx] = {
+        ...data.bookings[existsIdx],
+        ...normalizedBooking
+      };
     }
+    saveData(data);
   },
 
   // UC-04: My Bookings
   getMyBookings(username: string): Booking[] {
     const data = loadData();
-    return data.bookings.filter(b => b.guestUsername === username).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return data.bookings
+      .filter(b => b.guestUsername === username)
+      .map(b => {
+        const isReviewed = Boolean(
+          b.isReviewed === true ||
+          (b as any).is_reviewed === true ||
+          (b as any).is_reviewed === 1 ||
+          (Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === b.code))
+        );
+        return { ...b, isReviewed, is_reviewed: isReviewed };
+      })
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   },
 
   getBooking(code: string): Booking | null {
     const data = loadData();
-    return data.bookings.find(b => b.code === code) || null;
+    const b = data.bookings.find(bk => bk.code === code);
+    if (!b) return null;
+    const isReviewed = Boolean(
+      b.isReviewed === true ||
+      (b as any).is_reviewed === true ||
+      (b as any).is_reviewed === 1 ||
+      (Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === b.code))
+    );
+    return { ...b, isReviewed, is_reviewed: isReviewed };
   },
 
   cancelBooking(code: string): { success: boolean; message?: string } {
@@ -380,18 +420,27 @@ export const ODDStore = {
     guestName: string;
     rating: number;
     comment: string;
+    mediaUrls?: string[];
   }): { success: boolean; message?: string } {
     const data = loadData();
+    const isAlreadyReviewed = Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === reviewPayload.bookingCode);
     const idx = data.bookings.findIndex(b => b.code === reviewPayload.bookingCode);
-    if (idx === -1) return { success: false, message: 'Không tìm thấy đơn đặt phòng.' };
-    if (data.bookings[idx].isReviewed) return { success: false, message: 'Đơn này đã được đánh giá (TC-12).' };
+    if (idx !== -1 && (data.bookings[idx].isReviewed || (data.bookings[idx] as any).is_reviewed)) {
+      return { success: false, message: 'Đơn này đã được đánh giá (TC-12).' };
+    }
+    if (isAlreadyReviewed) {
+      return { success: false, message: 'Đơn này đã được đánh giá trước đó.' };
+    }
 
     data.reviews.push({
       id: data.reviews.length + 1,
       ...reviewPayload,
       date: new Date().toLocaleDateString('vi-VN'),
     });
-    data.bookings[idx].isReviewed = true;
+    if (idx !== -1) {
+      data.bookings[idx].isReviewed = true;
+      (data.bookings[idx] as any).is_reviewed = true;
+    }
     saveData(data);
     fetch('/api/reviews', {
       method: 'POST',
@@ -399,6 +448,20 @@ export const ODDStore = {
       body: JSON.stringify({ ...reviewPayload, date: data.reviews[data.reviews.length - 1].date }),
     }).catch(() => {});
     return { success: true };
+  },
+
+  getAllReviews(): Review[] {
+    const data = loadData();
+    return data.reviews || [];
+  },
+
+  isBookingReviewed(bookingCode: string): boolean {
+    const data = loadData();
+    const b = data.bookings.find(bk => bk.code === bookingCode);
+    if (b && (b.isReviewed === true || (b as any).is_reviewed === true || (b as any).is_reviewed === 1)) {
+      return true;
+    }
+    return Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === bookingCode);
   },
 
   getReviewsByProperty(propertyId: number | string): Review[] {
@@ -422,7 +485,7 @@ export const ODDStore = {
       address: propertyPayload.address || 'Hà Nội',
       city: propertyPayload.city || 'Hà Nội',
       area: propertyPayload.area || '',
-      rating: 5.0,
+      rating: null,
       reviewsCount: 0,
       priceMin: propertyPayload.priceMin || 500000,
       desc: propertyPayload.desc || '',

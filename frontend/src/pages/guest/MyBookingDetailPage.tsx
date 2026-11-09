@@ -32,6 +32,14 @@ export default function MyBookingDetailPage() {
   const booking = store.getBooking(bookingCode) || store.getAllBookings()[0];
   const [currentStatus, setCurrentStatus] = useState<BookingStatus>(booking?.status || 'PENDING');
 
+  // Đơn đã được đánh giá hay chưa (hỗ trợ cả camelCase, snake_case và bảng reviews)
+  const isReviewed = Boolean(
+    booking?.isReviewed === true ||
+    (booking as any)?.is_reviewed === true ||
+    (booking as any)?.is_reviewed === 1 ||
+    store.isBookingReviewed(bookingCode)
+  );
+
   // Find real property
   const property = store.getProperty(booking?.propertyId) || store.getAllProperties().find(p => p.name === booking?.propertyName) || store.getProperty(1);
   const propertyImg = property?.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80';
@@ -420,10 +428,10 @@ export default function MyBookingDetailPage() {
             boxShadow: '0 2px 12px rgba(0,0,0,0.03)'
           }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <StarFill style={{ color: 'var(--color-warning)' }} /> Đánh giá & Phản hồi kỳ nghỉ
+              <StarFill style={{ color: 'var(--color-star)' }} /> Đánh giá & Phản hồi kỳ nghỉ
             </h3>
 
-            {booking?.isReviewed ? (
+            {isReviewed ? (
               <div style={{
                 background: 'var(--color-warning-bg)',
                 borderRadius: 14,
@@ -445,7 +453,7 @@ export default function MyBookingDetailPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => navigate(`/property/${booking?.propertyId || 1}#reviews`)}
+                  onClick={() => navigate(`/property/${booking?.propertyId || 1}?highlight=${bookingCode}#reviews`)}
                   style={{
                     background: 'var(--color-text-primary)',
                     color: 'var(--color-bg-surface)',
@@ -529,7 +537,7 @@ export default function MyBookingDetailPage() {
                 </span>
                 <button
                   type="button"
-                  onClick={() => navigate(`/property/${booking?.propertyId || 1}#reviews`)}
+                  onClick={() => navigate(`/property/${booking?.propertyId || 1}?highlight=${bookingCode}#reviews`)}
                   style={{
                     background: 'var(--color-bg-surface)',
                     color: 'var(--color-text-primary)',
@@ -607,16 +615,16 @@ export default function MyBookingDetailPage() {
             {/* Nút hành động */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1.5rem' }}>
               {/* Nút Xem lại đánh giá nếu đã đánh giá */}
-              {booking?.isReviewed ? (
+              {isReviewed ? (
                 <button
                   type="button"
-                  onClick={() => navigate(`/property/${booking?.propertyId || 1}#reviews`)}
+                  onClick={() => navigate(`/property/${booking?.propertyId || 1}?highlight=${bookingCode}#reviews`)}
                   style={{
                     width: '100%',
                     padding: '0.85rem 1.25rem',
-                    background: 'linear-gradient(135deg, var(--color-warning-bg) 0%, var(--color-warning-bg) 100%)',
-                    color: 'var(--color-warning)',
-                    border: '1.5px solid var(--color-warning-border)',
+                    background: 'var(--color-star-bg)',
+                    color: 'var(--color-star-hover)',
+                    border: '1.5px solid #FDE68A',
                     borderRadius: 12,
                     fontSize: '0.92rem',
                     fontWeight: 700,
@@ -631,7 +639,7 @@ export default function MyBookingDetailPage() {
                   onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
                   onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
                 >
-                  <StarFill style={{ color: 'var(--color-warning)' }} /> Xem đánh giá trên trang đặt phòng
+                  <StarFill style={{ color: 'var(--color-star)' }} /> Xem đánh giá trên trang đặt phòng
                 </button>
               ) : currentStatus === 'COMPLETED' ? (
                 <button
