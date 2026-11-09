@@ -117,7 +117,7 @@ export default function PropertyDetailPage() {
 
   const handleBookNow = (roomId?: number) => {
     if (!checkIn || !checkOut) {
-      addToast('Vui lòng chọn ngày nhận phòng và trả phòng trên lịch.', 'warn');
+      addToast('Vui lòng chọn ngày nhận và trả phòng.', 'warn');
       return;
     }
 
@@ -129,14 +129,14 @@ export default function PropertyDetailPage() {
 
     // Chặn 1: Kiểm tra sức chứa
     if (guestCount > activeRoom.capacity) {
-      addToast(`Hạng phòng này chỉ phục vụ tối đa ${activeRoom.capacity} khách. Vui lòng giảm số lượng.`, 'error');
+      addToast(`Phòng này tối đa ${activeRoom.capacity} khách. Vui lòng chọn lại số khách.`, 'error');
       return;
     }
 
     // Chặn 2: Gọi kho dữ liệu để check trùng lịch (Đổi từ alert sang Toast góc màn hình)
     const conflict = store.checkConflict(activeRoom.id, checkIn, checkOut);
     if (conflict.hasConflict) {
-      addToast(`Ngày bạn chọn đã kín chỗ: ${conflict.reason}`, 'error');
+      addToast(`Phòng đã kín lịch trong khoảng ngày bạn chọn (${conflict.reason}).`, 'error');
       return;
     }
 
@@ -512,7 +512,7 @@ export default function PropertyDetailPage() {
 
               <div style={{ marginBottom: '1rem' }}>
                 <DateRangePicker
-                    label="Lịch nhận & trả phòng"
+                    label="Nhận phòng - Trả phòng"
                     value={{ start: checkIn, end: checkOut }}
                     minDate={new Date().toISOString().split('T')[0]}
                     // Truyền logic kiểm tra ngày bận vào đây
@@ -536,7 +536,7 @@ export default function PropertyDetailPage() {
 
               <div style={{ border: '1px solid var(--line-strong)', borderRadius: 'var(--radius-md)', overflow: 'hidden', marginBottom: '1rem' }}>
                 <div style={{ padding: '0.65rem 0.75rem' }}>
-                  <label htmlFor="reserve-guests" style={{ display: 'block', fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Khách</label>
+                  <label htmlFor="reserve-guests" style={{ display: 'block', fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Số khách</label>
                   <select id="reserve-guests" value={guests} onChange={e => setGuests(e.target.value)} style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.85rem', padding: 0, cursor: 'pointer' }}>
                     <option value="1">1 khách</option>
                     <option value="2">2 khách</option>
@@ -563,7 +563,7 @@ export default function PropertyDetailPage() {
                   <span style={{ color: '#059669', fontWeight: 600 }}>0₫ (Miễn phí)</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--line)', paddingTop: '0.85rem', fontWeight: 800, fontSize: '1.05rem' }}>
-                  <span>Tổng trước thuế</span>
+                  <span>Tổng cộng</span>
                   <span>{formatVND(totalPrice)}</span>
                 </div>
               </div>

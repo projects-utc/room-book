@@ -112,7 +112,7 @@ export const ODDStore = {
     if (!user) return { success: false, code: 'NOT_FOUND', message: 'Tài khoản không tồn tại trên hệ thống.' };
     if (user.status === 'LOCKED') return { success: false, code: 'LOCKED', message: 'Tài khoản này đang bị khóa bởi Quản trị viên.' };
     if (password && password !== '********' && user.password !== password) {
-      return { success: false, code: 'WRONG_PASSWORD', message: 'Mật khẩu không chính xác (TC-02).' };
+      return { success: false, code: 'WRONG_PASSWORD', message: 'Tên đăng nhập hoặc mật khẩu không chính xác.' };
     }
 
     const sessionUser: User = {
@@ -159,7 +159,7 @@ export const ODDStore = {
       return {
         success: false,
         code: 'INVALID_DATES',
-        message: 'Lỗi quy tắc ngày (TC-03): Ngày trả phòng phải sau ngày nhận phòng ít nhất 1 đêm!',
+        message: 'Ngày trả phòng phải sau ngày nhận phòng ít nhất 1 đêm.',
         count: 0,
         properties: [] as Property[],
       };
@@ -217,7 +217,7 @@ export const ODDStore = {
       return {
         success: false,
         code: 'CAPACITY_EXCEEDED',
-        message: `Lỗi sức chứa (BR-06 / TC-06): ${room.name} chỉ phục vụ tối đa ${room.capacity} khách (bạn chọn ${guests} khách).`,
+        message: `${room.name} chỉ nhận tối đa ${room.capacity} khách (bạn đang chọn ${guests} khách).`,
       };
     }
 
@@ -226,7 +226,7 @@ export const ODDStore = {
       return {
         success: false,
         code: 'ROOM_CONFLICT',
-        message: `Lỗi trùng phòng (BR-04 / TC-05): ${conflict.reason}`,
+        message: `Không thể đặt phòng: ${conflict.reason}`,
         conflictDetails: conflict,
       };
     }
@@ -372,7 +372,7 @@ export const ODDStore = {
     const data = loadData();
     const idx = data.bookings.findIndex(b => b.code === reviewPayload.bookingCode);
     if (idx === -1) return { success: false, message: 'Không tìm thấy đơn đặt phòng.' };
-    if (data.bookings[idx].isReviewed) return { success: false, message: 'Đơn này đã được đánh giá (TC-12).' };
+    if (data.bookings[idx].isReviewed) return { success: false, message: 'Đơn đặt phòng này đã được đánh giá.' };
 
     data.reviews.push({
       id: data.reviews.length + 1,
@@ -488,7 +488,7 @@ export const ODDStore = {
     const rId = parseInt(String(blockPayload.roomId), 10);
     const conflict = this.checkConflict(rId, blockPayload.start, blockPayload.end);
     if (conflict.hasConflict) {
-      return { success: false, code: 'BLOCK_CONFLICT', message: 'Xung đột lịch (TC-13): ' + conflict.reason };
+      return { success: false, code: 'BLOCK_CONFLICT', message: 'Trùng lịch đặt phòng: ' + conflict.reason };
     }
     const room = data.rooms.find(r => r.id === rId);
     data.roomBlocks.push({

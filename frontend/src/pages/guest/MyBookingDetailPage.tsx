@@ -361,7 +361,7 @@ export default function MyBookingDetailPage() {
               <div>
                 <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Nhận phòng</span>
                 <strong style={{ fontSize: '1.1rem', color: '#0F172A', display: 'block' }}>{booking?.checkIn}</strong>
-                <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Từ 14:00 chiều</span>
+                <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Từ 14:00</span>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#E11D48', fontSize: '0.78rem', fontWeight: 800 }}>
@@ -373,13 +373,13 @@ export default function MyBookingDetailPage() {
               <div style={{ textAlign: 'right' }}>
                 <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Trả phòng</span>
                 <strong style={{ fontSize: '1.1rem', color: '#0F172A', display: 'block' }}>{booking?.checkOut}</strong>
-                <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Trước 12:00 trưa</span>
+                <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Trước 12:00</span>
               </div>
             </div>
 
             <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#475569' }}>
               <span>Số lượng khách:</span>
-              <strong style={{ color: '#0F172A' }}>{booking?.guests} người lớn</strong>
+              <strong style={{ color: '#0F172A' }}>{booking?.guests} khách</strong>
             </div>
           </div>
 
@@ -397,7 +397,7 @@ export default function MyBookingDetailPage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', fontSize: '0.9rem' }}>
               <div>
-                <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block', marginBottom: 2 }}>Người đại diện:</span>
+                <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block', marginBottom: 2 }}>Người nhận phòng:</span>
                 <strong style={{ color: '#0F172A' }}>{booking?.guestName}</strong>
               </div>
               <div>
@@ -405,7 +405,7 @@ export default function MyBookingDetailPage() {
                 <strong style={{ color: '#0F172A' }}>{booking?.guestPhone}</strong>
               </div>
               <div>
-                <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block', marginBottom: 2 }}>Email nhận vé:</span>
+                <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block', marginBottom: 2 }}>Email nhận xác nhận:</span>
                 <strong style={{ color: '#0F172A' }}>{booking?.guestEmail}</strong>
               </div>
             </div>

@@ -295,7 +295,7 @@ export default function ReviewFormPage() {
                                 fontSize: '0.92rem',
                             }}
                         >
-                            Xem đánh giá trên trang đặt phòng
+                            Xem đánh giá trên trang chỗ ở
                         </Link>
                         <Link
                             to="/my-bookings"

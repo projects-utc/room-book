@@ -208,7 +208,7 @@ export default function LoginPage() {
                 </>
               ) : (
                 <>
-                  <span>Đăng nhập ngay</span>
+                  <span>Đăng nhập</span>
                   <ArrowRightShort style={{ fontSize: '1.4rem' }} />
                 </>
               )}
@@ -282,7 +282,7 @@ export default function LoginPage() {
                 textDecoration: 'none',
               }}
             >
-              Đăng ký miễn phí ngay
+              Đăng ký ngay
             </Link>
           </div>
 

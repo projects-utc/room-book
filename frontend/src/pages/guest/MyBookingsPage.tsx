@@ -180,10 +180,10 @@ export default function MyBookingsPage() {
       }}>
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 999, background: '#FFF1F2', color: '#E11D48', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>
-            <span>Kỳ nghỉ của tôi</span>
+            <span>Quản lý đặt chỗ</span>
           </div>
           <h1 style={{ fontSize: '2.15rem', fontWeight: 800, margin: '0 0 0.5rem', color: '#0F172A', letterSpacing: '-0.02em' }}>
-            Chuyến đi của bạn
+            Đơn đặt phòng của tôi
           </h1>
           <p style={{ margin: 0, color: '#64748B', fontSize: '0.98rem' }}>
             Chào mừng trở lại, <strong>{currentUser?.fullName || username}</strong>! Bạn có <strong style={{ color: '#E11D48' }}>{upcomingCount}</strong> chuyến đi sắp tới.
@@ -236,7 +236,7 @@ export default function MyBookingsPage() {
             <CalendarCheck />
           </div>
           <div>
-            <span style={{ fontSize: '0.8rem', color: '#64748B', display: 'block', fontWeight: 600 }}>Sắp tới & Chờ duyệt</span>
+            <span style={{ fontSize: '0.8rem', color: '#64748B', display: 'block', fontWeight: 600 }}>Sắp tới & Chờ xác nhận</span>
             <strong style={{ fontSize: '1.35rem', color: '#0F172A' }}>{upcomingCount}</strong>
           </div>
         </div>
@@ -551,7 +551,7 @@ export default function MyBookingsPage() {
 
                   {/* Guest Name & contact */}
                   <div style={{ fontSize: '0.84rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span>Đại diện đặt phòng:</span>
+                    <span>Người nhận phòng:</span>
                     <strong style={{ color: '#1E293B' }}>{b.guestName}</strong>
                     <span>({b.guestPhone})</span>
                   </div>

@@ -667,8 +667,8 @@ export function DatePicker({
               <button
                   type="button"
                   onClick={handleClear}
-                  title="Xóa ngày đã chọn"
-                  aria-label="Xóa ngày"
+                  title="Chọn lại ngày"
+                  aria-label="Chọn lại ngày"
                   style={{
                     background: 'transparent',
                     border: 'none',
@@ -918,7 +918,7 @@ export function DateRangePicker({
               ? `Đã chọn: ${nightsCount} đêm lưu trú`
               : value.start
                   ? 'Vui lòng chọn ngày trả phòng'
-                  : 'Chọn ngày bắt đầu chuyến đi'}
+                  : 'Vui lòng chọn ngày nhận phòng'}
         </span>
 
           {(value.start || value.end) && (
@@ -936,7 +936,7 @@ export function DateRangePicker({
                     padding: 0,
                   }}
               >
-                Đặt lại
+                Chọn lại ngày
               </button>
           )}
         </div>
@@ -1051,12 +1051,12 @@ export function DateRangePicker({
           </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.88rem' }}>
               {!value.start && !value.end ? (
-                  <span style={{ color: '#717171', fontWeight: 400 }}>Thêm ngày</span>
+                  <span style={{ color: '#717171', fontWeight: 400 }}>Chọn ngày</span>
               ) : value.start && !value.end ? (
                   <>
                     <span style={{ fontWeight: 600, color: '#222222' }}>{formatDisplayDateVN(value.start)}</span>
                     <span style={{ color: '#B0B0B0', fontSize: '0.8rem' }}>→</span>
-                    <span style={{ color: '#717171' }}>Thêm ngày trả</span>
+                    <span style={{ color: '#717171' }}>Chọn ngày trả phòng</span>
                   </>
               ) : !value.start && value.end ? (
                   <span style={{ fontWeight: 600, color: '#222222' }}>{formatDisplayDateVN(value.end)}</span>
@@ -1132,7 +1132,7 @@ export function DateRangePicker({
             <span>
             {value.start && value.end
                 ? `${formatDisplayDateVN(value.start)} → ${formatDisplayDateVN(value.end)}`
-                : 'Thời gian bất kỳ'}
+                : 'Chọn ngày'}
           </span>
             {nightsCount > 0 && (
                 <span
@@ -1145,7 +1145,7 @@ export function DateRangePicker({
                       fontWeight: 700,
                     }}
                 >
-              {nightsCount}đ
+              {nightsCount} đêm
             </span>
             )}
           </div>
@@ -1241,8 +1241,8 @@ export function DateRangePicker({
               <button
                   type="button"
                   onClick={handleClear}
-                  title="Xóa khoảng ngày"
-                  aria-label="Xóa khoảng ngày"
+                  title="Chọn lại ngày"
+                  aria-label="Chọn lại ngày"
                   style={{
                     background: 'transparent',
                     border: 'none',

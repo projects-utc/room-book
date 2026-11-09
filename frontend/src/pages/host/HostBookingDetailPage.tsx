@@ -45,7 +45,7 @@ export default function HostBookingDetailPage() {
               ]}
           />
           <UCTag>
-            <CalendarCheck /> UC-08 · Chi tiết đơn lưu trú
+            <CalendarCheck /> Chi tiết đơn đặt phòng
           </UCTag>
         </div>
 
@@ -69,7 +69,7 @@ export default function HostBookingDetailPage() {
             <div>
               <strong style={{ display: 'block', fontSize: '0.95rem' }}>Thao tác chuyển trạng thái đơn:</strong>
               <span className="muted" style={{ fontSize: '0.82rem' }}>
-              Quy trình chuẩn: PENDING → CONFIRMED → CHECKED_IN → COMPLETED
+              Quy trình: Chờ xác nhận → Đã xác nhận → Đang lưu trú → Đã hoàn thành
             </span>
             </div>
 
@@ -153,7 +153,7 @@ export default function HostBookingDetailPage() {
               <tr>
                 <th style={{ padding: '0.75rem', borderBottom: '1px solid var(--line)' }}>Số lượng khách</th>
                 <td style={{ padding: '0.75rem', borderBottom: '1px solid var(--line)' }}>
-                  {booking?.guests} người lớn (Phù hợp BR-02)
+                  {booking?.guests} khách
                 </td>
               </tr>
               <tr>
@@ -168,7 +168,7 @@ export default function HostBookingDetailPage() {
           <aside>
             <div className="panel" style={{ boxShadow: 'var(--shadow-md)', marginBottom: '1.5rem' }}>
               <h3 style={{ fontSize: '1.15rem', marginTop: 0, marginBottom: '1rem', borderBottom: '1px solid var(--line)', paddingBottom: '0.75rem' }}>
-                <PersonCircle className="text-brand" /> Khách thuê đại diện
+                <PersonCircle className="text-brand" /> Thông tin khách đặt
               </h3>
               <p style={{ margin: '0 0 0.5rem', fontWeight: 700, fontSize: '1.05rem' }}>
                 {booking?.guestName}
@@ -182,7 +182,7 @@ export default function HostBookingDetailPage() {
 
               <div style={{ borderTop: '1px solid var(--line)', paddingTop: '0.75rem' }}>
               <span className="muted" style={{ fontSize: '0.82rem' }}>
-                Tổng tiền snapshot (BR-05):
+                Tổng tiền thanh toán:
               </span>
                 <p className="card-price" style={{ fontSize: '1.5rem', margin: '0.25rem 0 0' }}>
                   {formatVND(booking?.total || 1300000)}
