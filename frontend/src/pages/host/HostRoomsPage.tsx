@@ -84,10 +84,10 @@ export default function HostRoomsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', margin: '1rem 0 2rem' }}>
         <div>
           <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#1E293B' }}>
-            Danh sách hạng phòng vận hành
+            Danh sách phòng
           </h1>
           <p style={{ margin: 0, color: '#64748B', fontSize: '0.95rem' }}>
-            Quản lý sức chứa tối đa (BR-02), đơn giá niêm yết mỗi đêm và lịch chặn bảo trì (RoomBlock).
+            Quản lý thông tin phòng, sức chứa tối đa, giá theo đêm và lịch tạm khóa phòng.
           </p>
         </div>
         <Button variant="primary" icon={<PlusLg />} onClick={() => setShowAddForm(true)}>
@@ -149,7 +149,7 @@ export default function HostRoomsPage() {
                     <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                       <Link to={`/host/roomblock?roomId=${room.id}`}>
                         <Button size="xs" variant="outline" icon={<CalendarRange />}>
-                          Chặn lịch (RoomBlock)
+                          Khóa lịch phòng
                         </Button>
                       </Link>
                       <Button

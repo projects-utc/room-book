@@ -137,12 +137,12 @@ export function Header() {
                             >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#222222', fontWeight: 600, fontSize: '0.88rem' }}>
                   <HouseDoor style={{ fontSize: '1rem', color: '#FF385C' }} />
-                  <span>Địa điểm bất kỳ</span>
+                  <span>Điểm đến bất kỳ</span>
                 </span>
                                 <span className="search-pill-divider" style={{ width: 1, height: 20, background: '#EBEBEB', margin: '0 0.85rem' }} />
-                                <span style={{ color: '#222222', fontSize: '0.88rem', fontWeight: 600 }}>Thời gian bất kỳ</span>
+                                <span style={{ color: '#222222', fontSize: '0.88rem', fontWeight: 600 }}>Chọn ngày</span>
                                 <span className="search-pill-divider" style={{ width: 1, height: 20, background: '#EBEBEB', margin: '0 0.85rem' }} />
-                                <span style={{ color: '#717171', fontSize: '0.88rem' }}>Thêm khách</span>
+                                <span style={{ color: '#717171', fontSize: '0.88rem' }}>Số khách</span>
                                 <button
                                     type="button"
                                     style={{
@@ -277,7 +277,7 @@ export function Header() {
                             }}
                         >
                             <Speedometer2 style={{ color: '#FF385C' }} />
-                            <span>Vào Quản trị</span>
+                            <span>Trang quản trị</span>
                         </Link>
                     ) : (
                         <Link
@@ -293,7 +293,7 @@ export function Header() {
                                 transition: 'background 0.2s',
                             }}
                         >
-                            {currentUser?.role === ROLES.HOST ? 'Quản lý Chỗ ở' : 'Đón tiếp khách'}
+                            {currentUser?.role === ROLES.HOST ? 'Kênh Chủ nhà' : 'Đăng ký'}
                         </Link>
                     )}
 
@@ -412,7 +412,7 @@ export function Header() {
                                                 <Building /> Chỗ ở của tôi
                                             </Link>
                                             <Link to="/host/rooms" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
-                                                <DoorOpen /> Hạng phòng & Lịch chặn
+                                                <DoorOpen /> Quản lý phòng & Lịch trống
                                             </Link>
                                             <Link to="/host/bookings" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
                                                 <CalendarCheck /> Quản lý đơn
@@ -431,7 +431,7 @@ export function Header() {
                                                 <Speedometer2 /> Bảng điều khiển Quản trị
                                             </Link>
                                             <Link to="/admin/users" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
-                                                <PeopleFill /> Quản lý tài khoản & RBAC
+                                                <PeopleFill /> Người dùng & Phân quyền
                                             </Link>
                                             <Link to="/admin/properties" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: '#222' }}>
                                                 <Building /> Quản lý chỗ ở toàn sàn
@@ -576,7 +576,7 @@ export function Header() {
                                 letterSpacing: '-0.02em',
                             }}
                         >
-                            Tạm biệt bạn nhé! 🌿
+                            Xác nhận đăng xuất
                         </h2>
                         <p style={{ margin: 0, color: '#64748B', fontSize: '0.92rem', lineHeight: 1.5 }}>
                             Bạn có chắc chắn muốn đăng xuất khỏi thiết bị này không?
@@ -639,14 +639,14 @@ export function Header() {
                                 className="btn-stay"
                                 onClick={() => setShowLogoutModal(false)}
                             >
-                                Ở lại trải nghiệm
+                                Hủy
                             </button>
                             <button
                                 type="button"
                                 className="btn-confirm-logout"
                                 onClick={handleConfirmLogout}
                             >
-                                <BoxArrowRight /> Đăng xuất an toàn
+                                <BoxArrowRight /> Đăng xuất
                             </button>
                         </div>
                     </div>
@@ -675,13 +675,13 @@ export function Footer() {
                     </div>
 
                     <div>
-                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: '#222' }}>Đón tiếp khách</p>
+                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: '#222' }}>Dành cho Chủ nhà</p>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: '#222' }}>
                             <li><Link to="/register">Cho thuê chỗ ở trên ODauDay</Link></li>
                             <li><Link to="/host/properties">Bảo vệ cho Chủ nhà</Link></li>
-                            <li><a href="#host-resources">Tài nguyên về đón tiếp khách</a></li>
+                            <li><a href="#host-resources">Hướng dẫn cho thuê</a></li>
                             <li><a href="#community-forum">Diễn đàn cộng đồng</a></li>
-                            <li><a href="#responsible-hosting">Đón tiếp khách có trách nhiệm</a></li>
+                            <li><a href="#responsible-hosting">Chính sách cho Chủ nhà</a></li>
                         </ul>
                     </div>
 

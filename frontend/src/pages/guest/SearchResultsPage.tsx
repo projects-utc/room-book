@@ -128,7 +128,7 @@ export default function SearchResultsPage() {
                   color: '#222',
                 }}
               >
-                <span>Hiển thị tổng giá trước thuế</span>
+                <span>Hiển thị tổng giá theo đêm</span>
                 <input
                   type="checkbox"
                   checked={showTaxes}

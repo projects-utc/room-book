@@ -93,12 +93,12 @@ export default function SearchBar({
                 marginBottom: 2,
               }}
             >
-              Địa điểm
+              Điểm đến
             </label>
             <input
               id="hero-search-dest"
               type="text"
-              placeholder="Tìm kiếm điểm đến"
+              placeholder="Bạn muốn đi đâu?"
               value={kw}
               onChange={e => setKw(e.target.value)}
               className="search-raw-input"
@@ -140,7 +140,7 @@ export default function SearchBar({
                 marginBottom: 2,
               }}
             >
-              Khách
+              Số khách
             </label>
             <select
               id="hero-search-guests"
@@ -155,7 +155,7 @@ export default function SearchBar({
                 fontWeight: guests ? 600 : 400,
               }}
             >
-              <option value="">Thêm khách</option>
+              <option value="">Chọn số khách</option>
               <option value="1">1 khách</option>
               <option value="2">2 khách</option>
               <option value="3">3 khách</option>

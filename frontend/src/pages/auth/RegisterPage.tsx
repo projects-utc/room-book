@@ -129,7 +129,7 @@ export default function RegisterPage() {
             {/* Full Name */}
             <div className="auth-input-wrapper">
               <label htmlFor="reg-fullname">
-                <span>Họ và tên đầy đủ</span>
+                <span>Họ và tên</span>
               </label>
               <div className="auth-input-container">
                 <PersonFill className="auth-input-icon" />
@@ -299,11 +299,11 @@ export default function RegisterPage() {
                     }}
                     className="animate-spin"
                   />
-                  <span>Đang khởi tạo tài khoản...</span>
+                  <span>Đang xử lý...</span>
                 </>
               ) : (
                 <>
-                  <span>Hoàn tất đăng ký</span>
+                  <span>Đăng ký</span>
                   <ArrowRightShort style={{ fontSize: '1.4rem' }} />
                 </>
               )}

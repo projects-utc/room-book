@@ -88,7 +88,7 @@ export default function HostBookingsPage() {
         <StatCard
           label="Đơn lưu trú hoàn tất"
           value={`${completedCount} đơn`}
-          sublabel="Đã ghi nhận doanh thu (BR-08)"
+          sublabel="Đã ghi nhận vào doanh thu"
           accent="ok"
         />
       </div>

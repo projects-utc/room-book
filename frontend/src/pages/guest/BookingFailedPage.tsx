@@ -56,7 +56,7 @@ export default function BookingFailedPage({ data, onRetry }: BookingFailedPagePr
                     Giao dịch thất bại
                 </h3>
                 <p style={{ margin: '0 0 1.5rem', fontSize: '0.92rem', color: '#64748B', lineHeight: 1.5 }}>
-                    Cổng thanh toán giả lập (Mock Payment) từ chối giao dịch. Bạn có thể thử lại hoặc đổi phương thức khác.
+                    Giao dịch chưa thành công do ngân hàng từ chối hoặc hết thời gian chờ. Bạn vui lòng thử lại hoặc chọn phương thức thanh toán khác.
                 </p>
 
                 <div
@@ -93,11 +93,11 @@ export default function BookingFailedPage({ data, onRetry }: BookingFailedPagePr
             </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                        <span style={{ color: '#64748B' }}>Phương thức (DB):</span>
+                        <span style={{ color: '#64748B' }}>Phương thức thanh toán:</span>
                         <strong style={{ color: '#1E293B' }}>{data.dbMethod}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                        <span style={{ color: '#64748B' }}>Kênh chi tiết:</span>
+                        <span style={{ color: '#64748B' }}>Kênh thanh toán:</span>
                         <span style={{ color: '#1E293B', fontWeight: 600 }}>{data.subChannel}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>

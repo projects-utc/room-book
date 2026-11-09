@@ -218,7 +218,7 @@ export default function BookingQuotePage() {
         {/* Header */}
         <div className="page-top-nav">
           <Button variant="outline" size="sm" icon={<ChevronLeft />} onClick={() => navigate(-1)} />
-          <h1>Yêu cầu đặt phòng</h1>
+          <h1>Xác nhận và đặt phòng</h1>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -244,7 +244,7 @@ export default function BookingQuotePage() {
                       <input type="radio" name="payMethod" checked={paymentMethod === 'cod'} onChange={() => {}} style={{ display: 'none' }} />
                       <CashCoin style={{ fontSize: '1.5rem', color: paymentMethod === 'cod' ? '#E11D48' : '#059669', flexShrink: 0, marginTop: 2 }} />
                       <div>
-                        <strong style={{ display: 'block', fontSize: '0.95rem', color: paymentMethod === 'cod' ? '#BE123C' : '#1E293B', marginBottom: 3 }}>Tiền mặt khi nhận phòng (Cọc 30%)</strong>
+                        <strong style={{ display: 'block', fontSize: '0.95rem', color: paymentMethod === 'cod' ? '#BE123C' : '#1E293B', marginBottom: 3 }}>Đặt cọc 30% giữ phòng (70% thanh toán khi nhận phòng)</strong>
                         <span style={{ fontSize: '0.82rem', color: '#64748B', lineHeight: 1.4, display: 'block' }}>Đặt cọc trước để giữ chỗ, thanh toán phần còn lại khi nhận phòng.</span>
                       </div>
                     </div>
@@ -272,7 +272,7 @@ export default function BookingQuotePage() {
                       Quét mã VietQR
                     </button>
                     <button type="button" onClick={() => setBankSubMode('BANK_REDIRECT')} style={{ flex: 1, padding: '0.5rem 0.75rem', borderRadius: 8, border: 'none', fontSize: '0.84rem', fontWeight: 600, cursor: 'pointer', backgroundColor: bankSubMode === 'BANK_REDIRECT' ? '#ffffff' : 'transparent', color: '#1E293B', boxShadow: bankSubMode === 'BANK_REDIRECT' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none', transition: 'all 0.2s' }}>
-                      Chuyển hướng Ngân hàng
+                      Thanh toán qua ứng dụng Ngân hàng
                     </button>
                   </div>
 
@@ -293,14 +293,14 @@ export default function BookingQuotePage() {
                             <span>Số TK:</span>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                               <strong>{receiverAccount.accountNo}</strong>
-                              <button type="button" onClick={() => handleCopy(receiverAccount.accountNo, 'STK')} style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: 4, border: '1px solid #CBD5E1', background: '#F8FAFC', cursor: 'pointer' }}>{copiedField === 'STK' ? 'Đã chép' : 'Sao chép'}</button>
+                              <button type="button" onClick={() => handleCopy(receiverAccount.accountNo, 'STK')} style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: 4, border: '1px solid #CBD5E1', background: '#F8FAFC', cursor: 'pointer' }}>{copiedField === 'STK' ? 'Đã sao chép' : 'Sao chép'}</button>
                             </div>
                           </div>
                           <div className="info-row">
                             <span>Nội dung:</span>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                               <strong style={{ color: '#E11D48' }}>{receiverAccount.content}</strong>
-                              <button type="button" onClick={() => handleCopy(receiverAccount.content, 'CONTENT')} style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: 4, border: '1px solid #CBD5E1', background: '#F8FAFC', cursor: 'pointer' }}>{copiedField === 'CONTENT' ? 'Đã chép' : 'Sao chép'}</button>
+                              <button type="button" onClick={() => handleCopy(receiverAccount.content, 'CONTENT')} style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: 4, border: '1px solid #CBD5E1', background: '#F8FAFC', cursor: 'pointer' }}>{copiedField === 'CONTENT' ? 'Đã sao chép' : 'Sao chép'}</button>
                             </div>
                           </div>
                         </div>
@@ -336,7 +336,7 @@ export default function BookingQuotePage() {
 
                 {/* Sim Test Box */}
                 <div className="sim-box">
-                  <label>🧪 Mô phỏng kết quả:</label>
+                  <label>Chế độ kiểm thử giao dịch (Demo):</label>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <button type="button" className={`sim-btn sim-btn-success${simulateOutcome === 'SUCCESS' ? ' active' : ''}`} onClick={() => setSimulateOutcome('SUCCESS')}>✓ PAID</button>
                     <button type="button" className={`sim-btn sim-btn-fail${simulateOutcome === 'FAILED' ? ' active' : ''}`} onClick={() => setSimulateOutcome('FAILED')}>✕ FAILED</button>
@@ -380,9 +380,9 @@ export default function BookingQuotePage() {
                   </div>
                 </div>
 
-                {/* Thông tin kỳ nghỉ */}
+                {/* Chi tiết đặt phòng */}
                 <div style={{ background: 'linear-gradient(135deg,#F8FAFC,#FFF1F2)', borderRadius: 14, padding: '0.9rem', border: '1px solid #E2E8F0', marginBottom: '1.1rem' }}>
-                  <strong style={{ display: 'block', fontSize: '0.88rem', color: '#0F172A', marginBottom: '0.6rem' }}>Thông tin kỳ nghỉ</strong>
+                  <strong style={{ display: 'block', fontSize: '0.88rem', color: '#0F172A', marginBottom: '0.6rem' }}>Chi tiết đặt phòng</strong>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.8)', borderRadius: 10, padding: '0.65rem 0.75rem', border: '1px solid rgba(226,232,240,0.9)' }}>
                     <div>
                       <span style={{ display: 'block', color: '#64748B', fontSize: '0.68rem', marginBottom: 2 }}>NHẬN PHÒNG</span>

@@ -75,7 +75,7 @@ export default function AdminUsersPage() {
   const handleToggleStatus = async (u: User) => {
     // Safety check: Cannot lock own admin account
     if (u.username === currentUser?.username || u.username === 'admin') {
-      addToast('Quy tắc an toàn (ASSUM-01): Quản trị viên không thể tự khóa tài khoản chính mình!', 'error');
+      addToast('Bạn không thể tự khóa tài khoản Quản trị viên đang đăng nhập.', 'error');
       return;
     }
 
@@ -92,7 +92,7 @@ export default function AdminUsersPage() {
 
   const handleChangeRole = async (u: User, newR: User['role']) => {
     if (u.username === 'admin' && newR !== 'ADMIN') {
-      addToast('Quy tắc an toàn (ASSUM-01): Hệ thống phải duy trì ít nhất 01 Quản trị viên tối cao!', 'error');
+      addToast('Hệ thống phải duy trì ít nhất 01 Quản trị viên hoạt động.', 'error');
       return;
     }
 
@@ -182,17 +182,17 @@ export default function AdminUsersPage() {
         <Breadcrumb
             items={[
               { label: 'Admin Console', to: '/admin/users' },
-              { label: 'Quản lý tài khoản & RBAC' },
+              { label: 'Người dùng & Phân quyền' },
             ]}
         />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', margin: '1rem 0 2rem' }}>
           <div>
             <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#1E293B' }}>
-              Quản lý tài khoản &amp; Phân quyền RBAC
+              Quản lý Người dùng &amp; Phân quyền
             </h1>
             <p style={{ margin: 0, color: '#64748B', fontSize: '0.95rem' }}>
-              Kiểm soát tài khoản, thay đổi quyền hạn và khóa người dùng vi phạm. Bảo đảm quy tắc an toàn ASSUM-01.
+              Kiểm soát tài khoản, thay đổi quyền hạn và khóa người dùng vi phạm trên hệ thống.
             </p>
           </div>
           <Button variant="primary" icon={<PersonPlusFill />} onClick={() => setShowAddForm(true)} style={{ background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)', border: 'none' }}>
