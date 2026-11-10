@@ -68,17 +68,14 @@ public class PropertyEntity {
     private String badge;
 
     @Column(name = "is_hot")
-    @JsonProperty("isHot")
     @Builder.Default
     private Boolean isHot = false;
 
     @Column(name = "views_7d")
-    @JsonProperty("views7d")
     @Builder.Default
     private Long views7d = 0L;
 
     @Column(name = "is_trending")
-    @JsonProperty("isTrending")
     @Builder.Default
     private Boolean isTrending = false;
 

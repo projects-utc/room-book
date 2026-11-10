@@ -80,15 +80,6 @@ export default function ReviewFormPage() {
         });
     };
 
-    const fileToBase64 = (file: File): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = error => reject(error);
-        });
-    };
-
     // Nhãn cảm xúc theo số sao (SPEC-FE-001)
     const ratingLabels: Record<number, { text: string; color: string }> = {
         1: { text: 'Cần cải thiện', color: 'var(--color-danger)' },
@@ -114,15 +105,11 @@ export default function ReviewFormPage() {
         setIsSubmitting(true);
 
         try {
-            // Chuyển đổi file đính kèm thành base64 data URLs để lưu trữ và hiển thị bền vững
-            const mediaUrls = await Promise.all(mediaFiles.map(m => fileToBase64(m.file)));
-
             const reviewPayload = {
                 bookingCode,
                 propertyId: targetPropertyId,
                 rating,
                 comment,
-                mediaUrls,
                 guestUsername: currentUser?.username || 'guest_user',
                 guestName: currentUser?.fullName || 'Khách Hàng Ẩn Danh'
             };
@@ -131,7 +118,7 @@ export default function ReviewFormPage() {
             const response = await stayApi.submitReview(reviewPayload);
 
             if (response.success) {
-                // Đánh dấu vào store cục bộ để UI biết đơn này đã được đánh giá kèm mảng media
+                // Đánh dấu vào store cục bộ để UI biết đơn này đã được đánh giá
                 const localRes = store.submitReview(reviewPayload);
 
                 if (localRes.success) {

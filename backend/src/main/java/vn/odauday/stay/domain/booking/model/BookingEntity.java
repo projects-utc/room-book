@@ -92,14 +92,4 @@ public class BookingEntity {
     @JsonAlias({"is_reviewed", "isReviewed"})
     @Builder.Default
     private Boolean isReviewed = false;
-
-    @JsonProperty("is_reviewed")
-    public Boolean getIs_reviewed() {
-        return isReviewed;
-    }
-
-    @JsonProperty("payment_method")
-    public String getPayment_method() {
-        return paymentMethod;
-    }
 }

@@ -420,7 +420,6 @@ export const ODDStore = {
     guestName: string;
     rating: number;
     comment: string;
-    mediaUrls?: string[];
   }): { success: boolean; message?: string } {
     const data = loadData();
     const isAlreadyReviewed = Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === reviewPayload.bookingCode);

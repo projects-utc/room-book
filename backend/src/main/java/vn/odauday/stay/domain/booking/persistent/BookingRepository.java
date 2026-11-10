@@ -27,17 +27,4 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
             @Param("startDate") String startDate,
             @Param("minBookings") long minBookings
     );
-
-    /**
-     * Tìm tất cả các phòng/chỗ ở có số lượt đặt phòng (bookings) > minBookings trong 30 ngày qua
-     */
-    @Query("SELECT b.propertyId FROM BookingEntity b " +
-           "WHERE (b.status IS NULL OR b.status != 'CANCELLED') " +
-           "AND b.createdAt >= :startDate " +
-           "GROUP BY b.propertyId " +
-           "HAVING COUNT(b.id) > :minBookings")
-    List<Long> findTrendingPropertyIds(
-            @Param("startDate") String startDate,
-            @Param("minBookings") long minBookings
-    );
 }
