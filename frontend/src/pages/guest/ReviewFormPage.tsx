@@ -1,9 +1,9 @@
 // Airbnb-Inspired Review Form Page (TypeScript)
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb } from '../../components/UI';
-import { ShieldCheck, StarFill, CameraFill } from 'react-bootstrap-icons';
+import { ShieldCheck, StarFill } from 'react-bootstrap-icons';
 import { stayApi } from '../../api/stayApi';
 import { Property } from '../../data';
 
@@ -48,37 +48,6 @@ export default function ReviewFormPage() {
     const [hoverRating, setHoverRating] = useState<number>(0);
     const [comment, setComment] = useState<string>('');
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-    // 4 & 5. Quản lý đính kèm Media (ảnh/video) và xem trước (preview thumbnail)
-    const [mediaFiles, setMediaFiles] = useState<Array<{ file: File; previewUrl: string; type: 'image' | 'video' }>>([]);
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (!files || files.length === 0) return;
-
-        const newMedia = Array.from(files).map(file => {
-            const previewUrl = URL.createObjectURL(file);
-            const type = file.type.startsWith('video/') ? ('video' as const) : ('image' as const);
-            return { file, previewUrl, type };
-        });
-
-        setMediaFiles(prev => [...prev, ...newMedia]);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
-    };
-
-    const handleRemoveMedia = (indexToRemove: number) => {
-        setMediaFiles(prev => {
-            const updated = [...prev];
-            const removed = updated.splice(indexToRemove, 1);
-            if (removed[0]?.previewUrl) {
-                URL.revokeObjectURL(removed[0].previewUrl);
-            }
-            return updated;
-        });
-    };
 
     // Nhãn cảm xúc theo số sao (SPEC-FE-001)
     const ratingLabels: Record<number, { text: string; color: string }> = {
@@ -237,101 +206,6 @@ export default function ReviewFormPage() {
                             onChange={(e) => setComment(e.target.value)}
                             required
                         />
-                    </div>
-
-                    {/* 4 & 5: KHU VỰC ĐÍNH KÈM HÌNH ẢNH / VIDEO VÀ LƯỚI PREVIEW THUMBNAIL */}
-                    <div style={{ marginBottom: '20px' }}>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            multiple
-                            accept="image/*,video/*"
-                            style={{ display: 'none' }}
-                            onChange={handleFilesSelected}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => fileInputRef.current?.click()}
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 8,
-                                padding: '10px 18px',
-                                borderRadius: 10,
-                                border: '1.5px dashed var(--color-primary)',
-                                background: 'var(--color-primary-soft)',
-                                color: 'var(--color-primary)',
-                                fontSize: '0.88rem',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                transition: 'all 0.15s ease',
-                            }}
-                            onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-                            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                        >
-                            <CameraFill style={{ fontSize: '1.15rem' }} />
-                            <span>Thêm hình ảnh / video</span>
-                        </button>
-
-                        {/* LƯỚI ẢNH THU NHỎ (THUMBNAIL GRID PREVIEW) */}
-                        {mediaFiles.length > 0 && (
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 14 }}>
-                                {mediaFiles.map((item, idx) => (
-                                    <div
-                                        key={idx}
-                                        style={{
-                                            position: 'relative',
-                                            width: 80,
-                                            height: 80,
-                                            borderRadius: 10,
-                                            overflow: 'hidden',
-                                            border: '1px solid var(--color-border-subtle)',
-                                            background: 'var(--color-bg-muted)',
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                                        }}
-                                    >
-                                        {item.type === 'video' ? (
-                                            <video
-                                                src={item.previewUrl}
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            />
-                                        ) : (
-                                            <img
-                                                src={item.previewUrl}
-                                                alt={`Tệp xem trước ${idx + 1}`}
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            />
-                                        )}
-                                        <button
-                                            type="button"
-                                            onClick={() => handleRemoveMedia(idx)}
-                                            style={{
-                                                position: 'absolute',
-                                                top: 4,
-                                                right: 4,
-                                                width: 20,
-                                                height: 20,
-                                                borderRadius: '50%',
-                                                background: 'rgba(0, 0, 0, 0.65)',
-                                                color: '#fff',
-                                                border: 'none',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                fontSize: '11px',
-                                                fontWeight: 'bold',
-                                                padding: 0,
-                                                lineHeight: 1,
-                                            }}
-                                            title="Xóa tệp này"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '20px' }}>

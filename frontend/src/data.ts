@@ -92,7 +92,6 @@ export interface Review {
   rating: number;
   comment: string;
   date: string;
-  mediaUrls?: string[];
 }
 
 export interface Promotion {
@@ -179,11 +178,6 @@ export const INITIAL_DATA: InitialDataState = {
       rating: 5,
       comment: 'Phòng sạch sẽ, không gian thoáng đãng mát mẻ, chủ nhà hỗ trợ check-in rất nhanh chóng và nhiệt tình. Vị trí đi bộ ra hồ Tây rất gần!',
       date: '13/01/2027',
-      mediaUrls: [
-        'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=800&q=80'
-      ]
     },
     {
       id: 2,
@@ -194,10 +188,6 @@ export const INITIAL_DATA: InitialDataState = {
       rating: 5,
       comment: 'Chỗ ở cực kỳ ưng ý, decor tone ấm cúng, đầy đủ tiện nghi bếp và máy giặt sấy. Tự nhận phòng bằng khóa số rất an tâm!',
       date: '20/01/2027',
-      mediaUrls: [
-        'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80'
-      ]
     },
     {
       id: 3,

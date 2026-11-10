@@ -118,7 +118,7 @@ export default function PropertyDetailPage() {
       3: reviews.filter(r => Math.round(Number(r.rating)) === 3).length,
       2: reviews.filter(r => Math.round(Number(r.rating)) === 2).length,
       1: reviews.filter(r => Math.round(Number(r.rating)) === 1).length,
-      withMedia: reviews.filter(r => Array.isArray(r.mediaUrls) && r.mediaUrls.length > 0).length,
+      withMedia: reviews.filter(r => Array.isArray((r as any).mediaUrls) && (r as any).mediaUrls.length > 0).length,
     };
   }, [reviews]);
 
@@ -126,7 +126,7 @@ export default function PropertyDetailPage() {
   const displayedReviews = useMemo(() => {
     if (reviewFilter === 'ALL') return reviews;
     if (reviewFilter === 'WITH_MEDIA') {
-      return reviews.filter(r => Array.isArray(r.mediaUrls) && r.mediaUrls.length > 0);
+      return reviews.filter(r => Array.isArray((r as any).mediaUrls) && (r as any).mediaUrls.length > 0);
     }
     const starNum = Number(reviewFilter);
     return reviews.filter(r => Math.round(Number(r.rating)) === starNum);
@@ -445,7 +445,7 @@ export default function PropertyDetailPage() {
                       { key: '3', label: `3 Sao (${filterCounts['3']})` },
                       { key: '2', label: `2 Sao (${filterCounts['2']})` },
                       { key: '1', label: `1 Sao (${filterCounts['1']})` },
-                      { key: 'WITH_MEDIA', label: `Có hình ảnh / video (${filterCounts.withMedia})` },
+                      ...(filterCounts.withMedia > 0 ? [{ key: 'WITH_MEDIA', label: `Có hình ảnh / video (${filterCounts.withMedia})` }] : []),
                     ].map(f => {
                       const isActive = reviewFilter === f.key;
                       return (
@@ -670,9 +670,9 @@ export default function PropertyDetailPage() {
                       </p>
 
                       {/* Lưới hình ảnh / video thu nhỏ */}
-                      {Array.isArray(rev.mediaUrls) && rev.mediaUrls.length > 0 && (
+                      {Array.isArray((rev as any).mediaUrls) && (rev as any).mediaUrls.length > 0 && (
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '0.85rem' }}>
-                          {rev.mediaUrls.map((mediaUrl, idx) => (
+                          {(rev as any).mediaUrls.map((mediaUrl: string, idx: number) => (
                             <div
                               key={idx}
                               onClick={() => setPreviewImage(mediaUrl)}
