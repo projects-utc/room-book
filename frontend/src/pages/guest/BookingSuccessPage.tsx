@@ -16,18 +16,21 @@ export default function BookingSuccessPage() {
     const txnCode = searchParams.get('txn') || 'TXN-808384';
     const dbMethod = searchParams.get('method') || 'BANK_TRANSFER';
     const subChannel = searchParams.get('channel') || 'Quét mã VietQR';
-    const paidAmount = Number(searchParams.get('amount')) || booking?.total || 1300000;
+    // Số tiền đã thanh toán lần này (truyền từ BookingQuotePage qua URL)
+    const paidAmount = Number(searchParams.get('amount')) || booking?.total || 0;
+    // Tổng tiền đơn đặt phòng (lấy từ booking store)
     const totalAmount = booking?.total || paidAmount;
+    // Chỉ hiện "Còn lại" khi COD (đặt cọc 30%): paidAmount < totalAmount
     const remainingAmount = Math.max(0, totalAmount - paidAmount);
 
     return (
         <div style={{ maxWidth: 540, margin: '3.5rem auto 5rem', padding: '0 1.5rem' }}>
             <div
                 style={{
-                    background: '#ffffff',
+                    background: 'var(--color-bg-surface)',
                     padding: '2.25rem 2rem',
                     borderRadius: 18,
-                    border: '1px solid #E2E8F0',
+                    border: '1px solid var(--color-border-subtle)',
                     boxShadow: '0 10px 25px rgba(0,0,0,0.06)',
                     textAlign: 'center',
                 }}
@@ -44,17 +47,17 @@ export default function BookingSuccessPage() {
                         justifyContent: 'center',
                         fontSize: '2rem',
                         fontWeight: 700,
-                        backgroundColor: '#ECFDF5',
-                        color: '#10B981',
+                        backgroundColor: 'var(--color-success-bg)',
+                        color: 'var(--color-success)',
                     }}
                 >
                     ✓
                 </div>
 
-                <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 700, color: '#1E293B' }}>
+                <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
                     Thanh toán thành công!
                 </h3>
-                <p style={{ margin: '0 0 1.5rem', fontSize: '0.92rem', color: '#64748B', lineHeight: 1.5 }}>
+                <p style={{ margin: '0 0 1.5rem', fontSize: '0.92rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
                     Đơn #{booking?.code || code} đã hoàn tất{' '}
                     {dbMethod === 'CASH' ? 'đặt cọc 30% giữ chỗ' : 'thanh toán 100%'}. Phương thức thanh toán đã được khóa.
                 </p>
@@ -62,61 +65,61 @@ export default function BookingSuccessPage() {
                 {/* Khung thông tin chi tiết đồng bộ với PaymentFailedScreen */}
                 <div
                     style={{
-                        background: '#F8FAFC',
+                        background: 'var(--color-bg-app)',
                         borderRadius: 14,
                         padding: '1.25rem',
                         textAlign: 'left',
                         marginBottom: '1.5rem',
-                        border: '1px solid #E2E8F0',
+                        border: '1px solid var(--color-border-subtle)',
                         fontSize: '0.9rem',
                     }}
                 >
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                        <span style={{ color: '#64748B' }}>Mã xác nhận đặt phòng:</span>
-                        <strong style={{ color: '#1E293B', fontFamily: 'monospace' }}>
+                        <span style={{ color: 'var(--color-text-muted)' }}>Mã xác nhận đặt phòng:</span>
+                        <strong style={{ color: 'var(--color-text-primary)', fontFamily: 'monospace' }}>
                             {booking?.code || code}
                         </strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                        <span style={{ color: '#64748B' }}>Mã giao dịch:</span>
-                        <strong style={{ color: '#1E293B' }}>{txnCode}</strong>
+                        <span style={{ color: 'var(--color-text-muted)' }}>Mã giao dịch:</span>
+                        <strong style={{ color: 'var(--color-text-primary)' }}>{txnCode}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                        <span style={{ color: '#64748B' }}>Chỗ ở & Hạng phòng:</span>
-                        <strong style={{ color: '#1E293B', textAlign: 'right' }}>
+                        <span style={{ color: 'var(--color-text-muted)' }}>Chỗ ở & Hạng phòng:</span>
+                        <strong style={{ color: 'var(--color-text-primary)', textAlign: 'right' }}>
                             {booking?.propertyName || 'ODauDay Stay'} ({booking?.roomName || 'Phòng nghỉ'})
                         </strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                        <span style={{ color: '#64748B' }}>Thời gian lưu trú:</span>
-                        <span style={{ color: '#1E293B', fontWeight: 600 }}>
+                        <span style={{ color: 'var(--color-text-muted)' }}>Thời gian lưu trú:</span>
+                        <span style={{ color: 'var(--color-text-primary)', fontWeight: 600 }}>
               {booking?.checkIn} → {booking?.checkOut} ({booking?.nights} đêm)
             </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                        <span style={{ color: '#64748B' }}>Người liên hệ:</span>
-                        <span style={{ color: '#1E293B', fontWeight: 600 }}>
+                        <span style={{ color: 'var(--color-text-muted)' }}>Người liên hệ:</span>
+                        <span style={{ color: 'var(--color-text-primary)', fontWeight: 600 }}>
               {booking?.guestName} ({booking?.guestPhone})
             </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                        <span style={{ color: '#64748B' }}>Phương thức (DB):</span>
-                        <strong style={{ color: '#1E293B' }}>{dbMethod}</strong>
+                        <span style={{ color: 'var(--color-text-muted)' }}>Phương thức (DB):</span>
+                        <strong style={{ color: 'var(--color-text-primary)' }}>{dbMethod}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                        <span style={{ color: '#64748B' }}>Kênh chi tiết:</span>
-                        <span style={{ color: '#1E293B', fontWeight: 600 }}>{subChannel}</span>
+                        <span style={{ color: 'var(--color-text-muted)' }}>Kênh chi tiết:</span>
+                        <span style={{ color: 'var(--color-text-primary)', fontWeight: 600 }}>{subChannel}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                        <span style={{ color: '#64748B' }}>Trạng thái:</span>
-                        <strong style={{ color: '#15803D' }}>PAID</strong>
+                        <span style={{ color: 'var(--color-text-muted)' }}>Trạng thái:</span>
+                        <strong style={{ color: 'var(--color-success)' }}>PAID</strong>
                     </div>
 
-                    <hr style={{ border: 'none', borderTop: '1px dashed #CBD5E1', margin: '0.85rem 0' }} />
+                    <hr style={{ border: 'none', borderTop: '1px dashed var(--color-border-strong)', margin: '0.85rem 0' }} />
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.05rem' }}>
-                        <strong style={{ color: '#1E293B' }}>Số tiền:</strong>
-                        <strong style={{ color: '#FF385C' }}>{formatVND(paidAmount)}</strong>
+                        <strong style={{ color: 'var(--color-text-primary)' }}>Số tiền:</strong>
+                        <strong style={{ color: 'var(--color-primary)' }}>{formatVND(paidAmount)}</strong>
                     </div>
 
                     {remainingAmount > 0 && (
@@ -125,11 +128,11 @@ export default function BookingSuccessPage() {
                                 display: 'flex',
                                 justifyContent: 'space-between',
                                 fontSize: '0.84rem',
-                                color: '#64748B',
+                                color: 'var(--color-text-muted)',
                                 marginTop: '0.4rem',
                             }}
                         >
-                            <span>Còn lại thanh toán tại quầy (70%):</span>
+                            <span>Còn lại thanh toán tại quầy ({Math.round((remainingAmount / totalAmount) * 100)}%):</span>
                             <strong>{formatVND(remainingAmount)}</strong>
                         </div>
                     )}
@@ -142,8 +145,8 @@ export default function BookingSuccessPage() {
                     style={{
                         width: '100%',
                         padding: '0.9rem 1.25rem',
-                        backgroundColor: '#1E293B',
-                        color: '#ffffff',
+                        backgroundColor: 'var(--color-text-primary)',
+                        color: 'var(--color-bg-surface)',
                         border: 'none',
                         borderRadius: 10,
                         fontSize: '0.95rem',
@@ -162,8 +165,8 @@ export default function BookingSuccessPage() {
                         width: '100%',
                         padding: '0.75rem 1.25rem',
                         backgroundColor: 'transparent',
-                        color: '#64748B',
-                        border: '1px solid #E2E8F0',
+                        color: 'var(--color-text-muted)',
+                        border: '1px solid var(--color-border-subtle)',
                         borderRadius: 10,
                         fontSize: '0.88rem',
                         fontWeight: 600,

@@ -51,7 +51,7 @@ export function setCurrentUser(user: User | null): void {
   try {
     if (!user) localStorage.setItem(USER_KEY, 'LOGGED_OUT');
     else localStorage.setItem(USER_KEY, JSON.stringify(user));
-  } catch {}
+  } catch { }
 }
 
 export interface QuoteResult {
@@ -104,8 +104,8 @@ export const ODDStore = {
     const user = data.users.find(u => {
       const uname = u.username.toLowerCase();
       return (
-          uname === inputName ||
-          ((uname === 'admin' || uname === 'admin.demo') && (inputName === 'admin' || inputName === 'admin.demo'))
+        uname === inputName ||
+        ((uname === 'admin' || uname === 'admin.demo') && (inputName === 'admin' || inputName === 'admin.demo'))
       );
     });
 
@@ -169,11 +169,11 @@ export const ODDStore = {
     const maxP = typeof maxPrice === 'number' ? maxPrice : parseInt(String(maxPrice || ''), 10) || Infinity;
     const results = data.properties.filter(p => {
       const matchKw =
-          !kwLower ||
-          p.name.toLowerCase().includes(kwLower) ||
-          p.address.toLowerCase().includes(kwLower) ||
-          p.city.toLowerCase().includes(kwLower) ||
-          (p.area || '').toLowerCase().includes(kwLower);
+        !kwLower ||
+        p.name.toLowerCase().includes(kwLower) ||
+        p.address.toLowerCase().includes(kwLower) ||
+        p.city.toLowerCase().includes(kwLower) ||
+        (p.area || '').toLowerCase().includes(kwLower);
       const matchType = type === 'Tất cả' || type === 'Tất cả chỗ ở' || p.type.toLowerCase().includes(type.toLowerCase());
       return matchKw && matchType && p.priceMin <= maxP;
     });
@@ -294,6 +294,7 @@ export const ODDStore = {
     guestName?: string;
     guestPhone?: string;
     guestEmail?: string;
+    paymentMethod?: string;
   }): { success: boolean; booking?: Booking; message?: string } {
     const quote = this.calculateQuote(payload.roomId, payload.checkIn, payload.checkOut, payload.guests);
     if (!quote.success) return { success: false, message: quote.message };
@@ -323,6 +324,9 @@ export const ODDStore = {
       status: 'PENDING',
       createdAt: new Date().toISOString().slice(0, 10),
       isReviewed: false,
+      is_reviewed: false,
+      paymentMethod: payload.paymentMethod || 'CASH',
+      payment_method: payload.paymentMethod || 'CASH',
     };
 
     data.bookings.push(newBooking);
@@ -331,19 +335,67 @@ export const ODDStore = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newBooking),
-    }).catch(() => {});
+    }).catch(() => { });
     return { success: true, booking: newBooking };
+  },
+
+  // Sync booking trả về từ API vào local store (tránh gọi lại BE lần 2)
+  syncBookingFromApi(booking: Booking): void {
+    const data = loadData();
+    const existsIdx = data.bookings.findIndex(b => b.code === booking.code);
+    const normalizedReviewed = Boolean(
+      booking.isReviewed === true ||
+      (booking as any).is_reviewed === true ||
+      (booking as any).is_reviewed === 1 ||
+      (Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === booking.code))
+    );
+    const normalizedMethod = booking.paymentMethod || booking.payment_method || 'CASH';
+    const normalizedBooking: Booking = {
+      ...booking,
+      paymentMethod: normalizedMethod,
+      payment_method: normalizedMethod,
+      isReviewed: normalizedReviewed,
+      is_reviewed: normalizedReviewed
+    };
+    if (existsIdx === -1) {
+      data.bookings.push(normalizedBooking);
+    } else {
+      data.bookings[existsIdx] = {
+        ...data.bookings[existsIdx],
+        ...normalizedBooking
+      };
+    }
+    saveData(data);
   },
 
   // UC-04: My Bookings
   getMyBookings(username: string): Booking[] {
     const data = loadData();
-    return data.bookings.filter(b => b.guestUsername === username).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return data.bookings
+      .filter(b => b.guestUsername === username)
+      .map(b => {
+        const isReviewed = Boolean(
+          b.isReviewed === true ||
+          (b as any).is_reviewed === true ||
+          (b as any).is_reviewed === 1 ||
+          (Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === b.code))
+        );
+        return { ...b, isReviewed, is_reviewed: isReviewed };
+      })
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   },
 
   getBooking(code: string): Booking | null {
     const data = loadData();
-    return data.bookings.find(b => b.code === code) || null;
+    const b = data.bookings.find(bk => bk.code === code);
+    if (!b) return null;
+    const isReviewed = Boolean(
+      b.isReviewed === true ||
+      (b as any).is_reviewed === true ||
+      (b as any).is_reviewed === 1 ||
+      (Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === b.code))
+    );
+    return { ...b, isReviewed, is_reviewed: isReviewed };
   },
 
   cancelBooking(code: string): { success: boolean; message?: string } {
@@ -356,7 +408,7 @@ export const ODDStore = {
     }
     data.bookings[idx].status = 'CANCELLED';
     saveData(data);
-    fetch(`/api/bookings/${encodeURIComponent(code)}/cancel`, { method: 'POST' }).catch(() => {});
+    fetch(`/api/bookings/${encodeURIComponent(code)}/cancel`, { method: 'POST' }).catch(() => { });
     return { success: true };
   },
 
@@ -370,23 +422,43 @@ export const ODDStore = {
     comment: string;
   }): { success: boolean; message?: string } {
     const data = loadData();
+    const isAlreadyReviewed = Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === reviewPayload.bookingCode);
     const idx = data.bookings.findIndex(b => b.code === reviewPayload.bookingCode);
     if (idx === -1) return { success: false, message: 'Không tìm thấy đơn đặt phòng.' };
-    if (data.bookings[idx].isReviewed) return { success: false, message: 'Đơn đặt phòng này đã được đánh giá.' };
+    if (data.bookings[idx].isReviewed || (data.bookings[idx] as any).is_reviewed || isAlreadyReviewed) {
+      return { success: false, message: 'Đơn đặt phòng này đã được đánh giá.' };
+    }
 
     data.reviews.push({
       id: data.reviews.length + 1,
       ...reviewPayload,
       date: new Date().toLocaleDateString('vi-VN'),
     });
-    data.bookings[idx].isReviewed = true;
+    if (idx !== -1) {
+      data.bookings[idx].isReviewed = true;
+      (data.bookings[idx] as any).is_reviewed = true;
+    }
     saveData(data);
     fetch('/api/reviews', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...reviewPayload, date: data.reviews[data.reviews.length - 1].date }),
-    }).catch(() => {});
+    }).catch(() => { });
     return { success: true };
+  },
+
+  getAllReviews(): Review[] {
+    const data = loadData();
+    return data.reviews || [];
+  },
+
+  isBookingReviewed(bookingCode: string): boolean {
+    const data = loadData();
+    const b = data.bookings.find(bk => bk.code === bookingCode);
+    if (b && (b.isReviewed === true || (b as any).is_reviewed === true || (b as any).is_reviewed === 1)) {
+      return true;
+    }
+    return Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === bookingCode);
   },
 
   getReviewsByProperty(propertyId: number | string): Review[] {
@@ -410,7 +482,7 @@ export const ODDStore = {
       address: propertyPayload.address || 'Hà Nội',
       city: propertyPayload.city || 'Hà Nội',
       area: propertyPayload.area || '',
-      rating: 5.0,
+      rating: null,
       reviewsCount: 0,
       priceMin: propertyPayload.priceMin || 500000,
       desc: propertyPayload.desc || '',
@@ -428,7 +500,7 @@ export const ODDStore = {
         newProp.id = res.data.id;
         saveData(data);
       }
-    }).catch(() => {});
+    }).catch(() => { });
     return { success: true, property: newProp };
   },
 
@@ -436,7 +508,7 @@ export const ODDStore = {
     const data = loadData();
     data.properties = data.properties.filter(p => p.id !== id);
     saveData(data);
-    fetch(`/api/properties/${id}`, { method: 'DELETE' }).catch(() => {});
+    fetch(`/api/properties/${id}`, { method: 'DELETE' }).catch(() => { });
     return { success: true };
   },
   getAllRooms(): Room[] {
@@ -468,7 +540,7 @@ export const ODDStore = {
         newRoom.id = res.data.id;
         saveData(data);
       }
-    }).catch(() => {});
+    }).catch(() => { });
     return { success: true, room: newRoom };
   },
 
@@ -476,7 +548,7 @@ export const ODDStore = {
     const data = loadData();
     data.rooms = data.rooms.filter(r => r.id !== id);
     saveData(data);
-    fetch(`/api/rooms/${id}`, { method: 'DELETE' }).catch(() => {});
+    fetch(`/api/rooms/${id}`, { method: 'DELETE' }).catch(() => { });
     return { success: true };
   },
   addRoomBlock(blockPayload: { roomId: number | string; roomName?: string; start: string; end: string; reason: string }): {
@@ -510,14 +582,14 @@ export const ODDStore = {
         lastBlock.id = res.data.id;
         saveData(data);
       }
-    }).catch(() => {});
+    }).catch(() => { });
     return { success: true };
   },
   deleteRoomBlock(id: number): { success: boolean } {
     const data = loadData();
     data.roomBlocks = data.roomBlocks.filter(b => b.id !== id);
     saveData(data);
-    fetch(`/api/room-blocks/${id}`, { method: 'DELETE' }).catch(() => {});
+    fetch(`/api/room-blocks/${id}`, { method: 'DELETE' }).catch(() => { });
     return { success: true };
   },
   getRoomBlocks(roomId?: number | string): RoomBlock[] {
@@ -542,7 +614,7 @@ export const ODDStore = {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus }),
-    }).catch(() => {});
+    }).catch(() => { });
     return { success: true };
   },
   // UC-09: Revenue
@@ -578,7 +650,7 @@ export const ODDStore = {
     if (idx === -1) return { success: false };
     data.users[idx].status = data.users[idx].status === 'ACTIVE' ? 'LOCKED' : 'ACTIVE';
     saveData(data);
-    fetch(`/api/users/${userId}/toggle-status`, { method: 'PATCH' }).catch(() => {});
+    fetch(`/api/users/${userId}/toggle-status`, { method: 'PATCH' }).catch(() => { });
     return { success: true, newStatus: data.users[idx].status };
   },
   changeUserRole(userId: number | string, newRole: User['role']): { success: boolean } {
@@ -591,7 +663,7 @@ export const ODDStore = {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ role: newRole }),
-    }).catch(() => {});
+    }).catch(() => { });
     return { success: true };
   },
   // ── Admin Management Features ──────────────────────────────────────────
@@ -617,7 +689,7 @@ export const ODDStore = {
     });
 
     saveData(data);
-    fetch(`/api/properties/${id}/toggle-status`, { method: 'PATCH' }).catch(() => {});
+    fetch(`/api/properties/${id}/toggle-status`, { method: 'PATCH' }).catch(() => { });
     return { success: true, newStatus: nextStatus };
   },
   adminCancelBooking(code: string, reason: string): { success: boolean; message?: string } {
@@ -639,7 +711,7 @@ export const ODDStore = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reason }),
-    }).catch(() => {});
+    }).catch(() => { });
     return { success: true };
   },
   getPromotions(): Promotion[] {
@@ -690,7 +762,7 @@ export const ODDStore = {
         newPromo.id = res.data.id;
         saveData(data);
       }
-    }).catch(() => {});
+    }).catch(() => { });
     return { success: true, promotion: newPromo };
   },
   togglePromotion(id: number): { success: boolean; newStatus?: 'ACTIVE' | 'INACTIVE' } {
@@ -702,7 +774,7 @@ export const ODDStore = {
     const nextStatus = cur === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     data.promotions[idx].status = nextStatus;
     saveData(data);
-    fetch(`/api/promotions/${id}/toggle`, { method: 'PATCH' }).catch(() => {});
+    fetch(`/api/promotions/${id}/toggle`, { method: 'PATCH' }).catch(() => { });
     return { success: true, newStatus: nextStatus };
   },
   deletePromotion(id: number): { success: boolean } {
@@ -721,7 +793,7 @@ export const ODDStore = {
     }
 
     saveData(data);
-    fetch(`/api/promotions/${id}`, { method: 'DELETE' }).catch(() => {});
+    fetch(`/api/promotions/${id}`, { method: 'DELETE' }).catch(() => { });
     return { success: true };
   },
   getAuditLogs(): AuditLog[] {
@@ -749,7 +821,7 @@ export const ODDStore = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(lastLog),
-    }).catch(() => {});
+    }).catch(() => { });
   },
 };
 export default ODDStore;

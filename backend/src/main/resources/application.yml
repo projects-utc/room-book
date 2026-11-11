@@ -16,6 +16,7 @@ spring:
       idle-timeout: 300000
       max-lifetime: 1200000
   jpa:
+    database-platform: org.hibernate.dialect.OracleDialect
     open-in-view: false
     hibernate:
       ddl-auto: update
@@ -26,5 +27,5 @@ spring:
 
 app:
   jwt:
-    secret: odaudaystaysecretkeyforjwttokengenerationshouldbelongenough256bit
+    secret: ${APP_JWT_SECRET:odaudaystaysecretkeyforjwttokengenerationshouldbelongenough256bit}
     expiration-ms: 86400000

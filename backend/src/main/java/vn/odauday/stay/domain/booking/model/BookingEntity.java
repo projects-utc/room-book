@@ -79,11 +79,17 @@ public class BookingEntity {
     @Builder.Default
     private String status = "PENDING";
 
+    @Column(name = "payment_method", length = 50)
+    @JsonProperty("payment_method")
+    @JsonAlias({"payment_method", "paymentMethod"})
+    private String paymentMethod;
+
     @Column(name = "created_at_str", length = 30)
     private String createdAt;
 
     @Column(name = "is_reviewed")
     @JsonProperty("is_reviewed")
+    @JsonAlias({"is_reviewed", "isReviewed"})
     @Builder.Default
     private Boolean isReviewed = false;
 }

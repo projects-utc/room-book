@@ -74,17 +74,17 @@ export default function RegisterPage() {
                   width: 40,
                   height: 40,
                   borderRadius: 12,
-                  background: 'linear-gradient(135deg, #FF385C 0%, #E00B41 100%)',
+                  background: 'var(--gradient-primary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   boxShadow: '0 4px 12px rgba(255, 56, 92, 0.35)',
                 }}
               >
-                <HouseDoorFill style={{ fontSize: '1.35rem', color: '#FFFFFF' }} />
+                <HouseDoorFill style={{ fontSize: '1.35rem', color: 'var(--color-bg-surface)' }} />
               </div>
-              <span style={{ fontSize: '1.45rem', fontWeight: 800, color: '#FF385C', letterSpacing: '-0.02em' }}>
-                ODauDay <span style={{ fontWeight: 600, color: '#1E293B' }}>Stay</span>
+              <span style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>
+                ODauDay <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>Stay</span>
               </span>
             </Link>
 
@@ -93,9 +93,9 @@ export default function RegisterPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.35rem',
-                background: '#FFF1F2',
-                border: '1px solid #FFE4E6',
-                color: '#E11D48',
+                background: 'var(--color-primary-soft)',
+                border: '1px solid var(--color-primary-border)',
+                color: 'var(--color-primary)',
                 borderRadius: '9999px',
                 padding: '0.2rem 0.8rem',
                 fontSize: '0.78rem',
@@ -110,14 +110,14 @@ export default function RegisterPage() {
               style={{
                 fontSize: '1.55rem',
                 fontWeight: 800,
-                color: '#0F172A',
+                color: 'var(--color-text-primary)',
                 margin: '0 0 0.35rem',
                 letterSpacing: '-0.02em',
               }}
             >
               Tạo tài khoản mới ✨
             </h1>
-            <p style={{ margin: 0, color: '#64748B', fontSize: '0.9rem' }}>
+            <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
               Bắt đầu những kỳ nghỉ trong mơ hoặc đăng tin chia sẻ không gian của bạn
             </p>
           </div>
@@ -233,15 +233,15 @@ export default function RegisterPage() {
 
             {/* Role Picker */}
             <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 700, color: '#1E293B', marginBottom: '0.45rem' }}>
-                Mục đích sử dụng chính <span style={{ color: '#FF385C' }}>*</span>
+              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.45rem' }}>
+                Mục đích sử dụng chính <span style={{ color: 'var(--color-primary)' }}>*</span>
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                 <div
                   onClick={() => setRole('GUEST')}
                   style={{
-                    border: role === 'GUEST' ? '2px solid #FF385C' : '1.5px solid #E2E8F0',
-                    background: role === 'GUEST' ? '#FFF1F2' : '#FFFFFF',
+                    border: role === 'GUEST' ? '2px solid var(--color-primary)' : '1.5px solid var(--color-border-subtle)',
+                    background: role === 'GUEST' ? 'var(--color-primary-soft)' : 'var(--color-bg-surface)',
                     borderRadius: '14px',
                     padding: '0.85rem',
                     cursor: 'pointer',
@@ -249,11 +249,11 @@ export default function RegisterPage() {
                     boxShadow: role === 'GUEST' ? '0 4px 12px rgba(255, 56, 92, 0.15)' : 'none',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 700, color: '#0F172A', fontSize: '0.92rem' }}>
-                    <HouseDoorFill style={{ color: '#FF385C' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 700, color: 'var(--color-text-primary)', fontSize: '0.92rem' }}>
+                    <HouseDoorFill style={{ color: 'var(--color-primary)' }} />
                     <span>Khách thuê</span>
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '0.2rem' }}>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '0.2rem' }}>
                     Tìm kiếm &amp; đặt phòng nghỉ dưỡng
                   </div>
                 </div>
@@ -261,8 +261,8 @@ export default function RegisterPage() {
                 <div
                   onClick={() => setRole('HOST')}
                   style={{
-                    border: role === 'HOST' ? '2px solid #FF385C' : '1.5px solid #E2E8F0',
-                    background: role === 'HOST' ? '#FFF1F2' : '#FFFFFF',
+                    border: role === 'HOST' ? '2px solid var(--color-primary)' : '1.5px solid var(--color-border-subtle)',
+                    background: role === 'HOST' ? 'var(--color-primary-soft)' : 'var(--color-bg-surface)',
                     borderRadius: '14px',
                     padding: '0.85rem',
                     cursor: 'pointer',
@@ -270,11 +270,11 @@ export default function RegisterPage() {
                     boxShadow: role === 'HOST' ? '0 4px 12px rgba(255, 56, 92, 0.15)' : 'none',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 700, color: '#0F172A', fontSize: '0.92rem' }}>
-                    <KeyFill style={{ color: '#FF385C' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 700, color: 'var(--color-text-primary)', fontSize: '0.92rem' }}>
+                    <KeyFill style={{ color: 'var(--color-primary)' }} />
                     <span>Chủ nhà</span>
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '0.2rem' }}>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '0.2rem' }}>
                     Đăng phòng &amp; đón tiếp du khách
                   </div>
                 </div>
@@ -294,7 +294,7 @@ export default function RegisterPage() {
                       width: 18,
                       height: 18,
                       border: '2px solid rgba(255,255,255,0.3)',
-                      borderTopColor: '#FFFFFF',
+                      borderTopColor: 'var(--color-bg-surface)',
                       borderRadius: '50%',
                     }}
                     className="animate-spin"
@@ -311,12 +311,12 @@ export default function RegisterPage() {
           </form>
 
           {/* Switch to Login */}
-          <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: '#64748B' }}>
+          <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
             Bạn đã có tài khoản rồi?{' '}
             <Link
               to="/login"
               style={{
-                color: '#FF385C',
+                color: 'var(--color-primary)',
                 fontWeight: 700,
                 textDecoration: 'none',
               }}
@@ -327,7 +327,7 @@ export default function RegisterPage() {
 
           {/* Security Badge */}
           <div className="auth-trust-badge">
-            <ShieldCheck style={{ fontSize: '1.05rem', color: '#10B981' }} />
+            <ShieldCheck style={{ fontSize: '1.05rem', color: 'var(--color-success)' }} />
             <span>Cam kết bảo mật &amp; không chia sẻ thông tin cá nhân</span>
           </div>
         </div>

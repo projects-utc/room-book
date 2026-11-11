@@ -5,56 +5,123 @@
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css');
 
 :root {
-  /* Airbnb Core Palette */
-  --airbnb-pink: #FF385C;
-  --airbnb-pink-hover: #E00B41;
-  --airbnb-gradient: linear-gradient(to right, #E61E4D 0%, #E31C5F 50%, #D70466 100%);
-  --brand: #FF385C;
-  --brand-hover: #E00B41;
-  --brand-gradient: linear-gradient(to right, #E61E4D 0%, #E31C5F 50%, #D70466 100%);
-  --brand-soft: #FFF8F8;
-  --brand-border: #FFD2D9;
+  /* ========================================================
+     1. ODauDay Unified Design Tokens (SPEC-FE-001)
+     ======================================================== */
+  
+  /* Primary & Brand */
+  --color-primary: #FF385C;
+  --color-primary-hover: #E00B41;
+  --color-primary-active: #C10836;
+  --color-primary-soft: #FFF1F2;
+  --color-primary-border: #FECDD3;
+  --gradient-primary: linear-gradient(135deg, #FF385C 0%, #E00B41 100%);
+  --shadow-primary: 0 4px 14px rgba(255, 56, 92, 0.28);
+  --shadow-primary-hover: 0 6px 20px rgba(255, 56, 92, 0.42);
 
-  /* Typography Colors */
-  --ink: #222222;
-  --ink-secondary: #717171;
-  --muted: #717171;
-  --subtle: #B0B0B0;
+  /* Secondary */
+  --color-secondary: #1E293B;
+  --color-secondary-hover: #0F172A;
+  --color-secondary-active: #020617;
+  --color-secondary-soft: #F1F5F9;
+  --color-secondary-border: #CBD5E1;
 
-  /* Surfaces & Lines */
-  --bg: #FFFFFF;
-  --surface: #FFFFFF;
-  --surface-alt: #F7F7F7;
-  --line: #EBEBEB;
-  --line-strong: #DDDDDD;
-  --border: #DDDDDD;
+  /* Background & Surfaces */
+  --color-bg-app: #F8FAFC;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-surface-elevated: #FFFFFF;
+  --color-bg-muted: #F1F5F9;
 
-  /* State Colors */
-  --ok: #008A05;
-  --ok-soft: #F0FDF4;
-  --ok-border: #BBF7D0;
-  --danger: #C13515;
-  --danger-soft: #FEF2F2;
-  --danger-border: #FECACA;
-  --warn: #C28E00;
-  --warn-soft: #FFFBEB;
-  --warn-border: #FDE68A;
-  --info: #0284C7;
+  /* Text & Typography (WCAG 2.1 AA Compliant) */
+  --color-text-primary: #0F172A;   /* 15.8:1 contrast on white */
+  --color-text-secondary: #475569; /* 6.5:1 contrast on white */
+  --color-text-muted: #64748B;     /* 4.6:1 contrast on white */
+  --color-text-inverse: #FFFFFF;
+  --color-text-disabled: #94A3B8;
 
-  /* Geometry & Shadows */
+  /* Borders & Dividers */
+  --color-border-subtle: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  --color-border-focus: #0F172A;
+
+  /* Semantic Status (Pastel Theme) */
+  --color-success: #15803D;
+  --color-success-bg: #F0FDF4;
+  --color-success-border: #BBF7D0;
+
+  --color-warning: #B45309;
+  --color-warning-bg: #FFFBEB;
+  --color-warning-border: #FDE68A;
+
+  /* Star Rating (Shopee / Vibrant Gold #FFB800) */
+  --color-star: #FFB800;
+  --color-star-hover: #F59E0B;
+  --color-star-bg: #FFFBEB;
+
+  --color-danger: #B91C1C;
+  --color-danger-bg: #FEF2F2;
+  --color-danger-border: #FECACA;
+
+  --color-info: #1D4ED8;
+  --color-info-bg: #EFF6FF;
+  --color-info-border: #BFDBFE;
+
+  /* Animation & Transitions */
+  --transition-fast: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Geometry & Radii */
+  --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-full: 9999px;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.12);
+  --shadow-card: 0 2px 16px rgba(15, 23, 42, 0.06);
+  --shadow-dropdown: 0 6px 20px rgba(15, 23, 42, 0.12);
+  --shadow-modal: 0 12px 32px rgba(15, 23, 42, 0.22);
   --shadow-search: 0 1px 2px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
   --shadow-search-hover: 0 2px 4px rgba(0, 0, 0, 0.18);
-  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.08);
-  --shadow-dropdown: 0 6px 20px rgba(0, 0, 0, 0.15);
-  --shadow-modal: 0 8px 28px rgba(0, 0, 0, 0.28);
 
   --container: 1280px;
+
+  /* Legacy Backward-Compatibility Aliases */
+  --airbnb-pink: var(--color-primary);
+  --airbnb-pink-hover: var(--color-primary-hover);
+  --airbnb-gradient: var(--gradient-primary);
+  --brand: var(--color-primary);
+  --brand-hover: var(--color-primary-hover);
+  --brand-gradient: var(--gradient-primary);
+  --brand-soft: var(--color-primary-soft);
+  --brand-border: var(--color-primary-border);
+
+  --ink: var(--color-text-primary);
+  --ink-secondary: var(--color-text-secondary);
+  --muted: var(--color-text-muted);
+  --subtle: var(--color-border-strong);
+
+  --bg: var(--color-bg-app);
+  --surface: var(--color-bg-surface);
+  --surface-alt: var(--color-bg-app);
+  --line: var(--color-border-subtle);
+  --line-strong: var(--color-border-strong);
+  --border: var(--color-border-subtle);
+
+  --ok: var(--color-success);
+  --ok-soft: var(--color-success-bg);
+  --ok-border: var(--color-success-border);
+  --danger: var(--color-danger);
+  --danger-soft: var(--color-danger-bg);
+  --danger-border: var(--color-danger-border);
+  --warn: var(--color-warning);
+  --warn-soft: var(--color-warning-bg);
+  --warn-border: var(--color-warning-border);
+  --info: var(--color-info);
 }
 
 *, *::before, *::after {
@@ -1483,7 +1550,9 @@ textarea::placeholder {
   gap: 1rem;
 }
 
-/* Reusable Buttons */
+/* ========================================================
+   Reusable Buttons & Interactive Engine (SPEC-FE-001)
+   ======================================================== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -1493,59 +1562,122 @@ textarea::placeholder {
   font-size: 0.92rem;
   font-weight: 600;
   padding: 0.7rem 1.4rem;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: var(--transition-fast);
   text-decoration: none;
   line-height: 1.3;
+  user-select: none;
+  outline: none;
 }
 
-.btn:hover {
-  transform: translateY(-1px);
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
 }
 
-.btn:active {
-  transform: scale(0.98);
+.btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
 }
 
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* 1. Primary Button (Airbnb Gradient Glow) */
 .btn-primary {
-  background: var(--airbnb-gradient);
-  color: #ffffff;
+  background: var(--gradient-primary);
+  color: var(--color-text-inverse) !important;
   border: none;
-  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.25);
+  box-shadow: var(--shadow-primary);
 }
 
-.btn-primary:hover {
-  opacity: 0.95;
-  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.38);
-  color: #ffffff;
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #FF4D6D 0%, #E00B41 100%);
+  box-shadow: var(--shadow-primary-hover);
+  color: var(--color-text-inverse) !important;
 }
 
+.btn-primary:active:not(:disabled) {
+  box-shadow: 0 2px 6px rgba(255, 56, 92, 0.2);
+}
+
+/* 2. Secondary Button (Slate Solid) */
+.btn-secondary {
+  background: var(--color-secondary);
+  color: var(--color-text-inverse) !important;
+  border: 1px solid var(--color-secondary);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.12);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-secondary-hover);
+  border-color: var(--color-secondary-hover);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.22);
+  color: var(--color-text-inverse) !important;
+}
+
+/* 3. Outline Button (Border & Soft Tint Hover) */
 .btn-outline {
-  background: #ffffff;
-  border: 1px solid #DDDDDD;
-  color: #222222;
+  background: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border-strong);
+  color: var(--color-text-primary);
 }
 
-.btn-outline:hover {
-  border-color: #222222;
-  background: #F7F7F7;
-  color: #222222;
+.btn-outline:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  box-shadow: 0 4px 12px rgba(255, 56, 92, 0.12);
+}
+
+/* 4. Ghost Button (Subtle Text Button) */
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--color-bg-muted);
+  color: var(--color-text-primary);
+}
+
+/* 5. Danger Button (Critical/Destructive Actions) */
+.btn-danger {
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  color: var(--color-danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #DC2626;
+  border-color: #DC2626;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
 }
 
 .btn-block {
   width: 100%;
 }
 
+.btn-lg {
+  padding: 0.85rem 1.75rem;
+  font-size: 1rem;
+  border-radius: 12px;
+}
+
 .btn-sm {
   padding: 0.45rem 0.95rem;
   font-size: 0.85rem;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .btn-xs {
-  padding: 0.35rem 0.75rem;
+  padding: 0.32rem 0.7rem;
   font-size: 0.78rem;
   border-radius: 6px;
 }
@@ -1555,6 +1687,26 @@ textarea::placeholder {
   align-items: center;
   gap: 0.5rem;
 }
+
+/* ========================================================
+   Design System Utility Classes (SPEC-FE-001)
+   ======================================================== */
+.text-primary { color: var(--color-text-primary) !important; }
+.text-secondary { color: var(--color-text-secondary) !important; }
+.text-muted { color: var(--color-text-muted) !important; }
+.text-brand { color: var(--color-primary) !important; }
+.text-success { color: var(--color-success) !important; }
+.text-warning { color: var(--color-warning) !important; }
+.text-danger { color: var(--color-danger) !important; }
+.text-info { color: var(--color-info) !important; }
+
+.bg-surface { background-color: var(--color-bg-surface) !important; }
+.bg-app { background-color: var(--color-bg-app) !important; }
+.bg-muted { background-color: var(--color-bg-muted) !important; }
+.bg-primary-soft { background-color: var(--color-primary-soft) !important; }
+
+.border-subtle { border-color: var(--color-border-subtle) !important; }
+.border-strong { border-color: var(--color-border-strong) !important; }
 
 /* Panels & Cards */
 .panel {
@@ -2125,3 +2277,14 @@ textarea::placeholder {
     transform: translateX(0) !important;
   }
 }
+
+/* Tailwind utility helpers for Carousel & Grid */
+.flex { display: flex; }
+.flex-none { flex: none; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.overflow-x-auto { overflow-x: auto; }
+.snap-x { scroll-snap-type: x mandatory; }
+.snap-mandatory { scroll-snap-type: x mandatory; }
+.snap-start { scroll-snap-align: start; }
+.scroll-smooth { scroll-behavior: smooth; }

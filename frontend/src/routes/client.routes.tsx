@@ -16,6 +16,7 @@ import BookingSuccessPage from '../pages/guest/BookingSuccessPage';
 import MyBookingsPage from '../pages/guest/MyBookingsPage';
 import MyBookingDetailPage from '../pages/guest/MyBookingDetailPage';
 import ReviewFormPage from '../pages/guest/ReviewFormPage';
+import WishlistPage from '../pages/guest/WishlistPage';
 
 export function ClientRoutes() {
   return (
@@ -24,6 +25,8 @@ export function ClientRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/client" element={<HomePage />} />
       <Route path="/client/search" element={<SearchResultsPage />} />
+      <Route path="/client/rooms" element={<SearchResultsPage />} />
+      <Route path="/client/wishlist" element={<WishlistPage />} />
       <Route path="/client/property/:id" element={<PropertyDetailPage />} />
       <Route path="/client/booking-quote" element={<BookingQuotePage />} />
       <Route path="/client/booking-success" element={<BookingSuccessPage />} />
@@ -32,6 +35,8 @@ export function ClientRoutes() {
 
       {/* Root shortcuts */}
       <Route path="/search" element={<SearchResultsPage />} />
+      <Route path="/rooms" element={<SearchResultsPage />} />
+      <Route path="/wishlist" element={<WishlistPage />} />
       <Route path="/property/:id" element={<PropertyDetailPage />} />
       <Route path="/booking-quote" element={<BookingQuotePage />} />
       <Route path="/booking-success" element={<BookingSuccessPage />} />

@@ -43,25 +43,110 @@ export function Badge({
   style,
   className = '',
 }: BadgeProps) {
-  // Color presets matching modern Airbnb & ODauDay Stay palette
+  // Unified Semantic Token Presets (SPEC-FE-001)
   const variantStyles: Record<string, { bg: string; color: string; border?: string; dotColor?: string }> = {
-    brand: { bg: '#FFF1F2', color: '#E11D48', border: '#FFE4E6', dotColor: '#E11D48' },
-    success: { bg: '#ECFDF5', color: '#047857', border: '#A7F3D0', dotColor: '#10B981' },
-    ok: { bg: '#ECFDF5', color: '#047857', border: '#A7F3D0', dotColor: '#10B981' },
-    active: { bg: '#ECFDF5', color: '#047857', border: '#A7F3D0', dotColor: '#10B981' },
-    confirmed: { bg: '#ECFDF5', color: '#047857', border: '#A7F3D0', dotColor: '#10B981' },
-    completed: { bg: '#F1F5F9', color: '#334155', border: '#CBD5E1', dotColor: '#64748B' },
-    warning: { bg: '#FEF3C7', color: '#B45309', border: '#FDE68A', dotColor: '#F59E0B' },
-    warn: { bg: '#FEF3C7', color: '#B45309', border: '#FDE68A', dotColor: '#F59E0B' },
-    pending: { bg: '#FEF3C7', color: '#B45309', border: '#FDE68A', dotColor: '#F59E0B' },
-    danger: { bg: '#FEF2F2', color: '#B91C1C', border: '#FECACA', dotColor: '#EF4444' },
-    error: { bg: '#FEF2F2', color: '#B91C1C', border: '#FECACA', dotColor: '#EF4444' },
-    cancelled: { bg: '#FEF2F2', color: '#B91C1C', border: '#FECACA', dotColor: '#EF4444' },
-    locked: { bg: '#FEF2F2', color: '#B91C1C', border: '#FECACA', dotColor: '#EF4444' },
-    info: { bg: '#EFF6FF', color: '#1D4ED8', border: '#BFDBFE', dotColor: '#3B82F6' },
-    checked_in: { bg: '#EFF6FF', color: '#1D4ED8', border: '#BFDBFE', dotColor: '#3B82F6' },
-    neutral: { bg: '#F3F4F6', color: '#374151', border: '#E5E7EB', dotColor: '#9CA3AF' },
-    outline: { bg: '#FFFFFF', color: '#222222', border: '#DDDDDD', dotColor: '#222222' },
+    brand: {
+      bg: 'var(--color-primary-soft)',
+      color: 'var(--color-primary)',
+      border: 'var(--color-primary-border)',
+      dotColor: 'var(--color-primary)',
+    },
+    success: {
+      bg: 'var(--color-success-bg)',
+      color: 'var(--color-success)',
+      border: 'var(--color-success-border)',
+      dotColor: 'var(--color-success)',
+    },
+    ok: {
+      bg: 'var(--color-success-bg)',
+      color: 'var(--color-success)',
+      border: 'var(--color-success-border)',
+      dotColor: 'var(--color-success)',
+    },
+    active: {
+      bg: 'var(--color-success-bg)',
+      color: 'var(--color-success)',
+      border: 'var(--color-success-border)',
+      dotColor: 'var(--color-success)',
+    },
+    confirmed: {
+      bg: 'var(--color-success-bg)',
+      color: 'var(--color-success)',
+      border: 'var(--color-success-border)',
+      dotColor: 'var(--color-success)',
+    },
+    completed: {
+      bg: 'var(--color-success-bg)',
+      color: 'var(--color-success)',
+      border: 'var(--color-success-border)',
+      dotColor: 'var(--color-success)',
+    },
+    warning: {
+      bg: 'var(--color-warning-bg)',
+      color: 'var(--color-warning)',
+      border: 'var(--color-warning-border)',
+      dotColor: 'var(--color-warning)',
+    },
+    warn: {
+      bg: 'var(--color-warning-bg)',
+      color: 'var(--color-warning)',
+      border: 'var(--color-warning-border)',
+      dotColor: 'var(--color-warning)',
+    },
+    pending: {
+      bg: 'var(--color-warning-bg)',
+      color: 'var(--color-warning)',
+      border: 'var(--color-warning-border)',
+      dotColor: 'var(--color-warning)',
+    },
+    danger: {
+      bg: 'var(--color-danger-bg)',
+      color: 'var(--color-danger)',
+      border: 'var(--color-danger-border)',
+      dotColor: 'var(--color-danger)',
+    },
+    error: {
+      bg: 'var(--color-danger-bg)',
+      color: 'var(--color-danger)',
+      border: 'var(--color-danger-border)',
+      dotColor: 'var(--color-danger)',
+    },
+    cancelled: {
+      bg: 'var(--color-danger-bg)',
+      color: 'var(--color-danger)',
+      border: 'var(--color-danger-border)',
+      dotColor: 'var(--color-danger)',
+    },
+    locked: {
+      bg: 'var(--color-danger-bg)',
+      color: 'var(--color-danger)',
+      border: 'var(--color-danger-border)',
+      dotColor: 'var(--color-danger)',
+    },
+    info: {
+      bg: 'var(--color-info-bg)',
+      color: 'var(--color-info)',
+      border: 'var(--color-info-border)',
+      dotColor: 'var(--color-info)',
+    },
+    checked_in: {
+      bg: 'var(--color-info-bg)',
+      color: 'var(--color-info)',
+      border: 'var(--color-info-border)',
+      dotColor: 'var(--color-info)',
+    },
+    neutral: {
+      bg: 'var(--color-bg-muted)',
+      color: 'var(--color-text-secondary)',
+      border: 'var(--color-border-subtle)',
+      dotColor: 'var(--color-text-muted)',
+    },
+    outline: {
+      bg: 'var(--color-bg-surface)',
+      color: 'var(--color-text-primary)',
+      border: 'var(--color-border-subtle)',
+      dotColor: 'var(--color-text-primary)',
+    },
   };
 
   const currentTheme = variantStyles[variant.toLowerCase()] || variantStyles.neutral;

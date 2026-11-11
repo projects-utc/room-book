@@ -31,6 +31,11 @@ public class PropertyController {
         return ApiResponse.ok(propertyService.getAllProperties());
     }
 
+    @GetMapping("/hot")
+    public ApiResponse<List<PropertyEntity>> getHotProperties() {
+        return ApiResponse.ok(propertyService.getHotProperties());
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<PropertyEntity> getPropertyById(@PathVariable Long id) {
         return ApiResponse.ok(propertyService.getPropertyById(id));

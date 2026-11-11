@@ -111,10 +111,10 @@ export default function AdminPropertiesPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Header */}
       <div>
-        <h1 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#0F172A' }}>
+        <h1 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
           Quản lý Chỗ ở &amp; Homestay toàn sàn
         </h1>
-        <p style={{ margin: 0, color: '#64748B', fontSize: '0.92rem' }}>
+        <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.92rem' }}>
           Kiểm duyệt, quản lý hiển thị, giá niêm yết và trạng thái hoạt động của toàn bộ cơ sở lưu trú trên nền tảng.
         </p>
       </div>
@@ -152,7 +152,7 @@ export default function AdminPropertiesPage() {
       <Card
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
-            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: '#0F172A' }}>
+            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>
               Danh sách cơ sở lưu trú ({filtered.length} kết quả)
             </span>
           </div>
@@ -220,13 +220,13 @@ export default function AdminPropertiesPage() {
                             height: 44,
                             borderRadius: 8,
                             objectFit: 'cover',
-                            border: '1px solid #E2E8F0',
+                            border: '1px solid var(--color-border-subtle)',
                           }}
                         />
                         <div>
-                          <div style={{ fontWeight: 700, color: '#0F172A', fontSize: '0.92rem' }}>{p.name}</div>
-                          <div style={{ fontSize: '0.78rem', color: '#64748B' }}>
-                            {p.badge && <span style={{ color: '#FF385C', fontWeight: 600 }}>[{p.badge}] </span>}
+                          <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', fontSize: '0.92rem' }}>{p.name}</div>
+                          <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
+                            {p.badge && <span style={{ color: 'var(--color-primary)', fontWeight: 600 }}>[{p.badge}] </span>}
                             ID: #{p.id}
                           </div>
                         </div>
@@ -234,31 +234,31 @@ export default function AdminPropertiesPage() {
                     </TableCell>
 
                     <TableCell>
-                      <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 600 }}>{p.type}</span>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', fontWeight: 600 }}>{p.type}</span>
                     </TableCell>
 
                     <TableCell>
-                      <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '0.88rem' }}>{p.owner}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748B' }}>Chủ cơ sở</div>
+                      <div style={{ fontWeight: 600, color: 'var(--color-text-primary)', fontSize: '0.88rem' }}>{p.owner}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Chủ cơ sở</div>
                     </TableCell>
 
                     <TableCell>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0F172A' }}>{p.city}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748B', maxWidth: 180, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{p.city}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', maxWidth: 180, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {p.address}
                       </div>
                     </TableCell>
 
                     <TableCell>
-                      <span style={{ fontWeight: 700, color: '#FF385C' }}>{formatVND(p.priceMin)}</span>
-                      <span style={{ fontSize: '0.72rem', color: '#64748B' }}> /đêm</span>
+                      <span style={{ fontWeight: 700, color: 'var(--color-primary)' }}>{formatVND(p.priceMin)}</span>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}> /đêm</span>
                     </TableCell>
 
                     <TableCell>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#0F172A', fontWeight: 700, fontSize: '0.85rem' }}>
-                        <StarFill style={{ color: '#F59E0B', fontSize: '0.8rem' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '0.85rem' }}>
+                        <StarFill style={{ color: 'var(--color-warning)', fontSize: '0.8rem' }} />
                         <span>{p.rating}</span>
-                        <span style={{ color: '#64748B', fontWeight: 400, fontSize: '0.75rem' }}>({p.reviewsCount})</span>
+                        <span style={{ color: 'var(--color-text-muted)', fontWeight: 400, fontSize: '0.75rem' }}>({p.reviewsCount})</span>
                       </div>
                     </TableCell>
 
@@ -286,8 +286,8 @@ export default function AdminPropertiesPage() {
                           size="xs"
                           onClick={() => handleToggleStatus(p)}
                           style={{
-                            color: isLocked ? '#10B981' : '#B91C1C',
-                            borderColor: isLocked ? '#10B981' : '#FCA5A5',
+                            color: isLocked ? 'var(--color-success)' : 'var(--color-danger)',
+                            borderColor: isLocked ? 'var(--color-success)' : 'var(--color-danger-border)',
                           }}
                         >
                           {isLocked ? <UnlockFill /> : <LockFill />}
@@ -298,7 +298,7 @@ export default function AdminPropertiesPage() {
                           variant="outline"
                           size="xs"
                           onClick={() => handleDelete(p)}
-                          style={{ color: '#94A3B8' }}
+                          style={{ color: 'var(--color-text-muted)' }}
                         >
                           <Trash3 />
                         </Button>
@@ -321,7 +321,7 @@ export default function AdminPropertiesPage() {
           size="lg"
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ fontSize: '0.88rem', color: '#64748B' }}>
+            <div style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)' }}>
               Địa chỉ: <strong>{selectedProp.address}</strong> · Chủ sở hữu: <strong>{selectedProp.owner}</strong>
             </div>
 
@@ -346,18 +346,18 @@ export default function AdminPropertiesPage() {
                   {propRooms.map((r) => (
                     <TableRow key={r.id}>
                       <TableCell>
-                        <div style={{ fontWeight: 700, color: '#0F172A' }}>{r.name}</div>
-                        <div style={{ fontSize: '0.75rem', color: '#64748B' }}>Mã: ROOM-{r.id}</div>
+                        <div style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>{r.name}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Mã: ROOM-{r.id}</div>
                       </TableCell>
                       <TableCell>{r.capacity} khách</TableCell>
                       <TableCell>
-                        <span style={{ fontWeight: 700, color: '#FF385C' }}>{formatVND(r.price)}</span>
+                        <span style={{ fontWeight: 700, color: 'var(--color-primary)' }}>{formatVND(r.price)}</span>
                       </TableCell>
                       <TableCell>
-                        <span style={{ fontWeight: 600, color: '#0284C7' }}>{r.weekendPrice ? formatVND(r.weekendPrice) : 'Như ngày thường'}</span>
+                        <span style={{ fontWeight: 600, color: 'var(--color-info)' }}>{r.weekendPrice ? formatVND(r.weekendPrice) : 'Như ngày thường'}</span>
                       </TableCell>
                       <TableCell>
-                        <span style={{ fontSize: '0.78rem', color: '#64748B' }}>{r.desc}</span>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{r.desc}</span>
                       </TableCell>
                       <TableCell>
                         {r.status === 'ACTIVE' ? (

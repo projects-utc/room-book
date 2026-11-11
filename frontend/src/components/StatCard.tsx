@@ -34,11 +34,11 @@ export function StatCard({
     const effectiveAccent = variant === 'highlight' ? 'brand' : accent;
 
     const accentColors = {
-        brand: '#FF385C',
-        ok: '#008A05',
-        warn: '#C28E00',
-        info: '#0284C7',
-        danger: '#C13515',
+        brand: 'var(--color-primary)',
+        ok: 'var(--color-success)',
+        warn: 'var(--color-warning)',
+        info: 'var(--color-info)',
+        danger: 'var(--color-danger)',
     };
 
     const currentColor = accentColors[effectiveAccent] || accentColors.brand;
@@ -49,18 +49,18 @@ export function StatCard({
     // Xác định màu sắc cho trendDirection
     const trendColor =
         trendDirection === 'up'
-            ? '#008A05'
+            ? 'var(--color-success)'
             : trendDirection === 'down'
-                ? '#C13515'
-                : '#717171';
+                ? 'var(--color-danger)'
+                : 'var(--color-text-secondary)';
 
     return (
         <div
             onClick={onClick}
             className={`panel ${className}`}
             style={{
-                background: '#ffffff',
-                border: '1px solid #EBEBEB',
+                background: 'var(--color-bg-surface)',
+                border: '1px solid var(--color-border-subtle)',
                 borderLeft: `4px solid ${currentColor}`,
                 borderRadius: '14px',
                 padding: '1.25rem 1.5rem',
@@ -77,7 +77,7 @@ export function StatCard({
                 textTransform: 'uppercase',
                 fontWeight: 700,
                 letterSpacing: '0.04em',
-                color: '#717171',
+                color: 'var(--color-text-secondary)',
                 display: 'block',
             }}
         >
@@ -90,7 +90,7 @@ export function StatCard({
                 style={{
                     fontSize: '1.85rem',
                     fontWeight: 800,
-                    color: effectiveAccent === 'brand' ? '#222222' : currentColor,
+                    color: effectiveAccent === 'brand' ? 'var(--color-text-primary)' : currentColor,
                     margin: '0.35rem 0 0',
                     letterSpacing: '-0.02em',
                 }}
@@ -101,7 +101,7 @@ export function StatCard({
             {(secondaryText || trend) && (
                 <div style={{ marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                     {secondaryText && (
-                        <span style={{ fontSize: '0.82rem', color: '#717171' }}>
+                        <span style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)' }}>
               {secondaryText}
             </span>
                     )}

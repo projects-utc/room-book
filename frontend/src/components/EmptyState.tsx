@@ -33,9 +33,9 @@ export function EmptyState({
         justifyContent: 'center',
         textAlign: 'center',
         padding: compact ? '2rem 1.5rem' : '3.5rem 2rem',
-        background: '#ffffff',
+        background: 'var(--color-bg-surface)',
         borderRadius: '16px',
-        border: '1px dashed #E2E8F0',
+        border: '1px dashed var(--color-border-subtle)',
         margin: '1rem 0',
         ...style,
       }}
@@ -45,13 +45,13 @@ export function EmptyState({
           width: compact ? 48 : 64,
           height: compact ? 48 : 64,
           borderRadius: '50%',
-          background: '#F8FAFC',
-          border: '1px solid #E2E8F0',
+          background: 'var(--color-bg-app)',
+          border: '1px solid var(--color-border-subtle)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: compact ? '1.35rem' : '1.75rem',
-          color: '#94A3B8',
+          color: 'var(--color-text-muted)',
           marginBottom: '1rem',
         }}
       >
@@ -62,7 +62,7 @@ export function EmptyState({
         style={{
           fontSize: compact ? '1rem' : '1.15rem',
           fontWeight: 700,
-          color: '#1E293B',
+          color: 'var(--color-text-primary)',
           margin: '0 0 0.35rem',
         }}
       >
@@ -73,7 +73,7 @@ export function EmptyState({
         <p
           style={{
             fontSize: compact ? '0.85rem' : '0.9rem',
-            color: '#64748B',
+            color: 'var(--color-text-muted)',
             maxWidth: 420,
             margin: '0 0 1.25rem',
             lineHeight: 1.5,
