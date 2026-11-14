@@ -1,8 +1,9 @@
 // Airbnb-Inspired Booking Detail Page (Redesigned)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb } from '../../components';
+import { stayApi } from '../../api/stayApi';
 import { formatVND } from '../../constants';
 import {
   CalendarCheck,
@@ -29,8 +30,21 @@ export default function MyBookingDetailPage() {
   const navigate = useNavigate();
 
   const bookingCode = code || 'ODD-DEMO-0002';
-  const booking = store.getBooking(bookingCode) || store.getAllBookings()[0];
-  const [currentStatus, setCurrentStatus] = useState<BookingStatus>(booking?.status || 'PENDING');
+  const initialBooking = store.getBooking(bookingCode) || store.getAllBookings().find(b => b.code === bookingCode) || null;
+  const [booking, setBooking] = useState<any>(initialBooking);
+  const [currentStatus, setCurrentStatus] = useState<BookingStatus>(initialBooking?.status || 'PENDING');
+
+  useEffect(() => {
+    if (bookingCode) {
+      stayApi.getBooking(bookingCode).then(res => {
+        if (res.success && res.data) {
+          setBooking(res.data);
+          setCurrentStatus(res.data.status);
+          store.syncBookingFromApi(res.data);
+        }
+      }).catch(() => {});
+    }
+  }, [bookingCode]);
 
   // Đơn đã được đánh giá hay chưa (hỗ trợ cả camelCase, snake_case và bảng reviews)
   const isReviewed = Boolean(
@@ -161,7 +175,10 @@ export default function MyBookingDetailPage() {
         <Breadcrumb
           items={[
             { label: 'Trang chủ', to: '/' },
-            { label: 'Chuyến đi của bạn', to: '/my-bookings' },
+            {
+              label: currentStatus === 'COMPLETED' ? 'Lịch sử đặt phòng' : 'Chi tiết đặt phòng',
+              to: currentStatus === 'COMPLETED' ? '/my-bookings?tab=COMPLETED' : '/my-bookings'
+            },
             { label: `Đơn #${bookingCode}` },
           ]}
         />
@@ -181,7 +198,7 @@ export default function MyBookingDetailPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button
             type="button"
-            onClick={() => navigate('/my-bookings')}
+            onClick={() => navigate(currentStatus === 'COMPLETED' ? '/my-bookings?tab=COMPLETED' : '/my-bookings')}
             style={{
               width: 40,
               height: 40,
@@ -269,6 +286,26 @@ export default function MyBookingDetailPage() {
             <strong style={{ display: 'block', fontSize: '0.98rem', marginBottom: 2 }}>Đang chờ chủ nhà xác nhận</strong>
             <span style={{ fontSize: '0.88rem', color: 'var(--color-warning)' }}>
               Yêu cầu đặt phòng của bạn đã được gửi tới chủ nhà. Thông thường chủ nhà sẽ phản hồi trong vòng vài giờ.
+            </span>
+          </div>
+        </div>
+      ) : currentStatus === 'COMPLETED' ? (
+        <div style={{
+          background: 'var(--color-success-bg)',
+          border: '1px solid var(--color-success-border)',
+          borderRadius: 16,
+          padding: '1.25rem 1.5rem',
+          marginBottom: '2rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          color: 'var(--color-success)'
+        }}>
+          <CheckCircleFill style={{ fontSize: '1.5rem', color: 'var(--color-success)', flexShrink: 0 }} />
+          <div>
+            <strong style={{ display: 'block', fontSize: '0.98rem', marginBottom: 2 }}>Đơn đặt phòng đã hoàn thành (Lịch sử đặt phòng)</strong>
+            <span style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
+              Kỳ nghỉ tại {booking?.propertyName} đã hoàn tất lưu trú. Đơn đặt phòng này được lưu trữ trong Lịch sử đặt phòng để bạn xem lại hoặc gửi đánh giá.
             </span>
           </div>
         </div>
@@ -724,7 +761,7 @@ export default function MyBookingDetailPage() {
 
               <button
                 type="button"
-                onClick={() => navigate('/my-bookings')}
+                onClick={() => navigate(currentStatus === 'COMPLETED' ? '/my-bookings?tab=COMPLETED' : '/my-bookings')}
                 style={{
                   width: '100%',
                   padding: '0.75rem 1.25rem',
@@ -737,7 +774,7 @@ export default function MyBookingDetailPage() {
                   cursor: 'pointer'
                 }}
               >
-                ← Quay lại danh sách chuyến đi
+                ← Quay lại {currentStatus === 'COMPLETED' ? 'Lịch sử đặt phòng' : 'Chi tiết đặt phòng'}
               </button>
             </div>
           </div>

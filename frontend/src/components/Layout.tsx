@@ -25,6 +25,7 @@ import {
     ExclamationOctagonFill,
     HeartFill,
     HouseDoor,
+    ClockHistory,
 } from 'react-bootstrap-icons';
 
 // ── Header (ODauDay Stay Brand + Airbnb Experience) ─────────────────────────
@@ -449,7 +450,16 @@ export function Header() {
                                         onClick={() => setMenuOpen(false)}
                                         style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
                                     >
-                                        <BagCheck /> Chuyến đi của tôi
+                                        <BagCheck style={{ color: 'var(--color-primary)' }} /> Chi tiết đặt phòng
+                                    </Link>
+
+                                    <Link
+                                        to="/my-bookings?tab=COMPLETED"
+                                        className="dropdown-item"
+                                        onClick={() => setMenuOpen(false)}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
+                                    >
+                                        <ClockHistory style={{ color: 'var(--color-info)' }} /> Lịch sử đặt phòng
                                     </Link>
 
                                     <Link
