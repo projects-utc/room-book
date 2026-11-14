@@ -1,6 +1,6 @@
 // Standardized "Trips" (Chuyến đi của tôi) Page (Airbnb Luxury Style)
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { formatVND } from '../../constants';
 import { Button, Badge } from '../../components';
@@ -25,10 +25,39 @@ import {
 export default function MyBookingsPage() {
   const { store, currentUser, addToast } = useStore();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const username = currentUser?.username || 'guest.demo';
 
-  const [activeTab, setActiveTab] = useState<'UPCOMING' | 'COMPLETED' | 'CANCELLED' | 'ALL'>('UPCOMING');
+  const [activeTab, setActiveTab] = useState<'UPCOMING' | 'COMPLETED' | 'CANCELLED' | 'ALL'>(() => {
+    const tabParam = searchParams.get('tab')?.toUpperCase();
+    if (tabParam === 'COMPLETED' || tabParam === 'HISTORY') return 'COMPLETED';
+    if (tabParam === 'CANCELLED') return 'CANCELLED';
+    if (tabParam === 'ALL') return 'ALL';
+    return 'UPCOMING';
+  });
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab')?.toUpperCase();
+    if (tabParam === 'COMPLETED' || tabParam === 'HISTORY') {
+      setActiveTab('COMPLETED');
+    } else if (tabParam === 'UPCOMING' || tabParam === 'ACTIVE' || tabParam === 'DETAIL') {
+      setActiveTab('UPCOMING');
+    } else if (tabParam === 'CANCELLED') {
+      setActiveTab('CANCELLED');
+    } else if (tabParam === 'ALL') {
+      setActiveTab('ALL');
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (tab: 'UPCOMING' | 'COMPLETED' | 'CANCELLED' | 'ALL') => {
+    setActiveTab(tab);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('tab', tab);
+      return next;
+    });
+  };
 
   // Tập hợp các mã đơn đã có đánh giá (từ local store + API)
   const [reviewedCodes, setReviewedCodes] = useState<Set<string>>(() => {
@@ -236,13 +265,25 @@ export default function MyBookingsPage() {
       }}>
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 999, background: 'var(--color-primary-soft)', color: 'var(--color-primary)', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>
-            <span>Quản lý đặt chỗ</span>
+            <span>{activeTab === 'COMPLETED' ? 'Lịch sử đặt phòng' : 'Chi tiết đặt phòng & Quản lý'}</span>
           </div>
           <h1 style={{ fontSize: '2.15rem', fontWeight: 800, margin: '0 0 0.5rem', color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
-            Đơn đặt phòng của tôi
+            {activeTab === 'COMPLETED'
+              ? 'Lịch sử đặt phòng'
+              : activeTab === 'UPCOMING'
+              ? 'Chi tiết đặt phòng'
+              : activeTab === 'CANCELLED'
+              ? 'Đơn đặt phòng đã hủy'
+              : 'Tất cả đơn đặt phòng'}
           </h1>
           <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.98rem' }}>
-            Chào mừng trở lại, <strong>{currentUser?.fullName || username}</strong>! Bạn có <strong style={{ color: 'var(--color-primary)' }}>{upcomingCount}</strong> chuyến đi sắp tới.
+            {activeTab === 'COMPLETED' ? (
+              <>Hiển thị các đơn đặt phòng <strong>đã hoàn thành</strong> kỳ lưu trú của tài khoản <strong>{currentUser?.fullName || username}</strong>.</>
+            ) : activeTab === 'UPCOMING' ? (
+              <>Hiển thị các đơn đặt phòng <strong>chưa hoàn thành</strong> (chờ duyệt, đã xác nhận, đang lưu trú) của tài khoản <strong>{currentUser?.fullName || username}</strong>.</>
+            ) : (
+              <>Chào mừng trở lại, <strong>{currentUser?.fullName || username}</strong>! Bạn có <strong style={{ color: 'var(--color-primary)' }}>{upcomingCount}</strong> đơn đặt phòng chưa hoàn thành.</>
+            )}
           </p>
         </div>
 
@@ -274,7 +315,7 @@ export default function MyBookingsPage() {
       {/* ── Summary Stat Pills Bar ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
         <div
-          onClick={() => setActiveTab('UPCOMING')}
+          onClick={() => handleTabChange('UPCOMING')}
           style={{
             background: activeTab === 'UPCOMING' ? 'var(--color-primary-soft)' : 'var(--color-bg-surface)',
             border: activeTab === 'UPCOMING' ? '2px solid var(--color-primary)' : '1px solid var(--color-border-subtle)',
@@ -292,13 +333,13 @@ export default function MyBookingsPage() {
             <CalendarCheck />
           </div>
           <div>
-            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Sắp tới & Chờ xác nhận</span>
-            <strong style={{ fontSize: '1.35rem', color: 'var(--color-text-primary)' }}>{upcomingCount}</strong>
+            <strong style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', display: 'block' }}>Chi tiết đặt phòng</strong>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Chưa hoàn thành ({upcomingCount})</span>
           </div>
         </div>
 
         <div
-          onClick={() => setActiveTab('COMPLETED')}
+          onClick={() => handleTabChange('COMPLETED')}
           style={{
             background: activeTab === 'COMPLETED' ? 'var(--color-success-bg)' : 'var(--color-bg-surface)',
             border: activeTab === 'COMPLETED' ? '2px solid var(--color-success)' : '1px solid var(--color-border-subtle)',
@@ -316,13 +357,13 @@ export default function MyBookingsPage() {
             <CheckCircleFill />
           </div>
           <div>
-            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Đã hoàn thành</span>
-            <strong style={{ fontSize: '1.35rem', color: 'var(--color-text-primary)' }}>{completedCount}</strong>
+            <strong style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', display: 'block' }}>Lịch sử đặt phòng</strong>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Đã hoàn thành ({completedCount})</span>
           </div>
         </div>
 
         <div
-          onClick={() => setActiveTab('CANCELLED')}
+          onClick={() => handleTabChange('CANCELLED')}
           style={{
             background: activeTab === 'CANCELLED' ? 'var(--color-danger-bg)' : 'var(--color-bg-surface)',
             border: activeTab === 'CANCELLED' ? '2px solid var(--color-danger)' : '1px solid var(--color-border-subtle)',
@@ -340,13 +381,13 @@ export default function MyBookingsPage() {
             <XCircleFill />
           </div>
           <div>
-            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Đã hủy</span>
-            <strong style={{ fontSize: '1.35rem', color: 'var(--color-text-primary)' }}>{cancelledCount}</strong>
+            <strong style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', display: 'block' }}>Đơn đã hủy</strong>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Đã hủy ({cancelledCount})</span>
           </div>
         </div>
 
         <div
-          onClick={() => setActiveTab('ALL')}
+          onClick={() => handleTabChange('ALL')}
           style={{
             background: activeTab === 'ALL' ? 'var(--color-bg-app)' : 'var(--color-bg-surface)',
             border: activeTab === 'ALL' ? '2px solid var(--color-text-primary)' : '1px solid var(--color-border-subtle)',
@@ -364,8 +405,8 @@ export default function MyBookingsPage() {
             <HouseDoor />
           </div>
           <div>
-            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Tất cả chuyến đi</span>
-            <strong style={{ fontSize: '1.35rem', color: 'var(--color-text-primary)' }}>{myBookings.length}</strong>
+            <strong style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', display: 'block' }}>Tất cả đơn đặt</strong>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Toàn bộ ({myBookings.length})</span>
           </div>
         </div>
       </div>
@@ -424,12 +465,16 @@ export default function MyBookingsPage() {
             <HouseDoor />
           </div>
           <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: '0 0 0.5rem', color: 'var(--color-text-primary)' }}>
-            Chưa tìm thấy chuyến đi nào
+            {activeTab === 'COMPLETED' ? 'Chưa có đơn đặt phòng nào trong lịch sử' : activeTab === 'UPCOMING' ? 'Không có đơn đặt phòng nào chưa hoàn thành' : 'Chưa tìm thấy chuyến đi nào'}
           </h2>
           <p style={{ color: 'var(--color-text-muted)', maxWidth: 440, margin: '0 auto 1.75rem', lineHeight: 1.6, fontSize: '0.95rem' }}>
             {searchQuery
               ? `Không có chuyến đi nào phù hợp với từ khóa "${searchQuery}". Hãy thử tìm kiếm bằng từ khóa khác.`
-              : 'Đã đến lúc chuẩn bị hành lý và lên kế hoạch cho kỳ nghỉ dưỡng mơ ước cùng ODauDay Stay!'}
+              : activeTab === 'COMPLETED'
+                ? 'Các đơn đặt phòng sau khi quý khách trả phòng và hoàn tất lưu trú sẽ được lưu trữ tự động tại mục Lịch sử đặt phòng.'
+                : activeTab === 'UPCOMING'
+                ? 'Mọi đơn đặt phòng đang chờ duyệt, đã xác nhận hoặc đang lưu trú sẽ hiển thị tại mục Chi tiết đặt phòng.'
+                : 'Đã đến lúc chuẩn bị hành lý và lên kế hoạch cho kỳ nghỉ dưỡng mơ ước cùng ODauDay Stay!'}
           </p>
           <button
             type="button"
@@ -661,7 +706,7 @@ export default function MyBookingsPage() {
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-text-primary)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'var(--color-text-primary)')}
                     >
-                      Chi tiết <ArrowRight style={{ fontSize: '0.85rem' }} />
+                      {b.status === 'COMPLETED' ? 'Xem chi tiết lịch sử' : 'Chi tiết đặt phòng'} <ArrowRight style={{ fontSize: '0.85rem' }} />
                     </button>
 
                     {/* Nếu đơn đã hoàn thành và CHƯA đánh giá -> Hiển thị nút "Viết đánh giá" */}
