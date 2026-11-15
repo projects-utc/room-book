@@ -40,6 +40,16 @@ public class ReviewService {
             throw new IllegalStateException("Đơn đặt phòng này đã được đánh giá trước đó.");
         }
 
+        if (request.getBookingCode() != null && !request.getBookingCode().isBlank()) {
+            bookingRepository.findByCode(request.getBookingCode()).ifPresent(b -> {
+                if (Boolean.TRUE.equals(b.getIsReviewed())) {
+                    throw new IllegalStateException("Đơn đặt phòng này đã được đánh giá.");
+                }
+                b.setIsReviewed(true);
+                bookingRepository.save(b);
+            });
+        }
+
         String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
         ReviewEntity review = ReviewEntity.builder()
@@ -57,35 +67,7 @@ public class ReviewService {
         // Tự động tính toán và cập nhật điểm số Property
         updatePropertyRating(request.getPropertyId());
 
-        if (request.getBookingCode() != null && !request.getBookingCode().isBlank()) {
-            bookingRepository.findByCode(request.getBookingCode()).ifPresent(b -> {
-                b.setIsReviewed(true);
-                bookingRepository.save(b);
-            });
-        }
-
         return mapToResponse(savedReview);
-    }
-
-    @Transactional
-    public ReviewEntity submitReview(ReviewEntity review) {
-        if (review.getDate() == null || review.getDate().isBlank()) {
-            review.setDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        }
-        ReviewEntity saved = reviewRepository.save(review);
-
-        // Cập nhật điểm property nếu có propertyId
-        if (review.getPropertyId() != null) {
-            updatePropertyRating(review.getPropertyId());
-        }
-
-        if (review.getBookingCode() != null && !review.getBookingCode().isBlank()) {
-            bookingRepository.findByCode(review.getBookingCode()).ifPresent(b -> {
-                b.setIsReviewed(true);
-                bookingRepository.save(b);
-            });
-        }
-        return saved;
     }
 
     private void updatePropertyRating(Long propertyId) {
@@ -96,7 +78,7 @@ public class ReviewService {
             PropertyEntity property = propertyRepository.findById(propertyId)
                     .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy chỗ ở ID: " + propertyId));
 
-            double roundedRating = avgRating != null ? Math.round(avgRating * 100.0) / 100.0 : 5.0;
+            double roundedRating = avgRating != null ? Math.round(avgRating * 10.0) / 10.0 : 5.0;
 
             property.setRating(roundedRating);
             property.setReviewsCount(totalReviews);

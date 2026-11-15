@@ -104,14 +104,10 @@ export default function HomePage() {
     return filtered.length > 0 ? filtered : properties.slice(0, 5);
   }, [properties]);
 
-  // Khu vực 2: Các phòng còn lại hiển thị ở dạng Grid truyền thống ("Khám phá chỗ ở")
-  const exploreProperties = useMemo(() => {
-    const hotIds = new Set(hotProperties.map(p => p.id));
-    const remaining = properties.filter(p => !hotIds.has(p.id));
-    return remaining.length > 0 ? remaining : properties;
-  }, [properties, hotProperties]);
+  // Khu vực 2: Danh sách phòng ở mục "Khám phá chỗ ở" - Giữ đầy đủ tất cả phòng (thẻ phòng xu hướng vẫn có ở đây)
+  const exploreProperties = properties;
 
-  // Ref và hàm cuộn ngang cho Carousel Phòng Hot
+  // Ref và hàm cuộn ngang cho Phòng Hot ("nếu có nhiều thì cho lướt sang bên")
   const hotScrollRef = useRef<HTMLDivElement>(null);
 
   const scrollHotLeft = () => {
@@ -128,6 +124,38 @@ export default function HomePage() {
     }
   };
 
+  // Phân trang cho "Khám phá chỗ ở": 2 hàng (10 phòng mỗi trang với 5 cột)
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.max(1, Math.ceil(exploreProperties.length / itemsPerPage));
+
+  const paginatedExploreProperties = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return exploreProperties.slice(start, start + itemsPerPage);
+  }, [exploreProperties, currentPage, itemsPerPage]);
+
+  const exploreSectionRef = useRef<HTMLElement>(null);
+
+  const handlePrevPage = () => {
+    setCurrentPage(prev => {
+      const next = Math.max(prev - 1, 1);
+      if (next !== prev && exploreSectionRef.current) {
+        exploreSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return next;
+    });
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => {
+      const next = Math.min(prev + 1, totalPages);
+      if (next !== prev && exploreSectionRef.current) {
+        exploreSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return next;
+    });
+  };
+
   return (
     <div style={{ maxWidth: 1760, margin: '0 auto', padding: '0 2.5rem 6rem' }}>
       {/* Big Hero Search Bar (Shared SearchBar Component) */}
@@ -142,12 +170,11 @@ export default function HomePage() {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────────
-          KHU VỰC 1: 🔥 Xu hướng hiện nay (Phòng Hot) - Horizontal Carousel
+          KHU VỰC 1: 🔥 Xu hướng hiện nay (Phòng Hot) - Lướt ngang nếu nhiều phòng, thẻ chuẩn kích thước
           ───────────────────────────────────────────────────────────────── */}
       <section style={{ marginBottom: '1.5rem' }}>
         {/* Section Header */}
         <div
-          className="flex items-center justify-between mb-5 flex-wrap gap-2"
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -172,7 +199,6 @@ export default function HomePage() {
             >
               <span>🔥 Xu hướng hiện nay</span>
               <span
-                className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200"
                 style={{
                   fontSize: '0.75rem',
                   fontWeight: 700,
@@ -187,7 +213,6 @@ export default function HomePage() {
               </span>
             </h2>
             <p
-              className="text-sm text-slate-500 mt-1 mb-0"
               style={{
                 fontSize: '0.875rem',
                 color: 'var(--color-text-secondary, #475569)',
@@ -198,14 +223,13 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {/* Desktop Navigation Scroll Buttons */}
+          {/* Nút lướt sang bên nếu có nhiều phòng xu hướng */}
+          {hotProperties.length > 5 && (
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button
                 type="button"
                 onClick={scrollHotLeft}
                 aria-label="Cuộn sang trái"
-                className="w-8 h-8 rounded-full border border-slate-300 bg-white flex items-center justify-center hover:bg-slate-50 hover:scale-105 transition-all shadow-sm"
                 style={{
                   width: 34,
                   height: 34,
@@ -219,24 +243,14 @@ export default function HomePage() {
                   color: 'var(--color-text-primary, #0F172A)',
                   boxShadow: 'var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.1))',
                   transition: 'all 0.15s ease',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'var(--color-text-primary, #0F172A)';
-                  e.currentTarget.style.transform = 'scale(1.06)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'var(--color-border-strong, #CBD5E1)';
-                  e.currentTarget.style.transform = 'scale(1)';
                 }}
               >
                 <ChevronLeft style={{ fontSize: '0.85rem' }} />
               </button>
-
               <button
                 type="button"
                 onClick={scrollHotRight}
                 aria-label="Cuộn sang phải"
-                className="w-8 h-8 rounded-full border border-slate-300 bg-white flex items-center justify-center hover:bg-slate-50 hover:scale-105 transition-all shadow-sm"
                 style={{
                   width: 34,
                   height: 34,
@@ -250,71 +264,18 @@ export default function HomePage() {
                   color: 'var(--color-text-primary, #0F172A)',
                   boxShadow: 'var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.1))',
                   transition: 'all 0.15s ease',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'var(--color-text-primary, #0F172A)';
-                  e.currentTarget.style.transform = 'scale(1.06)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'var(--color-border-strong, #CBD5E1)';
-                  e.currentTarget.style.transform = 'scale(1)';
                 }}
               >
                 <ChevronRight style={{ fontSize: '0.85rem' }} />
               </button>
             </div>
-
-            {/* Nút Xem thêm */}
-            <Link
-              to="/rooms?filter=hot"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-rose-600 hover:text-rose-700 hover:underline px-3 py-1.5 rounded-full hover:bg-rose-50 transition-colors"
-              style={{
-                fontSize: '0.9rem',
-                fontWeight: 600,
-                color: 'var(--color-primary, #FF385C)',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                padding: '0.35rem 0.75rem',
-                borderRadius: '9999px',
-                transition: 'background-color 0.15s ease',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-primary-soft, #FFF1F2)')}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-            >
-              <span>Xem thêm</span>
-              <ChevronRight style={{ fontSize: '0.8rem' }} />
-            </Link>
-          </div>
+          )}
         </div>
 
-        {/* Thanh trượt ngang (Horizontal Scroll / Carousel) */}
-        <div
-          ref={hotScrollRef}
-          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 scroll-smooth"
-          style={{
-            display: 'flex',
-            gap: '1.25rem',
-            overflowX: 'auto',
-            scrollSnapType: 'x mandatory',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            paddingBottom: '0.75rem',
-            paddingTop: '0.25rem',
-            WebkitOverflowScrolling: 'touch',
-          }}
-        >
+        {/* Thanh trượt ngang lướt sang bên, kích thước thẻ bằng 100% thẻ dưới */}
+        <div ref={hotScrollRef} className="trending-slider">
           {hotProperties.map(property => (
-            <div
-              key={property.id}
-              className="flex-none snap-start"
-              style={{
-                flex: '0 0 auto',
-                width: 'clamp(270px, 28vw, 320px)',
-                scrollSnapAlign: 'start',
-              }}
-            >
+            <div key={property.id} className="trending-card-item">
               <PropertyCard
                 property={property}
                 checkIn={checkIn}
@@ -322,6 +283,7 @@ export default function HomePage() {
                 guests={guests}
                 nights={2}
                 isHotSection={true}
+                aspectRatio="16 / 10"
               />
             </div>
           ))}
@@ -332,52 +294,76 @@ export default function HomePage() {
           ĐƯỜNG KẺ NGANG (DIVIDER) TINH TẾ
           ───────────────────────────────────────────────────────────────── */}
       <div
-        className="my-10 border-t border-slate-200"
         style={{
-          margin: '3rem 0 2.5rem',
+          margin: '2.5rem 0 2rem',
           borderTop: '1px solid var(--color-border-subtle, #E2E8F0)',
         }}
       />
 
       {/* ─────────────────────────────────────────────────────────────────
-          KHU VỰC 2: Khám phá chỗ ở - Grid truyền thống
+          KHU VỰC 2: Khám phá chỗ ở - 2 Hàng hiển thị hết nội dung + Chuyển trang & Xem thêm
           ───────────────────────────────────────────────────────────────── */}
-      <section>
-        {/* Section Header */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <h2
-            className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight m-0"
-            style={{
-              fontSize: '1.5rem',
-              fontWeight: 700,
-              color: 'var(--color-text-primary, #0F172A)',
-              margin: 0,
-            }}
-          >
-            Khám phá chỗ ở
-          </h2>
-          <p
-            className="text-sm text-slate-500 mt-1 mb-0"
-            style={{
-              fontSize: '0.875rem',
-              color: 'var(--color-text-secondary, #475569)',
-              margin: '0.35rem 0 0',
-            }}
-          >
-            Bộ sưu tập chỗ nghỉ đa dạng trên khắp các điểm đến nổi tiếng Việt Nam
-          </p>
-        </div>
-
-        {/* Clean Responsive Grid (Desktop 4-5 cột, Tablet 2-3 cột, Mobile 1 cột) */}
+      <section ref={exploreSectionRef}>
+        {/* Section Header có bộ điều khiển chuyển trang và Xem thêm */}
         <div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10"
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-            gap: '2.5rem 1.25rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1.25rem',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
           }}
         >
-          {exploreProperties.map(property => (
+          <div>
+            <h2
+              className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight m-0"
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: 700,
+                color: 'var(--color-text-primary, #0F172A)',
+                margin: 0,
+              }}
+            >
+              Khám phá chỗ ở
+            </h2>
+            <p
+              style={{
+                fontSize: '0.875rem',
+                color: 'var(--color-text-secondary, #475569)',
+                margin: '0.35rem 0 0',
+              }}
+            >
+              Bộ sưu tập chỗ nghỉ đa dạng trên khắp các điểm đến nổi tiếng Việt Nam
+            </p>
+          </div>
+
+          {/* Nút Xem thêm đưa xuống Khám phá chỗ ở (đã bỏ nút chuyển trang ở đây vì cuối trang đã có) */}
+          <Link
+            to="/rooms"
+            style={{
+              fontSize: '0.9rem',
+              fontWeight: 600,
+              color: 'var(--color-primary, #FF385C)',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              padding: '0.4rem 0.85rem',
+              borderRadius: '9999px',
+              transition: 'background-color 0.15s ease',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-primary-soft, #FFF1F2)')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+          >
+            <span>Xem thêm</span>
+            <ChevronRight style={{ fontSize: '0.8rem' }} />
+          </Link>
+        </div>
+
+        {/* Grid hiển thị chính xác 2 hàng (10 đơn), tỷ lệ hiển thị đầy đủ mọi nội dung không bị cắt */}
+        <div className="explore-property-grid">
+          {paginatedExploreProperties.map(property => (
             <PropertyCard
               key={property.id}
               property={property}
@@ -385,9 +371,98 @@ export default function HomePage() {
               checkOut={checkOut}
               guests={guests}
               nights={2}
+              aspectRatio="16 / 10"
             />
           ))}
         </div>
+
+        {/* Thanh số trang chuyển trang bên dưới */}
+        {totalPages > 1 && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '0.5rem',
+              marginTop: '2.5rem',
+            }}
+          >
+            <button
+              type="button"
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              style={{
+                padding: '0.5rem 0.95rem',
+                borderRadius: '10px',
+                border: '1px solid var(--color-border-strong, #CBD5E1)',
+                background: '#FFFFFF',
+                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                opacity: currentPage === 1 ? 0.45 : 1,
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                color: 'var(--color-text-primary, #0F172A)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                boxShadow: 'var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05))',
+              }}
+            >
+              <ChevronLeft style={{ fontSize: '0.8rem' }} /> Trước
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                type="button"
+                onClick={() => {
+                  setCurrentPage(page);
+                  if (exploreSectionRef.current) {
+                    exploreSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
+                style={{
+                  minWidth: 38,
+                  height: 38,
+                  padding: '0 8px',
+                  borderRadius: '10px',
+                  border: page === currentPage ? 'none' : '1px solid var(--color-border-subtle, #E2E8F0)',
+                  background: page === currentPage ? 'var(--color-primary, #E11D48)' : '#FFFFFF',
+                  color: page === currentPage ? '#FFFFFF' : 'var(--color-text-primary, #0F172A)',
+                  fontWeight: 700,
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  boxShadow: page === currentPage ? '0 2px 8px rgba(225, 29, 72, 0.3)' : 'var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05))',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              type="button"
+              onClick={handleNextPage}
+              disabled={currentPage >= totalPages}
+              style={{
+                padding: '0.5rem 0.95rem',
+                borderRadius: '10px',
+                border: '1px solid var(--color-border-strong, #CBD5E1)',
+                background: '#FFFFFF',
+                cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
+                opacity: currentPage >= totalPages ? 0.45 : 1,
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                color: 'var(--color-text-primary, #0F172A)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                boxShadow: 'var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05))',
+              }}
+            >
+              Sau <ChevronRight style={{ fontSize: '0.8rem' }} />
+            </button>
+          </div>
+        )}
       </section>
 
       {/* Floating Bottom Pill: "Giá đã bao gồm mọi khoản phí" with dismiss */}

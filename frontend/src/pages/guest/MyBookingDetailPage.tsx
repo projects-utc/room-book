@@ -5,6 +5,7 @@ import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb } from '../../components';
 import { stayApi } from '../../api/stayApi';
 import { formatVND } from '../../constants';
+import { Booking } from '../../data';
 import {
   CalendarCheck,
   HouseDoor,
@@ -26,25 +27,29 @@ export default function MyBookingDetailPage() {
   const { store, addToast } = useStore();
   const navigate = useNavigate();
 
-  const bookingCode = code || 'ODD-DEMO-0002';
-  const initialBooking = store.getBooking(bookingCode) || store.getAllBookings().find(b => b.code === bookingCode) || null;
-  const [booking, setBooking] = useState<any>(initialBooking);
-  const [currentStatus, setCurrentStatus] = useState<BookingStatus>(initialBooking?.status || 'PENDING');
+  const bookingCode = code || '';
+  const [booking, setBooking] = useState<Booking | null>(() => bookingCode ? store.getBooking(bookingCode) : null);
+  const [currentStatus, setCurrentStatus] = useState<BookingStatus>(booking?.status || 'PENDING');
 
   useEffect(() => {
-    if (bookingCode) {
-      stayApi.getBooking(bookingCode).then(res => {
-        if (res.success && res.data) {
-          setBooking(res.data);
-          setCurrentStatus(res.data.status);
-          store.syncBookingFromApi(res.data);
-        }
-      }).catch(() => {});
-    }
-  }, [bookingCode]);
+    const cachedBooking = bookingCode ? store.getBooking(bookingCode) : null;
+    setBooking(cachedBooking);
+    setCurrentStatus(cachedBooking?.status || 'PENDING');
+    if (!bookingCode) return;
+
+    let active = true;
+    stayApi.getBooking(bookingCode).then(res => {
+      if (active && res.success && res.data) {
+        setBooking(res.data);
+        setCurrentStatus(res.data.status);
+        store.syncBookingFromApi(res.data);
+      }
+    }).catch(() => {});
+    return () => { active = false; };
+  }, [bookingCode, store]);
 
   // Find real property
-  const property = store.getProperty(booking?.propertyId) || store.getAllProperties().find(p => p.name === booking?.propertyName) || store.getProperty(1);
+  const property = (booking ? store.getProperty(booking.propertyId) : null) || store.getAllProperties().find(p => p.name === booking?.propertyName) || store.getProperty(1);
   const propertyImg = property?.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80';
 
   const handleCancel = () => {
@@ -490,9 +495,15 @@ export default function MyBookingDetailPage() {
               border: '1px solid var(--color-border-subtle)',
               fontSize: '0.84rem'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 2 }}>
-                <CashCoin style={{ color: 'var(--color-primary)', fontSize: '1.1rem' }} /> Hình thức: Tiền mặt khi nhận phòng / Chuyển khoản
-              </div>
+              {(booking?.paymentMethod === 'BANK_TRANSFER' || (booking as any)?.payment_method === 'BANK_TRANSFER') ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 2 }}>
+                  <CreditCard style={{ color: 'var(--color-primary)', fontSize: '1.1rem' }} /> Hình thức: Chuyển khoản ngân hàng (Thanh toán 100%)
+                </div>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 2 }}>
+                  <CashCoin style={{ color: 'var(--color-primary)', fontSize: '1.1rem' }} /> Hình thức: Tiền mặt khi nhận phòng (Đã cọc 30% qua ngân hàng)
+                </div>
+              )}
               <span style={{ color: 'var(--color-text-muted)', fontSize: '0.78rem' }}>Mã đối soát hệ thống: #{bookingCode}</span>
             </div>
 

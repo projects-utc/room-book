@@ -1,21 +1,33 @@
 // Airbnb-Inspired Booking Success / Confirmation Page (TypeScript)
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { formatVND } from '../../constants';
+import { stayApi } from '../../api/stayApi';
+import { Booking } from '../../data';
 
 export default function BookingSuccessPage() {
     const [searchParams] = useSearchParams();
     const { store } = useStore();
     const navigate = useNavigate();
 
-    const code = searchParams.get('code') || 'ODD-DEMO-0002';
-    const booking = store.getBooking(code) || store.getAllBookings()[0];
+    const code = searchParams.get('code') || '';
+    const [booking, setBooking] = useState<Booking | null>(() => code ? store.getBooking(code) : null);
+
+    useEffect(() => {
+        if (code && !booking) {
+            stayApi.getBooking(code).then(res => {
+                if (res.success && res.data) {
+                    setBooking(res.data as Booking);
+                }
+            }).catch(() => {});
+        }
+    }, [code]);
 
     // Nhận thêm thông tin giao dịch truyền từ BookingQuotePage qua URL
-    const txnCode = searchParams.get('txn') || 'TXN-808384';
-    const dbMethod = searchParams.get('method') || 'BANK_TRANSFER';
-    const subChannel = searchParams.get('channel') || 'Quét mã VietQR';
+    const txnCode = searchParams.get('txn') || 'TXN-' + Math.floor(100000 + Math.random() * 900000);
+    const dbMethod = searchParams.get('method') || booking?.paymentMethod || 'BANK_TRANSFER';
+    const subChannel = searchParams.get('channel') || 'Chuyển hướng ngân hàng (MB Bank)';
     // Số tiền đã thanh toán lần này (truyền từ BookingQuotePage qua URL)
     const paidAmount = Number(searchParams.get('amount')) || booking?.total || 0;
     // Tổng tiền đơn đặt phòng (lấy từ booking store)
@@ -24,9 +36,11 @@ export default function BookingSuccessPage() {
     const remainingAmount = Math.max(0, totalAmount - paidAmount);
 
     return (
-        <div style={{ maxWidth: 540, margin: '3.5rem auto 5rem', padding: '0 1.5rem' }}>
+        <div style={{ maxWidth: 1760, margin: '3.5rem auto 5rem', padding: '0 2.5rem' }}>
             <div
                 style={{
+                    maxWidth: 540,
+                    margin: '0 auto',
                     background: 'var(--color-bg-surface)',
                     padding: '2.25rem 2rem',
                     borderRadius: 18,

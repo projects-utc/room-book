@@ -288,7 +288,7 @@ button {
   background: var(--surface-alt);
 }
 
-/* User Menu Pill */
+/* User Menu Pill & Avatar Button */
 .user-menu-pill {
   display: flex;
   align-items: center;
@@ -303,6 +303,30 @@ button {
 
 .user-menu-pill:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.user-avatar-btn {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.user-avatar-btn:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  transform: scale(1.05);
+}
+
+/* Responsive Header: Hide center search pill on small / narrow screens */
+@media (max-width: 900px) {
+  .header-center-nav {
+    display: none !important;
+  }
+  .site-header {
+    padding: 0.75rem 1.25rem !important;
+  }
 }
 
 .user-menu-avatar {
@@ -733,25 +757,122 @@ button {
   filter: brightness(0.92);
 }
 
-/* 2-Column Detail Layout */
+/* ==========================================================================
+   2-Column Detail & Booking Quote Layouts (Unified Sticky Sidebar & Adaptive Mobile)
+   ========================================================================== */
 .detail-layout {
   display: grid;
-  grid-template-columns: 1fr 370px;
-  gap: 4.5rem;
-  align-items: start;
-}
-
-@media (max-width: 992px) {
-  .detail-layout {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-  }
+  grid-template-columns: minmax(0, 1fr) 420px;
+  grid-template-areas:
+    "main sidebar"
+    "reviews sidebar";
+  gap: 3.5rem;
+  align-items: stretch;
 }
 
 .detail-main {
+  grid-area: main;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  min-width: 0;
+}
+
+.detail-sidebar {
+  grid-area: sidebar;
+  width: 100%;
+}
+
+.detail-reviews-container {
+  grid-area: reviews;
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .detail-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+  .detail-sidebar {
+    width: 100%;
+  }
+}
+
+/* Booking Quote Layout */
+.quote-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  grid-template-areas:
+    "guest sidebar"
+    "payment sidebar"
+    "policy sidebar";
+  gap: 2.5rem;
+  align-items: stretch;
+}
+
+.quote-guest-section {
+  grid-area: guest;
+  min-width: 0;
+}
+
+.quote-payment-section {
+  grid-area: payment;
+  min-width: 0;
+}
+
+.quote-sidebar {
+  grid-area: sidebar;
+  width: 100%;
+}
+
+.quote-policy-section {
+  grid-area: policy;
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .quote-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .quote-sidebar {
+    width: 100%;
+  }
+}
+
+/* Unified Sticky Sidebar Widget */
+.unified-sidebar-sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 5.5rem;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .unified-sidebar-sticky {
+    position: static;
+  }
+}
+
+.unified-sidebar-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+@media (max-width: 1024px) {
+  .unified-sidebar-card {
+    max-width: 100%;
+    padding: 1.5rem;
+  }
 }
 
 .host-section {
@@ -1092,6 +1213,84 @@ button {
     inset: 0;
     object-fit: contain;
     background: var(--color-bg-muted);
+  }
+}
+
+/* ── Property Card Dimensions & Trending Slider (100% Đồng bộ kích thước) ── */
+.trending-slider {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 0.5rem;
+  padding-top: 0.25rem;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  box-sizing: border-box;
+}
+.trending-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.trending-slider > .trending-card-item {
+  flex: 0 0 calc((100% - 4 * 1.25rem) / 5);
+  width: calc((100% - 4 * 1.25rem) / 5);
+  max-width: calc((100% - 4 * 1.25rem) / 5);
+  scroll-snap-align: start;
+  box-sizing: border-box;
+}
+
+.explore-property-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1.5rem 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .trending-slider > .trending-card-item {
+    flex: 0 0 calc((100% - 3 * 1.25rem) / 4);
+    width: calc((100% - 3 * 1.25rem) / 4);
+    max-width: calc((100% - 3 * 1.25rem) / 4);
+  }
+  .explore-property-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .trending-slider > .trending-card-item {
+    flex: 0 0 calc((100% - 2 * 1.25rem) / 3);
+    width: calc((100% - 2 * 1.25rem) / 3);
+    max-width: calc((100% - 2 * 1.25rem) / 3);
+  }
+  .explore-property-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .trending-slider > .trending-card-item {
+    flex: 0 0 calc((100% - 1 * 1.25rem) / 2);
+    width: calc((100% - 1 * 1.25rem) / 2);
+    max-width: calc((100% - 1 * 1.25rem) / 2);
+  }
+  .explore-property-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .trending-slider > .trending-card-item {
+    flex: 0 0 100%;
+    width: 100%;
+    max-width: 100%;
+  }
+  .explore-property-grid {
+    grid-template-columns: 1fr;
   }
 }
 
