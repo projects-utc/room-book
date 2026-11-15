@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { PropertyCard } from '../../components/UI';
 import SearchBar from '../../components/SearchBar';
-import { ChevronLeft, ChevronRight, X } from 'react-bootstrap-icons';
+import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 import { Property } from '../../data';
 import { stayApi } from '../../api/stayApi';
 import { useQuery } from '../../hooks/useQuery';
@@ -16,7 +16,6 @@ export default function HomePage() {
   const [checkIn] = useState('');
   const [checkOut] = useState('');
   const [guests] = useState('');
-  const [showFeeBadge, setShowFeeBadge] = useState(true);
 
   // Hàm fetch danh sách phòng và đánh giá từ Backend
   const fetchPropertiesWithReviews = useCallback(async (): Promise<Property[]> => {
@@ -388,53 +387,6 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-
-      {/* Floating Bottom Pill: "Giá đã bao gồm mọi khoản phí" with dismiss */}
-      {showFeeBadge && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: 24,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 90,
-            background: 'rgba(255, 255, 255, 0.96)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid var(--color-border-strong, #CBD5E1)',
-            boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)',
-            borderRadius: '9999px',
-            padding: '0.65rem 1.15rem 0.65rem 1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.6rem',
-            fontSize: '0.88rem',
-            fontWeight: 600,
-            color: 'var(--color-text-primary, #0F172A)',
-            animation: 'fadeIn 0.3s ease',
-          }}
-        >
-          <span style={{ fontSize: '1rem' }}>🏷️</span>
-          <span>Giá đã bao gồm mọi khoản phí</span>
-          <button
-            type="button"
-            onClick={() => setShowFeeBadge(false)}
-            aria-label="Đóng thông báo"
-            style={{
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--color-text-secondary, #475569)',
-              padding: '2px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginLeft: '0.25rem',
-            }}
-          >
-            <X style={{ fontSize: '1.1rem' }} />
-          </button>
-        </div>
-      )}
     </div>
   );
 }

@@ -32,6 +32,11 @@ public class BookingController {
         return ApiResponse.ok(bookingService.getBookings(guestUsername));
     }
 
+    @GetMapping("/revenue")
+    public ApiResponse<Map<String, Object>> getRevenueSummary(@RequestParam(required = false) String owner) {
+        return ApiResponse.ok(bookingService.getRevenueSummary(owner));
+    }
+
     @GetMapping("/{code}")
     public ApiResponse<BookingEntity> getBookingByCode(@PathVariable String code) {
         return ApiResponse.ok(bookingService.getBookingByCode(code));

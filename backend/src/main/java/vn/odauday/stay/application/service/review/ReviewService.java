@@ -40,6 +40,17 @@ public class ReviewService {
             throw new IllegalStateException("Đơn đặt phòng này đã được đánh giá trước đó.");
         }
 
+        if (request.getBookingCode() != null && !request.getBookingCode().isBlank()) {
+            bookingRepository.findByCode(request.getBookingCode().trim()).ifPresent(b -> {
+                if (Boolean.TRUE.equals(b.getIsReviewed())) {
+                    throw new IllegalStateException("Đơn đặt phòng này đã được đánh giá trước đó.");
+                }
+                if (!"COMPLETED".equalsIgnoreCase(b.getStatus())) {
+                    throw new IllegalStateException("Chỉ có thể đánh giá sau khi kỳ lưu trú đã hoàn thành");
+                }
+            });
+        }
+
         String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
         ReviewEntity review = ReviewEntity.builder()
@@ -69,6 +80,19 @@ public class ReviewService {
 
     @Transactional
     public ReviewEntity submitReview(ReviewEntity review) {
+        if (review.getBookingCode() != null && !review.getBookingCode().isBlank()) {
+            if (reviewRepository.existsByBookingCode(review.getBookingCode().trim())) {
+                throw new IllegalStateException("Đơn đặt phòng này đã được đánh giá trước đó.");
+            }
+            bookingRepository.findByCode(review.getBookingCode().trim()).ifPresent(b -> {
+                if (Boolean.TRUE.equals(b.getIsReviewed())) {
+                    throw new IllegalStateException("Đơn đặt phòng này đã được đánh giá trước đó.");
+                }
+                if (!"COMPLETED".equalsIgnoreCase(b.getStatus())) {
+                    throw new IllegalStateException("Chỉ có thể đánh giá sau khi kỳ lưu trú đã hoàn thành");
+                }
+            });
+        }
         if (review.getDate() == null || review.getDate().isBlank()) {
             review.setDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         }

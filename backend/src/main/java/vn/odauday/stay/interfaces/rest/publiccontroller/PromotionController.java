@@ -17,6 +17,7 @@ import vn.odauday.stay.application.service.promotion.PromotionService;
 import vn.odauday.stay.domain.promotion.model.PromotionEntity;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -35,6 +36,13 @@ public class PromotionController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<PromotionEntity> createPromotion(@RequestBody PromotionEntity promo) {
         return ApiResponse.ok("Đã tạo mã giảm giá thành công", promotionService.createPromotion(promo));
+    }
+
+    @PostMapping("/apply")
+    public ApiResponse<Map<String, Object>> applyPromotion(@RequestBody Map<String, Object> body) {
+        String code = body.get("code") != null ? String.valueOf(body.get("code")) : "";
+        Double orderAmount = body.get("orderAmount") != null ? Double.valueOf(String.valueOf(body.get("orderAmount"))) : 0.0;
+        return ApiResponse.ok("Áp dụng mã giảm giá thành công", promotionService.validateAndCalculateDiscount(code, orderAmount));
     }
 
     @PatchMapping("/{id}/toggle")

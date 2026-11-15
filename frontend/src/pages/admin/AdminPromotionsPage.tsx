@@ -144,12 +144,6 @@ export default function AdminPromotionsPage() {
           description="Được áp dụng thành công vào đơn phòng"
           trendDirection="up"
         />
-        <StatCard
-          label="Tỷ lệ lấp đầy ngân sách"
-          value="45.8%"
-          description="Kiểm soát an toàn giới hạn chiết khấu"
-          trendDirection="neutral"
-        />
       </div>
 
       {/* Main Table Card */}

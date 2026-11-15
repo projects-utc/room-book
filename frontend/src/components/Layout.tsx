@@ -33,7 +33,6 @@ export function Header() {
     const location = useLocation();
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('all');
     const [isScrolled, setIsScrolled] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -127,146 +126,55 @@ export function Header() {
           </span>
                 </Link>
 
-                {/* Center: Search pill or Category tabs */}
-                {!isAuthPage && (
+                {!isAuthPage && !((isSearchPage || isHome) && !isScrolled) && (
                     <div>
-                        {(isSearchPage && !isScrolled) ? null : (!isHome || isScrolled) ? (
-                            /* Collapsed Floating Search Pill (Visible when scrolled or on other pages) */
-                            <div
-                                className="search-pill-container"
-                                onClick={() => navigate('/search')}
-                                role="button"
-                                tabIndex={0}
-                                onKeyDown={e => e.key === 'Enter' && navigate('/search')}
-                                aria-label="Tìm kiếm chỗ ở"
+                        <div
+                            className="search-pill-container"
+                            onClick={() => navigate('/search')}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={e => e.key === 'Enter' && navigate('/search')}
+                            aria-label="Tìm kiếm chỗ ở"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                border: '1px solid var(--color-border-strong)',
+                                borderRadius: '9999px',
+                                boxShadow: 'var(--shadow-search)',
+                                padding: '0.45rem 0.65rem 0.45rem 1.25rem',
+                                cursor: 'pointer',
+                                background: 'var(--color-bg-surface)',
+                            }}
+                        >
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-text-primary)', fontWeight: 600, fontSize: '0.88rem' }}>
+                                <HouseDoor style={{ fontSize: '1rem', color: 'var(--color-primary)' }} />
+                                <span>Điểm đến bất kỳ</span>
+                            </span>
+                            <span className="search-pill-divider" style={{ width: 1, height: 20, background: 'var(--color-border-subtle)', margin: '0 0.85rem' }} />
+                            <span style={{ color: 'var(--color-text-primary)', fontSize: '0.88rem', fontWeight: 600 }}>Chọn ngày</span>
+                            <span className="search-pill-divider" style={{ width: 1, height: 20, background: 'var(--color-border-subtle)', margin: '0 0.85rem' }} />
+                            <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.88rem' }}>Số khách</span>
+                            <button
+                                type="button"
                                 style={{
+                                    background: 'var(--color-primary)',
+                                    color: 'var(--color-text-inverse)',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    width: 34,
+                                    height: 34,
                                     display: 'flex',
                                     alignItems: 'center',
-                                    border: '1px solid var(--color-border-strong)',
-                                    borderRadius: '9999px',
-                                    boxShadow: 'var(--shadow-search)',
-                                    padding: '0.45rem 0.65rem 0.45rem 1.25rem',
+                                    justifyContent: 'center',
+                                    marginLeft: '0.75rem',
                                     cursor: 'pointer',
-                                    background: 'var(--color-bg-surface)',
+                                    flexShrink: 0,
                                 }}
+                                aria-label="Tìm kiếm"
                             >
-                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-text-primary)', fontWeight: 600, fontSize: '0.88rem' }}>
-                  <HouseDoor style={{ fontSize: '1rem', color: 'var(--color-primary)' }} />
-                  <span>Điểm đến bất kỳ</span>
-                </span>
-                                <span className="search-pill-divider" style={{ width: 1, height: 20, background: 'var(--color-border-subtle)', margin: '0 0.85rem' }} />
-                                <span style={{ color: 'var(--color-text-primary)', fontSize: '0.88rem', fontWeight: 600 }}>Chọn ngày</span>
-                                <span className="search-pill-divider" style={{ width: 1, height: 20, background: 'var(--color-border-subtle)', margin: '0 0.85rem' }} />
-                                <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.88rem' }}>Số khách</span>
-                                <button
-                                    type="button"
-                                    style={{
-                                        background: 'var(--color-primary)',
-                                        color: 'var(--color-text-inverse)',
-                                        border: 'none',
-                                        borderRadius: '50%',
-                                        width: 34,
-                                        height: 34,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        marginLeft: '0.75rem',
-                                        cursor: 'pointer',
-                                        flexShrink: 0,
-                                    }}
-                                    aria-label="Tìm kiếm"
-                                >
-                                    <Search style={{ fontSize: '0.85rem' }} />
-                                </button>
-                            </div>
-                        ) : (
-                            /* Airbnb Top 4 Navigation Tabs */
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1.75rem' }}>
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab('all')}
-                                    style={{
-                                        background: 'transparent',
-                                        border: 'none',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.45rem',
-                                        fontSize: '0.95rem',
-                                        fontWeight: activeTab === 'all' ? 700 : 500,
-                                        color: activeTab === 'all' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                                        padding: '0.5rem 0',
-                                        borderBottom: activeTab === 'all' ? '2px solid var(--color-text-primary)' : '2px solid transparent',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    <span style={{ fontSize: '1.25rem' }}>🌍</span>
-                                    <span>Tất cả</span>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab('stays')}
-                                    style={{
-                                        background: 'transparent',
-                                        border: 'none',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.45rem',
-                                        fontSize: '0.95rem',
-                                        fontWeight: activeTab === 'stays' ? 700 : 500,
-                                        color: activeTab === 'stays' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                                        padding: '0.5rem 0',
-                                        borderBottom: activeTab === 'stays' ? '2px solid var(--color-text-primary)' : '2px solid transparent',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    <span style={{ fontSize: '1.25rem' }}>🏡</span>
-                                    <span>Nơi lưu trú</span>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab('experiences')}
-                                    style={{
-                                        background: 'transparent',
-                                        border: 'none',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.45rem',
-                                        fontSize: '0.95rem',
-                                        fontWeight: activeTab === 'experiences' ? 700 : 500,
-                                        color: activeTab === 'experiences' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                                        padding: '0.5rem 0',
-                                        borderBottom: activeTab === 'experiences' ? '2px solid var(--color-text-primary)' : '2px solid transparent',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    <span style={{ fontSize: '1.25rem' }}>🎈</span>
-                                    <span>Trải nghiệm</span>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab('services')}
-                                    style={{
-                                        background: 'transparent',
-                                        border: 'none',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.45rem',
-                                        fontSize: '0.95rem',
-                                        fontWeight: activeTab === 'services' ? 700 : 500,
-                                        color: activeTab === 'services' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                                        padding: '0.5rem 0',
-                                        borderBottom: activeTab === 'services' ? '2px solid var(--color-text-primary)' : '2px solid transparent',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    <span style={{ fontSize: '1.25rem' }}>🛎️</span>
-                                    <span>Dịch vụ</span>
-                                </button>
-                            </div>
-                        )}
+                                <Search style={{ fontSize: '0.85rem' }} />
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -311,26 +219,6 @@ export function Header() {
                             {currentUser?.role === ROLES.HOST ? 'Kênh Chủ nhà' : 'Đăng ký'}
                         </Link>
                     )}
-
-                    <button
-                        type="button"
-                        className="icon-btn"
-                        title="Ngôn ngữ: Tiếng Việt (VN) / VNĐ"
-                        aria-label="Chọn ngôn ngữ"
-                        style={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: '50%',
-                            border: 'none',
-                            background: 'transparent',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        <Globe style={{ fontSize: '1.05rem', color: 'var(--color-text-primary)' }} />
-                    </button>
 
                     {/* Wishlist Heart Icon Button */}
                     <Link
@@ -581,9 +469,6 @@ export function Header() {
                                     >
                                         Cho thuê chỗ ở qua ODauDay
                                     </Link>
-                                    <a href="#help" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
-                                        Trung tâm trợ giúp
-                                    </a>
                                     <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
                                     <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)' }}>Đăng nhập nhanh thử nghiệm</div>
                                     <div style={{ display: 'flex', gap: '0.25rem', padding: '0.25rem 1rem 0.5rem', flexWrap: 'wrap' }}>
@@ -725,71 +610,23 @@ export function Header() {
 // ── Footer (ODauDay Stay + Airbnb Clean 4-Column Layout) ────────────────────
 export function Footer() {
     return (
-        <footer className="site-footer" style={{ borderTop: '1px solid var(--color-border-subtle)', background: 'var(--color-bg-app)', padding: '3rem 2.5rem 1.5rem', marginTop: 'auto' }}>
-            <div style={{ maxWidth: 1760, margin: '0 auto' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem', borderBottom: '1px solid var(--color-border-subtle)', paddingBottom: '2.5rem' }}>
-                    <div>
-                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: 'var(--color-text-primary)' }}>Hỗ trợ</p>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
-                            <li><a href="#help">Trung tâm trợ giúp</a></li>
-                            <li><a href="#aircover">Bảo đảm ODauDay Cover</a></li>
-                            <li><a href="#antidiscrimination">Chống phân biệt đối xử</a></li>
-                            <li><a href="#disability">Hỗ trợ người khuyết tật</a></li>
-                            <li><a href="#cancellation">Các tùy chọn hủy phòng</a></li>
-                            <li><a href="#neighborhood">Báo cáo lo ngại của khu dân cư</a></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: 'var(--color-text-primary)' }}>Dành cho Chủ nhà</p>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
-                            <li><Link to="/register">Cho thuê chỗ ở trên ODauDay</Link></li>
-                            <li><Link to="/host/properties">Bảo vệ cho Chủ nhà</Link></li>
-                            <li><a href="#host-resources">Hướng dẫn cho thuê</a></li>
-                            <li><a href="#community-forum">Diễn đàn cộng đồng</a></li>
-                            <li><a href="#responsible-hosting">Chính sách cho Chủ nhà</a></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: 'var(--color-text-primary)' }}>ODauDay Stay</p>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
-                            <li><a href="#newsroom">Trang tin tức &amp; Xu hướng</a></li>
-                            <li><a href="#new-features">Tính năng mới</a></li>
-                            <li><a href="#careers">Cơ hội nghề nghiệp</a></li>
-                            <li><a href="#investors">Nhà đầu tư</a></li>
-                            <li><a href="#emergency">Chỗ ở khẩn cấp ODauDay.org</a></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <p style={{ fontWeight: 700, fontSize: '0.88rem', margin: '0 0 1rem', color: 'var(--color-text-primary)' }}>Điều khoản &amp; Chính sách</p>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
-                            <li><a href="#privacy">Chính sách quyền riêng tư</a></li>
-                            <li><a href="#terms">Điều khoản dịch vụ</a></li>
-                            <li><a href="#sitemap">Sơ đồ trang web</a></li>
-                            <li><a href="#company-details">Thông tin liên hệ</a></li>
-                        </ul>
-                    </div>
+        <footer className="site-footer" style={{ borderTop: '1px solid var(--color-border-subtle)', background: 'var(--color-bg-app)', padding: '1.5rem 2.5rem', marginTop: 'auto' }}>
+            <div style={{ maxWidth: 1760, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <span>© 2026 ODauDay Stay</span>
+                    <span>·</span>
+                    <Link to="/search" style={{ textDecoration: 'none', color: 'inherit' }}>Tìm chỗ ở</Link>
+                    <span>·</span>
+                    <Link to="/register" style={{ textDecoration: 'none', color: 'inherit' }}>Đăng ký tài khoản</Link>
+                    <span>·</span>
+                    <Link to="/host/properties" style={{ textDecoration: 'none', color: 'inherit' }}>Dành cho Chủ nhà</Link>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.5rem', flexWrap: 'wrap', gap: '1rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
-                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                        <span>© 2026 ODauDay Stay, Inc.</span>
-                        <span>·</span>
-                        <a href="#privacy" style={{ textDecoration: 'none' }}>Quyền riêng tư</a>
-                        <span>·</span>
-                        <a href="#terms" style={{ textDecoration: 'none' }}>Điều khoản</a>
-                        <span>·</span>
-                        <a href="#sitemap" style={{ textDecoration: 'none' }}>Sơ đồ trang web</a>
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', fontWeight: 600 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}>
-              <Globe /> Tiếng Việt (VN)
-            </span>
-                        <span style={{ cursor: 'pointer' }}>₫ VND</span>
-                    </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', fontWeight: 600 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <Globe /> Tiếng Việt (VN)
+                    </span>
+                    <span>₫ VND</span>
                 </div>
             </div>
         </footer>

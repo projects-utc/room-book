@@ -32,29 +32,10 @@ export default function HostRoomBlockPage() {
   const [start, setStart] = useState('2027-02-10');
   const [end, setEnd] = useState('2027-02-12');
   const [reason, setReason] = useState('Bảo trì điều hoà trung tâm & sơn mới ban công');
-  const [testScenario, setTestScenario] = useState<'default' | 'conflict'>('default');
   const [conflictError, setConflictError] = useState('');
 
   const refreshBlocks = () => {
     setBlocks(store.getRoomBlocks());
-  };
-
-  const handleScenarioChange = (scenario: 'default' | 'conflict') => {
-    setTestScenario(scenario);
-    if (scenario === 'conflict') {
-      // Room 2 has booking ODD-DEMO-0004 with Linh Tran: 2027-01-20 -> 2027-01-22 (CONFIRMED)
-      setStart('2027-01-20');
-      setEnd('2027-01-22');
-      setReason('Cần khóa phòng sửa chữa đột xuất');
-      setConflictError(
-        'Không thể khóa phòng: Khoảng ngày 20/01/2027 – 22/01/2027 đã có đơn đặt phòng được xác nhận (#ODD-DEMO-0004).'
-      );
-    } else {
-      setStart('2027-02-10');
-      setEnd('2027-02-12');
-      setReason('Bảo trì điều hoà trung tâm & sơn mới ban công');
-      setConflictError('');
-    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -104,31 +85,6 @@ export default function HostRoomBlockPage() {
           Chủ động khóa các khoảng ngày tạm dừng nhận khách do kế hoạch sửa chữa, bảo dưỡng hoặc nhu cầu riêng của chủ nhà.
         </p>
       </div>
-
-      {/* Test Scenario Switcher */}
-      <Card style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-          <span style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-            Kịch bản mẫu:
-          </span>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Button
-              size="sm"
-              variant={testScenario === 'default' ? 'primary' : 'outline'}
-              onClick={() => handleScenarioChange('default')}
-            >
-              Tạo lịch chặn hợp lệ
-            </Button>
-            <Button
-              size="sm"
-              variant={testScenario === 'conflict' ? 'primary' : 'outline'}
-              onClick={() => handleScenarioChange('conflict')}
-            >
-              Trùng lịch với đơn đã xác nhận
-            </Button>
-          </div>
-        </div>
-      </Card>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(320px, 1fr)', gap: '2rem', alignItems: 'start' }}>
         {/* Left Column: Form */}

@@ -30,7 +30,6 @@ export default function SearchResultsPage() {
   const [type, setType] = useState('Tất cả');
   const [maxPrice, setMaxPrice] = useState(3000000);
   const [showFilters, setShowFilters] = useState(false);
-  const [showTaxes, setShowTaxes] = useState(false);
 
   // Dữ liệu thực từ Backend API (thay thế hoàn toàn mảng fix cứng)
   const [backendProperties, setBackendProperties] = useState<Property[]>([]);
@@ -230,30 +229,6 @@ export default function SearchResultsPage() {
                 <Sliders />
                 <span>Bộ lọc {type !== 'Tất cả' || maxPrice < 3000000 ? '• 1+' : ''}</span>
               </button>
-
-              {/* Tax Toggle (Airbnb Feature) */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.6rem',
-                  border: '1px solid var(--color-border-strong)',
-                  borderRadius: '9999px',
-                  padding: '0.5rem 1rem',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                  background: 'var(--color-bg-surface)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                <span>Hiển thị tổng giá theo đêm</span>
-                <input
-                  type="checkbox"
-                  checked={showTaxes}
-                  onChange={e => setShowTaxes(e.target.checked)}
-                  style={{ width: 16, height: 16, accentColor: 'var(--color-text-primary)', cursor: 'pointer' }}
-                />
-              </div>
             </div>
           </div>
 
