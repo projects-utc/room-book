@@ -1,6 +1,6 @@
 // ODauDay Stay — Airbnb Vietnam Exact Homepage Layout & Micro-Animations (TypeScript)
 import React, { useState, useRef, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { PropertyCard } from '../../components/UI';
 import SearchBar from '../../components/SearchBar';
@@ -11,11 +11,12 @@ import { useQuery } from '../../hooks/useQuery';
 
 export default function HomePage() {
   const { store } = useStore();
+  const [searchParams] = useSearchParams();
 
-  const [kw] = useState('');
-  const [checkIn] = useState('');
-  const [checkOut] = useState('');
-  const [guests] = useState('');
+  const kw = searchParams.get('kw') || '';
+  const checkIn = searchParams.get('in') || '';
+  const checkOut = searchParams.get('out') || '';
+  const guests = searchParams.get('guests') || '';
   const [showFeeBadge, setShowFeeBadge] = useState(true);
 
   // Hàm fetch danh sách phòng và đánh giá từ Backend

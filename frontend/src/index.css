@@ -317,6 +317,49 @@ button {
   font-size: 1.1rem;
 }
 
+@media (max-width: 680px) {
+  .site-header {
+    padding: 0.6rem 1rem !important;
+  }
+
+  .header-container {
+    gap: 0.4rem !important;
+  }
+
+  .brand {
+    flex-shrink: 0;
+    gap: 0.25rem !important;
+  }
+
+  .brand > svg {
+    font-size: 1.5rem !important;
+  }
+
+  .brand > span {
+    font-size: 1.05rem !important;
+  }
+
+  .header-actions {
+    flex-shrink: 0;
+    gap: 0.15rem !important;
+  }
+
+  .header-actions > .host-link {
+    display: none !important;
+  }
+
+  .header-actions > .icon-btn {
+    width: 34px !important;
+    height: 34px !important;
+    padding: 0.35rem !important;
+  }
+
+  .user-menu-pill {
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+}
+
 /* User Dropdown Menu */
 .user-dropdown {
   position: absolute;
@@ -587,9 +630,26 @@ button {
    Property Detail Page (Airbnb Style 5-Photo Grid & Layout)
    ========================================================================== */
 .detail-container {
-  max-width: 1120px;
+  max-width: 1760px;
   margin: 1.5rem auto 4rem;
-  padding: 0 1.5rem;
+  padding: 0 2.5rem;
+}
+
+@media (max-width: 992px) {
+  .booking-detail-layout {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  .booking-detail-layout aside {
+    position: static !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .detail-container {
+    padding: 0 1rem;
+  }
 }
 
 .detail-header {
@@ -1000,9 +1060,38 @@ button {
   grid-template-columns: 280px 1fr 220px;
 }
 
+.my-trip-photo {
+  position: relative;
+  min-width: 0;
+  min-height: 220px;
+  overflow: hidden;
+}
+
+.my-trip-photo-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 @media (max-width: 992px) {
   .my-trip-card {
     grid-template-columns: 1fr;
+  }
+
+  .my-trip-photo {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+    align-self: start;
+  }
+
+  .my-trip-photo-image {
+    position: absolute;
+    inset: 0;
+    object-fit: contain;
+    background: var(--color-bg-muted);
   }
 }
 
