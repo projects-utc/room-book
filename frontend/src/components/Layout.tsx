@@ -25,6 +25,7 @@ import {
     ExclamationOctagonFill,
     HeartFill,
     HouseDoor,
+    ClockHistory,
 } from 'react-bootstrap-icons';
 
 // ── Header (ODauDay Stay Brand + Airbnb Experience) ─────────────────────────
@@ -41,6 +42,7 @@ export function Header() {
     const isHome = location.pathname === '/';
     const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
     const isSearchPage = location.pathname === '/search';
+    const isBookingPage = location.pathname.includes('/my-bookings');
 
     // Track scroll position to collapse/expand search bar
     useEffect(() => {
@@ -128,7 +130,7 @@ export function Header() {
                 </Link>
 
                 {/* Center: Search pill or Category tabs */}
-                {!isAuthPage && (
+                {!isAuthPage && !isBookingPage && (
                     <div>
                         {(isSearchPage && !isScrolled) ? null : (!isHome || isScrolled) ? (
                             /* Collapsed Floating Search Pill (Visible when scrolled or on other pages) */
@@ -444,12 +446,21 @@ export function Header() {
                                     </Link>
 
                                     <Link
-                                        to="/my-bookings"
+                                        to="/my-bookings?tab=UPCOMING"
                                         className="dropdown-item"
                                         onClick={() => setMenuOpen(false)}
                                         style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
                                     >
-                                        <BagCheck /> Chuyến đi của tôi
+                                        <BagCheck style={{ color: 'var(--color-primary)' }} /> Chi tiết đặt phòng
+                                    </Link>
+
+                                    <Link
+                                        to="/my-bookings?tab=COMPLETED"
+                                        className="dropdown-item"
+                                        onClick={() => setMenuOpen(false)}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
+                                    >
+                                        <ClockHistory style={{ color: 'var(--color-info)' }} /> Lịch sử đặt phòng
                                     </Link>
 
                                     <Link

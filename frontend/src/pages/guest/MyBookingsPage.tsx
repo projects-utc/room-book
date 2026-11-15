@@ -1,6 +1,6 @@
 // Standardized "Trips" (Chuyến đi của tôi) Page (Airbnb Luxury Style)
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { formatVND } from '../../constants';
 import { Button, Badge } from '../../components';
@@ -19,16 +19,49 @@ import {
   ArrowRight,
   ArrowRepeat,
   XCircle,
-  StarFill,
 } from 'react-bootstrap-icons';
 
 export default function MyBookingsPage() {
   const { store, currentUser, addToast } = useStore();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const username = currentUser?.username || 'guest.demo';
 
-  const [activeTab, setActiveTab] = useState<'UPCOMING' | 'COMPLETED' | 'CANCELLED' | 'ALL'>('UPCOMING');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<'UPCOMING' | 'COMPLETED' | 'CANCELLED' | 'ALL'>(() => {
+    const tabParam = searchParams.get('tab')?.toUpperCase();
+    if (tabParam === 'UPCOMING' || tabParam === 'ACTIVE' || tabParam === 'DETAIL') return 'UPCOMING';
+    if (!tabParam || tabParam === 'COMPLETED' || tabParam === 'HISTORY') return 'COMPLETED';
+    if (tabParam === 'CANCELLED') return 'CANCELLED';
+    return 'ALL';
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab')?.toUpperCase();
+    if (tabParam === 'COMPLETED' || tabParam === 'HISTORY') {
+      setActiveTab('COMPLETED');
+    } else if (tabParam === 'UPCOMING' || tabParam === 'ACTIVE' || tabParam === 'DETAIL') {
+      setActiveTab('UPCOMING');
+    } else if (tabParam === 'CANCELLED') {
+      setActiveTab('CANCELLED');
+    } else if (tabParam === 'ALL') {
+      setActiveTab('ALL');
+    } else if (!tabParam) {
+      setActiveTab('COMPLETED');
+    }
+  }, [searchParams]);
+
+  useEffect(() => setCurrentPage(1), [activeTab]);
+
+  const handleTabChange = (tab: 'COMPLETED' | 'CANCELLED' | 'ALL') => {
+    setActiveTab(tab);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('tab', tab);
+      return next;
+    });
+  };
 
   // Tập hợp các mã đơn đã có đánh giá (từ local store + API)
   const [reviewedCodes, setReviewedCodes] = useState<Set<string>>(() => {
@@ -77,36 +110,31 @@ export default function MyBookingsPage() {
     // 2. Tải danh sách đơn đặt phòng của người dùng
     if (username) {
       stayApi.getBookings(username).then(res => {
-        if (res.success && res.data && res.data.length > 0) {
+        if (res.success && Array.isArray(res.data)) {
           setMyBookings(normalizeBookingList(res.data));
         }
       }).catch(() => { });
     }
   }, [username]);
 
-  // Filter bookings by tab and search
+  // Filter bookings by tab, then show the latest orders first.
   const filteredBookings = myBookings.filter(b => {
-    let matchesTab = true;
-    if (activeTab === 'UPCOMING') {
-      matchesTab = ['PENDING', 'CONFIRMED', 'CHECKED_IN'].includes(b.status);
-    } else if (activeTab === 'COMPLETED') {
-      matchesTab = b.status === 'COMPLETED';
-    } else if (activeTab === 'CANCELLED') {
-      matchesTab = ['CANCELLED', 'REJECTED'].includes(b.status);
-    }
-
-    if (!matchesTab) return false;
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const matchName = b.propertyName?.toLowerCase().includes(q);
-      const matchCode = b.code?.toLowerCase().includes(q);
-      const matchRoom = b.roomName?.toLowerCase().includes(q);
-      return matchName || matchCode || matchRoom;
-    }
-
+    if (activeTab === 'UPCOMING') return ['PENDING', 'CONFIRMED', 'CHECKED_IN'].includes(b.status);
+    if (activeTab === 'COMPLETED') return b.status === 'COMPLETED';
+    if (activeTab === 'CANCELLED') return ['CANCELLED', 'REJECTED'].includes(b.status);
     return true;
+  }).sort((a, b) => {
+    const dateOrder = Date.parse(b.createdAt || '') - Date.parse(a.createdAt || '');
+    return Number.isNaN(dateOrder) || dateOrder === 0
+      ? b.code.localeCompare(a.code, undefined, { numeric: true })
+      : dateOrder;
   });
+  const pageCount = Math.max(1, Math.ceil(filteredBookings.length / pageSize));
+  const visibleBookings = filteredBookings.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  useEffect(() => {
+    if (currentPage > pageCount) setCurrentPage(pageCount);
+  }, [currentPage, pageCount]);
 
   const handleCancelBooking = (code: string) => {
     if (window.confirm(`Bạn có chắc chắn muốn hủy đơn đặt phòng #${code}?`)) {
@@ -214,12 +242,11 @@ export default function MyBookingsPage() {
     }
   };
 
-  const upcomingCount = myBookings.filter(b => ['PENDING', 'CONFIRMED', 'CHECKED_IN'].includes(b.status)).length;
   const completedCount = myBookings.filter(b => b.status === 'COMPLETED').length;
   const cancelledCount = myBookings.filter(b => ['CANCELLED', 'REJECTED'].includes(b.status)).length;
 
   return (
-    <div style={{ maxWidth: 1120, margin: '2rem auto 5rem', padding: '0 1.5rem' }}>
+    <div style={{ maxWidth: 1760, margin: '2rem auto 5rem', padding: '0 clamp(1rem, 2.5vw, 2.5rem)' }}>
       {/* ── Top Header Section ── */}
       <div style={{
         background: 'linear-gradient(135deg, var(--color-primary-soft) 0%, var(--color-bg-surface) 60%, var(--color-bg-app) 100%)',
@@ -236,13 +263,25 @@ export default function MyBookingsPage() {
       }}>
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 999, background: 'var(--color-primary-soft)', color: 'var(--color-primary)', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>
-            <span>Quản lý đặt chỗ</span>
+            <span>{activeTab === 'UPCOMING' ? 'Chi tiết đặt phòng' : 'Lịch sử đặt phòng'}</span>
           </div>
           <h1 style={{ fontSize: '2.15rem', fontWeight: 800, margin: '0 0 0.5rem', color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
-            Đơn đặt phòng của tôi
+            {activeTab === 'UPCOMING'
+              ? 'Chi tiết đặt phòng'
+              : activeTab === 'COMPLETED'
+              ? 'Lịch sử đặt phòng'
+              : activeTab === 'CANCELLED'
+              ? 'Đơn đặt phòng đã hủy'
+              : 'Tất cả đơn đặt phòng'}
           </h1>
           <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.98rem' }}>
-            Chào mừng trở lại, <strong>{currentUser?.fullName || username}</strong>! Bạn có <strong style={{ color: 'var(--color-primary)' }}>{upcomingCount}</strong> chuyến đi sắp tới.
+            {activeTab === 'UPCOMING'
+              ? <>Các đơn đang chờ duyệt, đã xác nhận hoặc đang lưu trú của tài khoản <strong>{currentUser?.fullName || username}</strong>.</>
+              : activeTab === 'COMPLETED'
+              ? <>Hiển thị các đơn đặt phòng <strong>đã hoàn thành</strong> kỳ lưu trú của tài khoản <strong>{currentUser?.fullName || username}</strong>.</>
+              : activeTab === 'CANCELLED'
+                ? <>Hiển thị các đơn đã hủy của tài khoản <strong>{currentUser?.fullName || username}</strong>.</>
+                : <>Toàn bộ đơn đặt phòng của tài khoản <strong>{currentUser?.fullName || username}</strong>.</>}
           </p>
         </div>
 
@@ -272,33 +311,9 @@ export default function MyBookingsPage() {
       </div>
 
       {/* ── Summary Stat Pills Bar ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+      {activeTab !== 'UPCOMING' && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
         <div
-          onClick={() => setActiveTab('UPCOMING')}
-          style={{
-            background: activeTab === 'UPCOMING' ? 'var(--color-primary-soft)' : 'var(--color-bg-surface)',
-            border: activeTab === 'UPCOMING' ? '2px solid var(--color-primary)' : '1px solid var(--color-border-subtle)',
-            borderRadius: 16,
-            padding: '1.15rem 1.25rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-            transition: 'all 0.2s ease',
-            boxShadow: activeTab === 'UPCOMING' ? '0 4px 16px rgba(225, 29, 72, 0.08)' : '0 1px 3px rgba(0,0,0,0.02)'
-          }}
-        >
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--color-info-bg)', color: 'var(--color-info)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
-            <CalendarCheck />
-          </div>
-          <div>
-            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Sắp tới & Chờ xác nhận</span>
-            <strong style={{ fontSize: '1.35rem', color: 'var(--color-text-primary)' }}>{upcomingCount}</strong>
-          </div>
-        </div>
-
-        <div
-          onClick={() => setActiveTab('COMPLETED')}
+          onClick={() => handleTabChange('COMPLETED')}
           style={{
             background: activeTab === 'COMPLETED' ? 'var(--color-success-bg)' : 'var(--color-bg-surface)',
             border: activeTab === 'COMPLETED' ? '2px solid var(--color-success)' : '1px solid var(--color-border-subtle)',
@@ -316,13 +331,13 @@ export default function MyBookingsPage() {
             <CheckCircleFill />
           </div>
           <div>
-            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Đã hoàn thành</span>
-            <strong style={{ fontSize: '1.35rem', color: 'var(--color-text-primary)' }}>{completedCount}</strong>
+            <strong style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', display: 'block' }}>Lịch sử đặt phòng</strong>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Đã hoàn thành ({completedCount})</span>
           </div>
         </div>
 
         <div
-          onClick={() => setActiveTab('CANCELLED')}
+          onClick={() => handleTabChange('CANCELLED')}
           style={{
             background: activeTab === 'CANCELLED' ? 'var(--color-danger-bg)' : 'var(--color-bg-surface)',
             border: activeTab === 'CANCELLED' ? '2px solid var(--color-danger)' : '1px solid var(--color-border-subtle)',
@@ -340,13 +355,13 @@ export default function MyBookingsPage() {
             <XCircleFill />
           </div>
           <div>
-            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Đã hủy</span>
-            <strong style={{ fontSize: '1.35rem', color: 'var(--color-text-primary)' }}>{cancelledCount}</strong>
+            <strong style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', display: 'block' }}>Đơn đã hủy</strong>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Đã hủy ({cancelledCount})</span>
           </div>
         </div>
 
         <div
-          onClick={() => setActiveTab('ALL')}
+          onClick={() => handleTabChange('ALL')}
           style={{
             background: activeTab === 'ALL' ? 'var(--color-bg-app)' : 'var(--color-bg-surface)',
             border: activeTab === 'ALL' ? '2px solid var(--color-text-primary)' : '1px solid var(--color-border-subtle)',
@@ -364,51 +379,11 @@ export default function MyBookingsPage() {
             <HouseDoor />
           </div>
           <div>
-            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Tất cả chuyến đi</span>
-            <strong style={{ fontSize: '1.35rem', color: 'var(--color-text-primary)' }}>{myBookings.length}</strong>
+            <strong style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', display: 'block' }}>Tất cả đơn đặt</strong>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Toàn bộ ({myBookings.length})</span>
           </div>
         </div>
-      </div>
-
-      {/* ── Search Bar in trips ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem', gap: '1rem', flexWrap: 'wrap' }}>
-        <div style={{
-          position: 'relative',
-          flex: '1 1 320px',
-          maxWidth: 420
-        }}>
-          <Search style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)', fontSize: '1rem' }} />
-          <input
-            type="text"
-            placeholder="Tìm theo tên chỗ nghỉ, mã đơn #ODD..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '0.7rem 1rem 0.7rem 2.5rem',
-              borderRadius: 12,
-              border: '1px solid var(--color-border-subtle)',
-              background: 'var(--color-bg-surface)',
-              fontSize: '0.9rem',
-              color: 'var(--color-text-primary)',
-              outline: 'none',
-              transition: 'border-color 0.2s, box-shadow 0.2s'
-            }}
-            onFocus={e => {
-              e.currentTarget.style.borderColor = 'var(--color-primary)';
-              e.currentTarget.style.boxShadow = '0 0 0 3px rgba(225, 29, 72, 0.12)';
-            }}
-            onBlur={e => {
-              e.currentTarget.style.borderColor = 'var(--color-border-subtle)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          />
-        </div>
-
-        <span style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)' }}>
-          Đang hiển thị <strong>{filteredBookings.length}</strong> / {myBookings.length} chuyến đi
-        </span>
-      </div>
+      </div>}
 
       {/* ── Trips Cards List ── */}
       {filteredBookings.length === 0 ? (
@@ -424,16 +399,18 @@ export default function MyBookingsPage() {
             <HouseDoor />
           </div>
           <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: '0 0 0.5rem', color: 'var(--color-text-primary)' }}>
-            Chưa tìm thấy chuyến đi nào
+            {activeTab === 'UPCOMING' ? 'Không có đơn đặt phòng chưa hoàn thành' : activeTab === 'COMPLETED' ? 'Chưa có đơn đặt phòng nào trong lịch sử' : activeTab === 'CANCELLED' ? 'Chưa có đơn đặt phòng nào đã hủy' : 'Chưa tìm thấy chuyến đi nào'}
           </h2>
           <p style={{ color: 'var(--color-text-muted)', maxWidth: 440, margin: '0 auto 1.75rem', lineHeight: 1.6, fontSize: '0.95rem' }}>
-            {searchQuery
-              ? `Không có chuyến đi nào phù hợp với từ khóa "${searchQuery}". Hãy thử tìm kiếm bằng từ khóa khác.`
-              : 'Đã đến lúc chuẩn bị hành lý và lên kế hoạch cho kỳ nghỉ dưỡng mơ ước cùng ODauDay Stay!'}
+            {activeTab === 'UPCOMING'
+              ? 'Đơn mới đặt, đã xác nhận và đang lưu trú sẽ hiển thị tại đây.'
+              : activeTab === 'COMPLETED'
+              ? 'Các đơn đặt phòng sau khi quý khách trả phòng và hoàn tất lưu trú sẽ được lưu trữ tự động tại mục Lịch sử đặt phòng.'
+                : 'Đã đến lúc chuẩn bị hành lý và lên kế hoạch cho kỳ nghỉ dưỡng mơ ước cùng ODauDay Stay!'}
           </p>
           <button
             type="button"
-            onClick={() => { setSearchQuery(''); navigate('/'); }}
+            onClick={() => navigate('/')}
             style={{
               background: 'var(--gradient-primary)',
               color: 'var(--color-bg-surface)',
@@ -451,7 +428,7 @@ export default function MyBookingsPage() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {filteredBookings.map(b => {
+          {visibleBookings.map(b => {
             // Find property object to fetch real image & details
             const property = store.getProperty(b.propertyId) || store.getAllProperties().find(p => p.name === b.propertyName) || store.getProperty(1);
             const propertyImg = property?.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80';
@@ -483,26 +460,16 @@ export default function MyBookingsPage() {
               >
                 {/* ── Left: Property Photo ── */}
                 <div
+                  className="my-trip-photo"
                   style={{
-                    position: 'relative',
-                    cursor: 'pointer',
-                    overflow: 'hidden',
-                    minHeight: 220,
+                    cursor: b.status === 'COMPLETED' ? 'default' : 'pointer',
                   }}
-                  onClick={() => navigate(`/my-bookings/${b.code}`)}
+                  onClick={b.status === 'COMPLETED' ? undefined : () => navigate(`/my-bookings/${b.code}`)}
                 >
                   <img
+                    className="my-trip-photo-image"
                     src={propertyImg}
                     alt={b.propertyName}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      display: 'block',
-                      transition: 'transform 0.35s ease',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.06)')}
-                    onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
                   />
 
                   {/* Top-left stay code */}
@@ -553,13 +520,13 @@ export default function MyBookingsPage() {
 
                     {/* Property title */}
                     <h3
-                      onClick={() => navigate(`/my-bookings/${b.code}`)}
+                      onClick={b.status === 'COMPLETED' ? undefined : () => navigate(`/my-bookings/${b.code}`)}
                       style={{
                         margin: '0 0 0.35rem',
                         fontSize: '1.3rem',
                         fontWeight: 800,
                         color: 'var(--color-text-primary)',
-                        cursor: 'pointer',
+                        cursor: b.status === 'COMPLETED' ? 'default' : 'pointer',
                         lineHeight: 1.3
                       }}
                       onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primary)')}
@@ -639,7 +606,7 @@ export default function MyBookingsPage() {
 
                   {/* Action Button stack */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', width: '100%', marginTop: '1rem' }}>
-                    <button
+                    {b.status !== 'COMPLETED' && <button
                       type="button"
                       onClick={() => navigate(`/my-bookings/${b.code}`)}
                       style={{
@@ -661,8 +628,8 @@ export default function MyBookingsPage() {
                       onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-text-primary)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'var(--color-text-primary)')}
                     >
-                      Chi tiết <ArrowRight style={{ fontSize: '0.85rem' }} />
-                    </button>
+                      Chi tiết đặt phòng <ArrowRight style={{ fontSize: '0.85rem' }} />
+                    </button>}
 
                     {/* Nếu đơn đã hoàn thành và CHƯA đánh giá -> Hiển thị nút "Viết đánh giá" */}
                     {b.status === 'COMPLETED' && !b.isReviewed && !(b as any).is_reviewed && !store.isBookingReviewed(b.code) && !reviewedCodes.has(b.code) && (
@@ -690,30 +657,6 @@ export default function MyBookingsPage() {
                     )}
 
                     {/* Nếu đơn đã hoàn thành và ĐÃ ĐÁNH GIÁ -> TUYỆT ĐỐI KHÔNG hiện "Viết đánh giá", chỉ hiện "Xem đánh giá" & "Đặt lại" */}
-                    {b.status === 'COMPLETED' && Boolean(b.isReviewed || (b as any).is_reviewed || store.isBookingReviewed(b.code) || reviewedCodes.has(b.code)) && (
-                      <button
-                        type="button"
-                        onClick={() => navigate(`/property/${b.propertyId || 1}?highlight=${b.code}#reviews`)}
-                        style={{
-                          width: '100%',
-                          padding: '0.6rem 1rem',
-                          borderRadius: 10,
-                          background: 'var(--color-star-bg)',
-                          color: 'var(--color-star-hover)',
-                          border: '1px solid #FDE68A',
-                          fontSize: '0.84rem',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 6,
-                        }}
-                      >
-                        <StarFill style={{ color: 'var(--color-star)' }} /> Xem đánh giá
-                      </button>
-                    )}
-
                     {b.status === 'COMPLETED' && Boolean(b.isReviewed || (b as any).is_reviewed || store.isBookingReviewed(b.code) || reviewedCodes.has(b.code)) && (
                       <button
                         type="button"
@@ -774,6 +717,21 @@ export default function MyBookingsPage() {
             );
           })}
         </div>
+      )}
+      {pageCount > 1 && (
+        <nav aria-label="Phân trang lịch sử đặt phòng" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: '2rem', flexWrap: 'wrap' }}>
+          <button type="button" onClick={() => setCurrentPage(page => Math.max(1, page - 1))} disabled={currentPage === 1} aria-label="Trang trước" style={{ padding: '0.55rem 0.9rem', border: '1px solid var(--color-border-subtle)', borderRadius: 10, background: 'var(--color-bg-surface)', color: 'var(--color-text-primary)', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.5 : 1 }}>
+            Trước
+          </button>
+          {Array.from({ length: pageCount }, (_, index) => index + 1).map(page => (
+            <button key={page} type="button" onClick={() => setCurrentPage(page)} aria-current={currentPage === page ? 'page' : undefined} style={{ minWidth: 40, height: 40, border: `1px solid ${currentPage === page ? 'var(--color-primary)' : 'var(--color-border-subtle)'}`, borderRadius: 10, background: currentPage === page ? 'var(--color-primary)' : 'var(--color-bg-surface)', color: currentPage === page ? '#fff' : 'var(--color-text-primary)', cursor: 'pointer', fontWeight: 700 }}>
+              {page}
+            </button>
+          ))}
+          <button type="button" onClick={() => setCurrentPage(page => Math.min(pageCount, page + 1))} disabled={currentPage === pageCount} aria-label="Trang sau" style={{ padding: '0.55rem 0.9rem', border: '1px solid var(--color-border-subtle)', borderRadius: 10, background: 'var(--color-bg-surface)', color: 'var(--color-text-primary)', cursor: currentPage === pageCount ? 'not-allowed' : 'pointer', opacity: currentPage === pageCount ? 0.5 : 1 }}>
+            Sau
+          </button>
+        </nav>
       )}
     </div>
   );

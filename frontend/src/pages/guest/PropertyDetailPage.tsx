@@ -10,7 +10,6 @@ import {
   HeartFill,
   Heart,
   Share,
-  PatchCheckFill,
   ShieldCheck,
   Wifi,
   Tv,
@@ -288,10 +287,6 @@ export default function PropertyDetailPage() {
                 </a>
               )}
               <span>·</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: 'var(--color-text-primary)' }}>
-                <PatchCheckFill style={{ color: 'var(--color-primary)' }} /> Chủ nhà siêu cấp
-              </span>
-              <span>·</span>
               <span style={{ color: 'var(--color-text-secondary)', textDecoration: 'underline' }}>
                 <GeoAltFill style={{ color: 'var(--color-danger)' }} /> {property.address}
               </span>
@@ -335,13 +330,6 @@ export default function PropertyDetailPage() {
                 <div>
                   <strong style={{ display: 'block', fontSize: '0.98rem' }}>Tự nhận phòng</strong>
                   <span style={{ color: 'var(--ink-secondary)', fontSize: '0.88rem' }}>Tự nhận phòng thuận tiện bằng mã khóa thông minh (smartlock).</span>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <PatchCheckFill style={{ fontSize: '1.35rem', color: 'var(--airbnb-pink)', marginTop: 2 }} />
-                <div>
-                  <strong style={{ display: 'block', fontSize: '0.98rem' }}>{property.owner} là Chủ nhà siêu cấp</strong>
-                  <span style={{ color: 'var(--ink-secondary)', fontSize: '0.88rem' }}>Chủ nhà siêu cấp là những chủ nhà dày dạn kinh nghiệm, được đánh giá cao và cam kết mang lại kỳ nghỉ tuyệt vời.</span>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
