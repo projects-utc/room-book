@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
+import { stayApi } from '../../api/stayApi';
 import { Breadcrumb, Button, Card, EmptyState, StatCard, formatDisplayDateVN } from '../../components';
 import { formatVND, BADGE_CLASS, BADGE_LABEL } from '../../constants';
 import {
@@ -20,8 +22,40 @@ export default function HostBookingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const filters = readBookingFilters(searchParams);
 
-  // StoreContext rerenders on store updates; read the current list instead of retaining a stale copy.
-  const bookings = store.getAllBookings();
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [reloadVersion, setReloadVersion] = useState(0);
+  const [updatingCode, setUpdatingCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    setIsLoading(true);
+    setLoadError('');
+
+    const fetchBookings = async () => {
+      try {
+        const response = await stayApi.getBookings();
+        if (!active) return;
+        if (!response.success || !Array.isArray(response.data)) {
+          throw new Error(response.message || 'Không tải được danh sách đơn từ máy chủ');
+        }
+        store.setBookings(response.data);
+      } catch (error) {
+        if (!active) return;
+        const message = error instanceof Error ? error.message : 'Lỗi khi tải danh sách đơn từ máy chủ';
+        setLoadError(message);
+        addToast(message, 'error');
+      } finally {
+        if (active) setIsLoading(false);
+      }
+    };
+
+    void fetchBookings();
+    return () => { active = false; };
+  }, [store, addToast, reloadVersion]);
+
+  // StoreContext rerenders when the API response is saved to the shared cache.
+  const bookings = isLoading || loadError ? [] : store.getAllBookings();
   const { filteredBookings, statusCounts, invalidDateRange } = filterBookings(bookings, filters);
   const { page, pageSize, pageCount, pages, visibleBookings } =
     paginateBookings(filteredBookings, searchParams);
@@ -55,12 +89,26 @@ export default function HostBookingsPage() {
   const clearFilters = () => updateFilters(DEFAULT_BOOKING_FILTERS);
   const hasActiveFilters = Boolean(filters.q.trim() || filters.from || filters.to || filters.status !== 'ALL');
 
-  const handleUpdateStatus = (code: string, newStatus: Booking['status']) => {
-    const result = store.updateBookingStatus(code, newStatus);
-    if (result.success) {
-      addToast(`Đơn #${code}: ${BADGE_LABEL[newStatus]}`, 'success');
-    } else {
-      addToast(result.message || 'Lỗi khi cập nhật trạng thái', 'error');
+  const handleUpdateStatus = async (code: string, newStatus: Booking['status']) => {
+    if (updatingCode) return;
+    setUpdatingCode(code);
+
+    try {
+      const response = await stayApi.updateBookingStatus(code, newStatus);
+      if (!response.success) {
+        addToast(response.message || 'Lỗi khi cập nhật trạng thái từ máy chủ', 'error');
+        return;
+      }
+
+      const updatedStatus = response.data?.status || newStatus;
+      store.setBookings(store.getAllBookings().map(booking => booking.code === code
+        ? { ...booking, ...response.data, status: updatedStatus }
+        : booking));
+      addToast(`Đơn #${code}: ${BADGE_LABEL[updatedStatus]}`, 'success');
+    } catch {
+      addToast('Không thể kết nối đến máy chủ để đổi trạng thái', 'error');
+    } finally {
+      setUpdatingCode(null);
     }
   };
 
@@ -132,7 +180,6 @@ export default function HostBookingsPage() {
           {invalidDateRange && <p id="booking-date-help" className="booking-filter-help is-error" role="alert">
             Ngày kết thúc cần bằng hoặc sau ngày bắt đầu.
           </p>}
-
         </section>
 
         <div className="booking-toolbar">
@@ -154,7 +201,19 @@ export default function HostBookingsPage() {
           </div>
         </div>
 
-        {filteredBookings.length === 0 ? (
+        {isLoading ? (
+          <div className="booking-empty" role="status">
+            <EmptyState compact icon={<ArrowCounterclockwise />}
+              title="Đang tải danh sách đơn đặt phòng…" />
+          </div>
+        ) : loadError ? (
+          <div className="booking-empty" role="alert">
+            <EmptyState compact title="Không tải được danh sách đơn"
+              description={loadError}
+              action={<Button variant="outline" size="sm" icon={<ArrowCounterclockwise />}
+                onClick={() => setReloadVersion(version => version + 1)}>Thử lại</Button>} />
+          </div>
+        ) : filteredBookings.length === 0 ? (
           <div className="booking-empty">
             <EmptyState icon={bookings.length ? <Search /> : <CalendarCheck />}
               title={invalidDateRange ? 'Kiểm tra lại khoảng ngày' : bookings.length
@@ -184,7 +243,7 @@ export default function HostBookingsPage() {
                 </thead>
                 <tbody>
                   {visibleBookings.map(booking => (
-                    <tr key={booking.code}>
+                    <tr key={booking.code} aria-busy={updatingCode === booking.code}>
                       <td><Link className="booking-code" to={`/host/bookings/${encodeURIComponent(booking.code)}`}>
                         #{booking.code}
                       </Link></td>
@@ -203,13 +262,17 @@ export default function HostBookingsPage() {
                       <td><div className="booking-actions">
                         {booking.status === 'PENDING' && <>
                           <Button variant="primary" size="xs" icon={<CheckLg />}
+                            disabled={updatingCode !== null}
                             onClick={() => handleUpdateStatus(booking.code, 'CONFIRMED')}>Duyệt đơn</Button>
                           <Button variant="outline" size="xs" icon={<XCircle />}
+                            disabled={updatingCode !== null}
                             onClick={() => handleUpdateStatus(booking.code, 'REJECTED')}>Từ chối</Button>
                         </>}
                         {booking.status === 'CONFIRMED' && <Button variant="outline" size="xs" icon={<KeyFill />}
+                          disabled={updatingCode !== null}
                           onClick={() => handleUpdateStatus(booking.code, 'CHECKED_IN')}>Check-in</Button>}
                         {booking.status === 'CHECKED_IN' && <Button variant="primary" size="xs" icon={<Check2All />}
+                          disabled={updatingCode !== null}
                           onClick={() => handleUpdateStatus(booking.code, 'COMPLETED')}>Hoàn tất</Button>}
                         <Link className="btn btn-outline btn-xs" to={`/host/bookings/${encodeURIComponent(booking.code)}`}>
                           <Eye aria-hidden="true" /> Chi tiết

@@ -83,11 +83,11 @@ export default function HostRoomsPage() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', margin: '1rem 0 2rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#1E293B' }}>
-            Danh sách hạng phòng vận hành
+          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
+            Danh sách phòng
           </h1>
-          <p style={{ margin: 0, color: '#64748B', fontSize: '0.95rem' }}>
-            Quản lý sức chứa tối đa (BR-02), đơn giá niêm yết mỗi đêm và lịch chặn bảo trì (RoomBlock).
+          <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
+            Quản lý thông tin phòng, sức chứa tối đa, giá theo đêm và lịch tạm khóa phòng.
           </p>
         </div>
         <Button variant="primary" icon={<PlusLg />} onClick={() => setShowAddForm(true)}>
@@ -128,8 +128,8 @@ export default function HostRoomsPage() {
               {rooms.map(room => (
                 <TableRow key={room.id}>
                   <TableCell>
-                    <strong style={{ display: 'block', color: '#1E293B' }}>{room.name}</strong>
-                    <span style={{ fontSize: '0.8rem', color: '#64748B' }}>{room.desc}</span>
+                    <strong style={{ display: 'block', color: 'var(--color-text-primary)' }}>{room.name}</strong>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>{room.desc}</span>
                   </TableCell>
                   <TableCell>{room.propertyName}</TableCell>
                   <TableCell>
@@ -149,14 +149,14 @@ export default function HostRoomsPage() {
                     <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                       <Link to={`/host/roomblock?roomId=${room.id}`}>
                         <Button size="xs" variant="outline" icon={<CalendarRange />}>
-                          Chặn lịch (RoomBlock)
+                          Khóa lịch phòng
                         </Button>
                       </Link>
                       <Button
                         size="xs"
                         variant="ghost"
                         icon={<Trash />}
-                        style={{ color: '#DC2626' }}
+                        style={{ color: 'var(--color-danger)' }}
                         title="Xóa phòng"
                         onClick={() => handleDelete(room.id, room.name)}
                       />

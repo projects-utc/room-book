@@ -76,10 +76,10 @@ export default function AdminAuditLogsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Page Header */}
       <div>
-        <h1 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#0F172A' }}>
-          Nhật ký Kiểm toán &amp; Giám sát Hệ thống (UC-10 / Audit Trail)
+        <h1 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
+          Nhật ký Hoạt động &amp; Giám sát Hệ thống
         </h1>
-        <p style={{ margin: 0, color: '#64748B', fontSize: '0.92rem' }}>
+        <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.92rem' }}>
           Lưu trữ toàn bộ các thao tác nhạy cảm, quyền hạn quản trị và can thiệp nghiệp vụ để đảm bảo tính minh bạch, tuân thủ an toàn dữ liệu.
         </p>
       </div>
@@ -87,7 +87,7 @@ export default function AdminAuditLogsPage() {
       {/* 4 Stat Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
         <StatCard
-          label="Tổng bản ghi kiểm toán"
+          label="Tổng nhật ký ghi nhận"
           value={`${logs.length} sự kiện`}
           description="Được ghi nhận tự động vào cơ sở dữ liệu"
           variant="highlight"
@@ -116,8 +116,8 @@ export default function AdminAuditLogsPage() {
       <Card
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
-            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: '#0F172A' }}>
-              Danh sách sự kiện kiểm toán ({filtered.length} kết quả)
+            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>
+              Danh sách nhật ký hoạt động ({filtered.length} kết quả)
             </span>
           </div>
         }
@@ -137,7 +137,7 @@ export default function AdminAuditLogsPage() {
               { value: 'ALL', label: 'Tất cả hành động' },
               { value: 'LOCK', label: 'Khóa tài khoản' },
               { value: 'UNLOCK', label: 'Mở khóa tài khoản' },
-              { value: 'CHANGE_ROLE', label: 'Đổi vai trò RBAC' },
+              { value: 'CHANGE_ROLE', label: 'Đổi vai trò' },
               { value: 'CANCEL_BOOKING', label: 'Can thiệp hủy đơn' },
               { value: 'TOGGLE_PROPERTY', label: 'Khóa/Mở chỗ ở' },
               { value: 'CREATE_PROMO', label: 'Tạo mã giảm giá' },
@@ -147,7 +147,7 @@ export default function AdminAuditLogsPage() {
 
         {filtered.length === 0 ? (
           <EmptyState
-            title="Không tìm thấy bản ghi kiểm toán nào"
+            title="Không tìm thấy bản ghi hoạt động nào"
             description="Hãy thử thay đổi từ khóa tìm kiếm hoặc bỏ bớt các bộ lọc hành động."
           />
         ) : (
@@ -166,32 +166,32 @@ export default function AdminAuditLogsPage() {
               {filtered.map((log) => (
                 <TableRow key={log.id}>
                   <TableCell>
-                    <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0F172A' }}>
+                    <span style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--color-text-primary)' }}>
                       #AUD-{log.id}
                     </span>
                   </TableCell>
 
                   <TableCell>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0F172A' }}>{log.timestamp}</div>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{log.timestamp}</div>
                   </TableCell>
 
                   <TableCell>{getActionBadge(log.action)}</TableCell>
 
                   <TableCell>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: '#0F172A' }}>
-                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981' }} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)' }} />
                       <span>{log.performedBy}</span>
                     </div>
                   </TableCell>
 
                   <TableCell>
-                    <span style={{ fontWeight: 700, color: '#FF385C', fontFamily: 'monospace' }}>
+                    <span style={{ fontWeight: 700, color: 'var(--color-primary)', fontFamily: 'monospace' }}>
                       {log.target}
                     </span>
                   </TableCell>
 
                   <TableCell>
-                    <span style={{ fontSize: '0.88rem', color: '#334155' }}>{log.details}</span>
+                    <span style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>{log.details}</span>
                   </TableCell>
                 </TableRow>
               ))}

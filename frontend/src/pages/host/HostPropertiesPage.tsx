@@ -86,10 +86,10 @@ export default function HostPropertiesPage() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#222222' }}>
+          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: 'var(--color-text-primary)' }}>
             Cơ sở lưu trú của tôi
           </h1>
-          <p style={{ margin: 0, color: '#717171', fontSize: '0.95rem' }}>
+          <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.95rem' }}>
             Chủ nhà chỉ được quyền quản lý các cơ sở thuộc quyền sở hữu của mình (Tài khoản: <strong>{owner}</strong>).
           </p>
         </div>
@@ -99,7 +99,7 @@ export default function HostPropertiesPage() {
           icon={<PlusLg />}
           onClick={() => setShowAddModal(true)}
         >
-          Đăng ký cơ sở mới
+          Thêm chỗ ở mới
         </Button>
       </div>
 
@@ -130,7 +130,7 @@ export default function HostPropertiesPage() {
       <Modal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
-        title="Đăng ký cơ sở lưu trú mới"
+        title="Thêm chỗ ở mới"
         subtitle="Thêm chỗ ở homestay hoặc biệt thự vào danh sách quản lý của bạn"
         size="lg"
       >
@@ -228,11 +228,11 @@ export default function HostPropertiesPage() {
         padding="none"
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <HouseDoor style={{ color: '#FF385C', fontSize: '1.2rem' }} />
+            <HouseDoor style={{ color: 'var(--color-primary)', fontSize: '1.2rem' }} />
             <span>Danh sách cơ sở lưu trú ({properties.length})</span>
           </div>
         }
-        headerRight={<Badge variant="active"><ShieldCheck /> Xác thực chủ quyền</Badge>}
+        headerRight={<Badge variant="active"><ShieldCheck /> Chủ sở hữu</Badge>}
       >
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0" style={{ width: '100%' }}>
@@ -240,7 +240,7 @@ export default function HostPropertiesPage() {
               <tr>
                 <th style={{ padding: '0.85rem 1rem' }}>Cơ sở lưu trú</th>
                 <th style={{ padding: '0.85rem 1rem' }}>Loại hình</th>
-                <th style={{ padding: '0.85rem 1rem' }}>Địa chỉ tọa lạc</th>
+                <th style={{ padding: '0.85rem 1rem' }}>Địa chỉ</th>
                 <th style={{ padding: '0.85rem 1rem' }}>Giá từ</th>
                 <th style={{ padding: '0.85rem 1rem' }}>Trạng thái</th>
                 <th style={{ textAlign: 'right', padding: '0.85rem 1rem' }}>Thao tác</th>
@@ -263,16 +263,16 @@ export default function HostPropertiesPage() {
                         }}
                       />
                       <div>
-                        <strong style={{ display: 'block', color: '#222222' }}>{p.name}</strong>
-                        <span style={{ fontSize: '0.78rem', color: '#717171' }}>
+                        <strong style={{ display: 'block', color: 'var(--color-text-primary)' }}>{p.name}</strong>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
                           {p.area || p.city}
                         </span>
                       </div>
                     </div>
                   </td>
                   <td style={{ padding: '0.85rem 1rem' }}>{p.type}</td>
-                  <td style={{ padding: '0.85rem 1rem', fontSize: '0.88rem', color: '#717171' }}>{p.address}</td>
-                  <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#FF385C' }}>
+                  <td style={{ padding: '0.85rem 1rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>{p.address}</td>
+                  <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: 'var(--color-primary)' }}>
                     {formatVND(p.priceMin)}
                   </td>
                   <td style={{ padding: '0.85rem 1rem' }}>

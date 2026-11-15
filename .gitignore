@@ -79,3 +79,9 @@ out/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Bỏ qua các thư mục cấu hình và token của AI Agent
+.github/
+.agents/
+.specify/
+graphify-out/

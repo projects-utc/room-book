@@ -53,9 +53,9 @@ export function Tabs({
                 fontSize: '0.85rem',
                 fontWeight: 600,
                 cursor: 'pointer',
-                border: isActive ? '1px solid #222222' : '1px solid #DDDDDD',
-                background: isActive ? '#222222' : '#ffffff',
-                color: isActive ? '#ffffff' : '#222222',
+                border: isActive ? '1px solid var(--color-text-primary)' : '1px solid var(--color-border-strong)',
+                background: isActive ? 'var(--color-text-primary)' : 'var(--color-bg-surface)',
+                color: isActive ? 'var(--color-bg-surface)' : 'var(--color-text-primary)',
                 transition: 'all 0.15s ease',
               }}
             >
@@ -65,8 +65,8 @@ export function Tabs({
                 <span
                   style={{
                     fontSize: '0.75rem',
-                    background: isActive ? 'rgba(255, 255, 255, 0.25)' : '#F1F5F9',
-                    color: isActive ? '#ffffff' : '#717171',
+                    background: isActive ? 'rgba(255, 255, 255, 0.25)' : 'var(--color-bg-muted)',
+                    color: isActive ? 'var(--color-bg-surface)' : 'var(--color-text-secondary)',
                     padding: '2px 6px',
                     borderRadius: '9999px',
                     marginLeft: '0.2rem',
@@ -89,7 +89,7 @@ export function Tabs({
       style={{
         display: 'flex',
         gap: '1.25rem',
-        borderBottom: '1px solid #EBEBEB',
+        borderBottom: '1px solid var(--color-border-subtle)',
         overflowX: 'auto',
         marginBottom: '1.5rem',
         ...style,
@@ -105,8 +105,8 @@ export function Tabs({
             style={{
               background: 'transparent',
               border: 'none',
-              borderBottom: isActive ? '2px solid #222222' : '2px solid transparent',
-              color: isActive ? '#222222' : '#717171',
+              borderBottom: isActive ? '2px solid var(--color-text-primary)' : '2px solid transparent',
+              color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
               fontWeight: isActive ? 700 : 500,
               fontSize: '0.92rem',
               padding: '0.65rem 0.25rem',
@@ -124,8 +124,8 @@ export function Tabs({
               <span
                 style={{
                   fontSize: '0.75rem',
-                  background: isActive ? '#222222' : '#F1F5F9',
-                  color: isActive ? '#ffffff' : '#717171',
+                  background: isActive ? 'var(--color-text-primary)' : 'var(--color-bg-muted)',
+                  color: isActive ? 'var(--color-bg-surface)' : 'var(--color-text-secondary)',
                   padding: '2px 7px',
                   borderRadius: '9999px',
                   fontWeight: 700,

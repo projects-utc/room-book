@@ -18,15 +18,15 @@ function AppContent() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#F8FAFC',
+          background: 'var(--color-bg-app)',
         }}
       >
         <div
           style={{
             width: 44,
             height: 44,
-            border: '4px solid #E2E8F0',
-            borderTopColor: '#FF385C',
+            border: '4px solid var(--color-border-subtle)',
+            borderTopColor: 'var(--color-primary)',
             borderRadius: '50%',
           }}
           className="animate-spin"

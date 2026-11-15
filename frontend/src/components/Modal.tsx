@@ -78,9 +78,9 @@ export function Modal({
           width: '100%',
           maxWidth: widthMap[size],
           maxHeight: '90vh',
-          background: '#ffffff',
+          background: 'var(--color-bg-surface)',
           borderRadius: '18px',
-          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.25)',
+          boxShadow: 'var(--shadow-modal)',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
@@ -92,7 +92,7 @@ export function Modal({
         <div
           style={{
             padding: '1.25rem 1.75rem',
-            borderBottom: '1px solid #EBEBEB',
+            borderBottom: '1px solid var(--color-border-subtle)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -101,12 +101,12 @@ export function Modal({
         >
           <div>
             {title && (
-              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#222222' }}>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>
                 {title}
               </h2>
             )}
             {subtitle && (
-              <p style={{ margin: '0.2rem 0 0', fontSize: '0.85rem', color: '#717171' }}>
+              <p style={{ margin: '0.2rem 0 0', fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
                 {subtitle}
               </p>
             )}
@@ -126,10 +126,10 @@ export function Modal({
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              color: '#222222',
+              color: 'var(--color-text-primary)',
               transition: 'background 0.15s ease',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#F7F7F7')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg-muted)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <X style={{ fontSize: '1.4rem' }} />
@@ -146,8 +146,8 @@ export function Modal({
           <div
             style={{
               padding: '1rem 1.75rem',
-              borderTop: '1px solid #EBEBEB',
-              background: '#F9FAFB',
+              borderTop: '1px solid var(--color-border-subtle)',
+              background: 'var(--color-bg-app)',
               display: 'flex',
               justifyContent: 'flex-end',
               gap: '0.75rem',

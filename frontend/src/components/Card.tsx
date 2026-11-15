@@ -8,7 +8,7 @@ export interface CardProps {
   footer?: ReactNode;
   variant?: 'default' | 'elevated' | 'flat' | 'outline';
   padding?: 'none' | 'sm' | 'md' | 'lg';
-  borderAccent?: string; // e.g. '#FF385C', '#059669' for KPI cards
+  borderAccent?: string; // e.g. 'var(--color-primary)', 'var(--color-success)' for KPI cards
   className?: string;
   style?: React.CSSProperties;
   children?: ReactNode;
@@ -36,17 +36,17 @@ export function Card({
   };
 
   const shadowMap = {
-    default: '0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04)',
-    elevated: '0 8px 28px rgba(0, 0, 0, 0.12)',
+    default: 'var(--shadow-sm)',
+    elevated: 'var(--shadow-card)',
     flat: 'none',
     outline: 'none',
   };
 
   const borderMap = {
-    default: '1px solid #EBEBEB',
-    elevated: '1px solid #DDDDDD',
+    default: '1px solid var(--color-border-subtle)',
+    elevated: '1px solid var(--color-border-subtle)',
     flat: 'none',
-    outline: '1px solid #DDDDDD',
+    outline: '1.5px solid var(--color-border-strong)',
   };
 
   return (
@@ -54,7 +54,7 @@ export function Card({
       onClick={onClick}
       className={`panel ${className}`}
       style={{
-        background: '#ffffff',
+        background: 'var(--color-bg-surface)',
         borderRadius: '16px',
         border: borderMap[variant],
         borderLeft: borderAccent ? `4px solid ${borderAccent}` : undefined,
@@ -69,7 +69,7 @@ export function Card({
         <div
           style={{
             padding: paddingMap[padding],
-            borderBottom: '1px solid #EBEBEB',
+            borderBottom: '1px solid var(--color-border-subtle)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -79,12 +79,12 @@ export function Card({
         >
           <div>
             {title && (
-              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#222222', letterSpacing: '-0.01em' }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-primary)', letterSpacing: '-0.01em' }}>
                 {title}
               </h3>
             )}
             {subtitle && (
-              <p style={{ margin: '0.2rem 0 0', fontSize: '0.88rem', color: '#717171' }}>
+              <p style={{ margin: '0.2rem 0 0', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
                 {subtitle}
               </p>
             )}
@@ -99,8 +99,8 @@ export function Card({
         <div
           style={{
             padding: paddingMap[padding],
-            borderTop: '1px solid #EBEBEB',
-            background: '#F9FAFB',
+            borderTop: '1px solid var(--color-border-subtle)',
+            background: 'var(--color-bg-app)',
           }}
         >
           {footer}

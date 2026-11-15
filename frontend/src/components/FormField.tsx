@@ -24,20 +24,20 @@ function FieldWrapper({
   return (
     <div className={`field ${className}`} style={{ marginBottom: '1.25rem', ...style }}>
       {label && (
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.85rem', fontWeight: 700, color: '#222222', marginBottom: '0.35rem' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.35rem' }}>
           <span>{label}</span>
-          {required && <span style={{ color: '#FF385C' }}>*</span>}
+          {required && <span style={{ color: 'var(--color-primary)' }}>*</span>}
         </label>
       )}
 
       {children}
 
       {error ? (
-        <span style={{ fontSize: '0.78rem', color: '#dc2626', marginTop: '0.25rem', display: 'block' }}>
+        <span style={{ fontSize: '0.78rem', color: 'var(--color-danger)', marginTop: '0.25rem', display: 'block' }}>
           {error}
         </span>
       ) : helperText ? (
-        <span style={{ fontSize: '0.78rem', color: '#717171', marginTop: '0.25rem', display: 'block' }}>
+        <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem', display: 'block' }}>
           {helperText}
         </span>
       ) : null}
@@ -71,7 +71,7 @@ export function InputField({
               left: '0.9rem',
               top: '50%',
               transform: 'translateY(-50%)',
-              color: '#717171',
+              color: 'var(--color-text-secondary)',
               display: 'flex',
               alignItems: 'center',
               pointerEvents: 'none',
@@ -87,7 +87,7 @@ export function InputField({
           className="form-control"
           style={{
             paddingLeft: icon ? '2.4rem' : '1rem',
-            borderColor: error ? '#dc2626' : undefined,
+            borderColor: error ? 'var(--color-danger)' : undefined,
           }}
         />
       </div>
@@ -130,7 +130,7 @@ export function SelectField({
               left: '0.9rem',
               top: '50%',
               transform: 'translateY(-50%)',
-              color: '#717171',
+              color: 'var(--color-text-secondary)',
               display: 'flex',
               alignItems: 'center',
               pointerEvents: 'none',
@@ -146,7 +146,7 @@ export function SelectField({
           className="form-control"
           style={{
             paddingLeft: icon ? '2.4rem' : '1rem',
-            borderColor: error ? '#dc2626' : undefined,
+            borderColor: error ? 'var(--color-danger)' : undefined,
             cursor: 'pointer',
           }}
         >
@@ -188,7 +188,7 @@ export function TextAreaField({
         required={required}
         className="form-control"
         style={{
-          borderColor: error ? '#dc2626' : undefined,
+          borderColor: error ? 'var(--color-danger)' : undefined,
           resize: 'vertical',
           lineHeight: 1.6,
         }}

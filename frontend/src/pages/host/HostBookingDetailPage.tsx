@@ -14,6 +14,7 @@ import {
   ClockHistory,
 } from 'react-bootstrap-icons';
 import { BookingStatus } from '../../constants';
+import stayApi from "../../api/stayApi";
 
 export default function HostBookingDetailPage() {
   const { code } = useParams<{ code: string }>();
@@ -24,13 +25,26 @@ export default function HostBookingDetailPage() {
 
   const [status, setStatus] = useState<BookingStatus>(booking?.status || 'PENDING');
 
-  const handleStatusChange = (newStatus: BookingStatus) => {
-    const res = store.updateBookingStatus(bookingCode, newStatus);
-    if (res.success) {
-      setStatus(newStatus);
-      addToast(`Đã chuyển trạng thái đơn #${bookingCode} sang ${newStatus}`, 'success');
-    } else {
-      addToast(res.message || 'Lỗi khi cập nhật trạng thái', 'error');
+  // HÀM ĐỔI TRẠNG THÁI GỌI XUỐNG BACKEND THỰC TẾ
+  const handleStatusChange = async (newStatus: BookingStatus) => {
+    try {
+      // 1. Gọi API cập nhật trạng thái trên MySQL
+      const response = await stayApi.updateBookingStatus(bookingCode, newStatus);
+
+      if (response.success) {
+        // 2. Cập nhật state cục bộ để giao diện đổi màu ngay
+        setStatus(newStatus);
+
+        // 3. Đồng bộ lại vào Store tĩnh (nếu cần)
+        store.updateBookingStatus(bookingCode, newStatus);
+
+        addToast(`Đã chuyển trạng thái đơn #${bookingCode} sang ${newStatus}`, 'success');
+      } else {
+        addToast(response.message || 'Lỗi khi cập nhật trạng thái từ máy chủ', 'error');
+      }
+    } catch (error) {
+      console.error("Lỗi đổi trạng thái:", error);
+      addToast('Không thể kết nối đến máy chủ để đổi trạng thái', 'error');
     }
   };
 
@@ -45,7 +59,7 @@ export default function HostBookingDetailPage() {
               ]}
           />
           <UCTag>
-            <CalendarCheck /> UC-08 · Chi tiết đơn lưu trú
+            <CalendarCheck /> Chi tiết đơn đặt phòng
           </UCTag>
         </div>
 
@@ -64,12 +78,12 @@ export default function HostBookingDetailPage() {
         </div>
 
         {/* State Transitions Toolbar */}
-        <section className="panel" style={{ marginBottom: '1.5rem', background: '#f8fafc', border: '1px solid var(--line)' }}>
+        <section className="panel" style={{ marginBottom: '1.5rem', background: 'var(--color-bg-app)', border: '1px solid var(--line)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <strong style={{ display: 'block', fontSize: '0.95rem' }}>Thao tác chuyển trạng thái đơn:</strong>
               <span className="muted" style={{ fontSize: '0.82rem' }}>
-              Quy trình chuẩn: PENDING → CONFIRMED → CHECKED_IN → COMPLETED
+              Quy trình: Chờ xác nhận → Đã xác nhận → Đang lưu trú → Đã hoàn thành
             </span>
             </div>
 
@@ -86,7 +100,7 @@ export default function HostBookingDetailPage() {
                     <button
                         type="button"
                         className="btn btn-outline btn-sm"
-                        style={{ color: '#dc2626' }}
+                        style={{ color: 'var(--color-danger)' }}
                         onClick={() => handleStatusChange('REJECTED')}
                     >
                       <XCircle /> Từ chối yêu cầu
@@ -153,7 +167,7 @@ export default function HostBookingDetailPage() {
               <tr>
                 <th style={{ padding: '0.75rem', borderBottom: '1px solid var(--line)' }}>Số lượng khách</th>
                 <td style={{ padding: '0.75rem', borderBottom: '1px solid var(--line)' }}>
-                  {booking?.guests} người lớn (Phù hợp BR-02)
+                  {booking?.guests} khách
                 </td>
               </tr>
               <tr>
@@ -168,7 +182,7 @@ export default function HostBookingDetailPage() {
           <aside>
             <div className="panel" style={{ boxShadow: 'var(--shadow-md)', marginBottom: '1.5rem' }}>
               <h3 style={{ fontSize: '1.15rem', marginTop: 0, marginBottom: '1rem', borderBottom: '1px solid var(--line)', paddingBottom: '0.75rem' }}>
-                <PersonCircle className="text-brand" /> Khách thuê đại diện
+                <PersonCircle className="text-brand" /> Thông tin khách đặt
               </h3>
               <p style={{ margin: '0 0 0.5rem', fontWeight: 700, fontSize: '1.05rem' }}>
                 {booking?.guestName}
@@ -182,7 +196,7 @@ export default function HostBookingDetailPage() {
 
               <div style={{ borderTop: '1px solid var(--line)', paddingTop: '0.75rem' }}>
               <span className="muted" style={{ fontSize: '0.82rem' }}>
-                Tổng tiền snapshot (BR-05):
+                Tổng tiền thanh toán:
               </span>
                 <p className="card-price" style={{ fontSize: '1.5rem', margin: '0.25rem 0 0' }}>
                   {formatVND(booking?.total || 1300000)}
