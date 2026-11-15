@@ -1,8 +1,9 @@
 // UC-08: Host Booking Detail Page (TypeScript)
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
-import { UCTag, Breadcrumb, Badge } from '../../components/UI';
+import { UCTag, Breadcrumb } from '../../components/UI';
+import { EmptyState } from '../../components/EmptyState';
 import { formatVND, BADGE_CLASS, BADGE_LABEL } from '../../constants';
 import {
   CalendarCheck,
@@ -14,39 +15,117 @@ import {
   ClockHistory,
 } from 'react-bootstrap-icons';
 import { BookingStatus } from '../../constants';
+import type { Booking } from '../../data';
 import stayApi from "../../api/stayApi";
 
 export default function HostBookingDetailPage() {
   const { code } = useParams<{ code: string }>();
   const { store, addToast } = useStore();
 
-  const bookingCode = code || 'ODD-DEMO-0002';
-  const booking = store.getBooking(bookingCode) || store.getAllBookings()[0];
+  const bookingCode = code || '';
+  const [booking, setBooking] = useState<Booking | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [notFound, setNotFound] = useState(false);
+  const [reloadVersion, setReloadVersion] = useState(0);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const updateInProgress = useRef(false);
+  const currentCode = useRef(bookingCode);
+  currentCode.current = bookingCode;
 
-  const [status, setStatus] = useState<BookingStatus>(booking?.status || 'PENDING');
+  useEffect(() => {
+    let active = true;
+    setBooking(null);
+    setIsLoading(true);
+    setLoadError('');
+    setNotFound(false);
 
-  // HÀM ĐỔI TRẠNG THÁI GỌI XUỐNG BACKEND THỰC TẾ
+    const fetchBooking = async () => {
+      try {
+        if (!bookingCode) {
+          if (active) setNotFound(true);
+          return;
+        }
+
+        const response = await stayApi.getBooking(bookingCode);
+        if (!active) return;
+        if (!response.success) {
+          if (/không tìm thấy|not found/i.test(response.message || '')) {
+            setNotFound(true);
+          } else {
+            setLoadError(response.message || 'Không tải được thông tin đơn từ máy chủ');
+          }
+          return;
+        }
+        if (!response.data || response.data.code !== bookingCode) {
+          setNotFound(true);
+          return;
+        }
+
+        setBooking(response.data);
+        store.syncBookingFromApi(response.data);
+      } catch (error) {
+        if (active) {
+          setLoadError(error instanceof Error ? error.message : 'Không thể kết nối đến máy chủ');
+        }
+      } finally {
+        if (active) setIsLoading(false);
+      }
+    };
+
+    void fetchBooking();
+    return () => { active = false; };
+  }, [bookingCode, store, reloadVersion]);
+
   const handleStatusChange = async (newStatus: BookingStatus) => {
+    if (!booking || booking.code !== bookingCode || updateInProgress.current) return;
+    updateInProgress.current = true;
+    setIsUpdating(true);
+
     try {
-      // 1. Gọi API cập nhật trạng thái trên MySQL
       const response = await stayApi.updateBookingStatus(bookingCode, newStatus);
-
       if (response.success) {
-        // 2. Cập nhật state cục bộ để giao diện đổi màu ngay
-        setStatus(newStatus);
-
-        // 3. Đồng bộ lại vào Store tĩnh (nếu cần)
-        store.updateBookingStatus(bookingCode, newStatus);
-
-        addToast(`Đã chuyển trạng thái đơn #${bookingCode} sang ${newStatus}`, 'success');
+        const updatedBooking: Booking = {
+          ...booking,
+          ...response.data,
+          status: response.data?.status || newStatus,
+        };
+        store.syncBookingFromApi(updatedBooking);
+        if (currentCode.current === bookingCode) setBooking(updatedBooking);
+        addToast(`Đơn #${bookingCode}: ${BADGE_LABEL[updatedBooking.status] || updatedBooking.status}`, 'success');
       } else {
         addToast(response.message || 'Lỗi khi cập nhật trạng thái từ máy chủ', 'error');
       }
     } catch (error) {
       console.error("Lỗi đổi trạng thái:", error);
       addToast('Không thể kết nối đến máy chủ để đổi trạng thái', 'error');
+    } finally {
+      updateInProgress.current = false;
+      setIsUpdating(false);
     }
   };
+
+  if (isLoading || (booking && booking.code !== bookingCode)) {
+    return <div role="status" style={{ maxWidth: 1000, margin: '1.5rem auto', padding: '0 1rem' }}>
+      <EmptyState compact title="Đang tải thông tin đơn đặt phòng…" />
+    </div>;
+  }
+
+  if (notFound || loadError || !booking) {
+    return <div role={loadError ? 'alert' : undefined} style={{ maxWidth: 1000, margin: '1.5rem auto', padding: '0 1rem' }}>
+      <EmptyState compact title={notFound ? 'Không tìm thấy đơn đặt phòng' : 'Không tải được thông tin đơn'}
+        description={notFound ? `Đơn #${bookingCode} không tồn tại hoặc đã bị xóa.` : loadError}
+        action={<button type="button" className="btn btn-outline btn-sm"
+          onClick={() => setReloadVersion(version => version + 1)}>Thử lại</button>}
+        secondaryAction={<Link to="/host/bookings" className="btn btn-outline btn-sm">Quay lại danh sách đơn</Link>} />
+    </div>;
+  }
+
+  const status = booking.status;
+  const paymentMethod = booking.paymentMethod || booking.payment_method;
+  const paymentLabel = paymentMethod === 'BANK_TRANSFER' ? 'Chuyển khoản ngân hàng'
+    : paymentMethod === 'CASH' || paymentMethod === 'COD' ? 'Thu trực tiếp khi nhận phòng (COD)'
+    : paymentMethod || 'Chưa có thông tin';
 
   return (
       <div style={{ maxWidth: 1000, margin: '1.5rem auto', padding: '0 1rem' }}>
@@ -73,7 +152,7 @@ export default function HostBookingDetailPage() {
           </span>
           </div>
           <span className="muted" style={{ fontSize: '0.85rem' }}>
-          <ClockHistory /> Ngày tạo: {booking?.createdAt || '02/01/2027'}
+          <ClockHistory /> Ngày tạo: {booking.createdAt || 'Chưa có thông tin'}
         </span>
         </div>
 
@@ -87,12 +166,13 @@ export default function HostBookingDetailPage() {
             </span>
             </div>
 
-            <div className="btn-group">
+            <div className="btn-group" aria-busy={isUpdating}>
               {status === 'PENDING' && (
                   <>
                     <button
                         type="button"
                         className="btn btn-primary btn-sm"
+                        disabled={isUpdating}
                         onClick={() => handleStatusChange('CONFIRMED')}
                     >
                       <CheckLg /> Duyệt đơn đặt phòng
@@ -101,6 +181,7 @@ export default function HostBookingDetailPage() {
                         type="button"
                         className="btn btn-outline btn-sm"
                         style={{ color: 'var(--color-danger)' }}
+                        disabled={isUpdating}
                         onClick={() => handleStatusChange('REJECTED')}
                     >
                       <XCircle /> Từ chối yêu cầu
@@ -112,6 +193,7 @@ export default function HostBookingDetailPage() {
                   <button
                       type="button"
                       className="btn btn-primary btn-sm"
+                      disabled={isUpdating}
                       onClick={() => handleStatusChange('CHECKED_IN')}
                   >
                     <KeyFill /> Xác nhận khách đã check-in
@@ -122,6 +204,7 @@ export default function HostBookingDetailPage() {
                   <button
                       type="button"
                       className="btn btn-primary btn-sm"
+                      disabled={isUpdating}
                       onClick={() => handleStatusChange('COMPLETED')}
                   >
                     <Check2All /> Xác nhận hoàn tất &amp; Trả phòng
@@ -149,13 +232,13 @@ export default function HostBookingDetailPage() {
               <tr>
                 <th style={{ width: '38%', padding: '0.75rem', borderBottom: '1px solid var(--line)' }}>Cơ sở lưu trú</th>
                 <td style={{ padding: '0.75rem', borderBottom: '1px solid var(--line)' }}>
-                  <strong>{booking?.propertyName || 'ODauDay Stay Hồ Tây'}</strong>
+                  <strong>{booking.propertyName || 'Chưa có thông tin'}</strong>
                 </td>
               </tr>
               <tr>
                 <th style={{ padding: '0.75rem', borderBottom: '1px solid var(--line)' }}>Hạng phòng</th>
                 <td style={{ padding: '0.75rem', borderBottom: '1px solid var(--line)' }}>
-                  {booking?.roomName || 'Phòng Garden'}
+                  {booking.roomName || 'Chưa có thông tin'}
                 </td>
               </tr>
               <tr>
@@ -172,7 +255,7 @@ export default function HostBookingDetailPage() {
               </tr>
               <tr>
                 <th style={{ padding: '0.75rem' }}>Phương thức thanh toán</th>
-                <td style={{ padding: '0.75rem' }}>Thu trực tiếp khi nhận phòng (COD)</td>
+                <td style={{ padding: '0.75rem' }}>{paymentLabel}</td>
               </tr>
               </tbody>
             </table>
@@ -199,7 +282,7 @@ export default function HostBookingDetailPage() {
                 Tổng tiền thanh toán:
               </span>
                 <p className="card-price" style={{ fontSize: '1.5rem', margin: '0.25rem 0 0' }}>
-                  {formatVND(booking?.total || 1300000)}
+                  {formatVND(booking.total ?? 0)}
                 </p>
               </div>
             </div>

@@ -1,5 +1,5 @@
 // Standardized "Trips" (Chuyến đi của tôi) Page (Airbnb Luxury Style)
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { formatVND } from '../../constants';
@@ -35,6 +35,8 @@ export default function MyBookingsPage() {
     return 'ALL';
   });
   const [currentPage, setCurrentPage] = useState(1);
+  const [cancellingCode, setCancellingCode] = useState<string | null>(null);
+  const cancelInFlight = useRef(false);
   const pageSize = 5;
 
   useEffect(() => {
@@ -136,16 +138,25 @@ export default function MyBookingsPage() {
     if (currentPage > pageCount) setCurrentPage(pageCount);
   }, [currentPage, pageCount]);
 
-  const handleCancelBooking = (code: string) => {
-    if (window.confirm(`Bạn có chắc chắn muốn hủy đơn đặt phòng #${code}?`)) {
-      const res = store.cancelBooking(code);
-      stayApi.cancelBooking(code).catch(() => { });
-      if (res.success) {
-        addToast(`Đã hủy thành công đơn #${code}`, 'success');
-        setMyBookings(prev => prev.map(b => b.code === code ? { ...b, status: 'CANCELLED' } : b));
-      } else {
-        addToast(res.message || 'Không thể hủy đơn', 'error');
+  const handleCancelBooking = async (code: string) => {
+    if (cancelInFlight.current || !window.confirm(`Bạn có chắc chắn muốn hủy đơn đặt phòng #${code}?`)) return;
+
+    cancelInFlight.current = true;
+    setCancellingCode(code);
+    try {
+      const res = await stayApi.cancelBooking(code);
+      if (!res.success || !res.data) {
+        throw new Error(res.message || 'Không thể hủy đơn');
       }
+      const updatedBooking = res.data;
+      store.syncBookingFromApi(updatedBooking);
+      setMyBookings(prev => normalizeBookingList(prev.map(b => b.code === code ? updatedBooking : b)));
+      addToast(`Đã hủy thành công đơn #${code}`, 'success');
+    } catch (error) {
+      addToast(error instanceof Error ? error.message : 'Không thể hủy đơn, vui lòng thử lại.', 'error');
+    } finally {
+      cancelInFlight.current = false;
+      setCancellingCode(null);
     }
   };
 
@@ -685,6 +696,8 @@ export default function MyBookingsPage() {
                       <button
                         type="button"
                         onClick={() => handleCancelBooking(b.code)}
+                        disabled={cancellingCode !== null}
+                        aria-busy={cancellingCode === b.code}
                         style={{
                           width: '100%',
                           padding: '0.55rem 0.9rem',
@@ -694,7 +707,7 @@ export default function MyBookingsPage() {
                           border: '1px solid var(--color-danger-border)',
                           fontSize: '0.82rem',
                           fontWeight: 600,
-                          cursor: 'pointer',
+                          cursor: cancellingCode !== null ? 'wait' : 'pointer',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -708,7 +721,7 @@ export default function MyBookingsPage() {
                           e.currentTarget.style.background = 'transparent';
                         }}
                       >
-                        <XCircle /> Hủy đặt phòng
+                        <XCircle /> {cancellingCode === b.code ? 'Đang hủy...' : 'Hủy đặt phòng'}
                       </button>
                     )}
                   </div>

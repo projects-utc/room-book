@@ -1,5 +1,5 @@
 // Airbnb-Inspired Booking Detail Page (Redesigned)
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb } from '../../components';
@@ -30,6 +30,10 @@ export default function MyBookingDetailPage() {
   const bookingCode = code || '';
   const [booking, setBooking] = useState<Booking | null>(() => bookingCode ? store.getBooking(bookingCode) : null);
   const [currentStatus, setCurrentStatus] = useState<BookingStatus>(booking?.status || 'PENDING');
+  const [isCancelling, setIsCancelling] = useState(false);
+  const cancelInFlight = useRef(false);
+  const currentCodeRef = useRef(bookingCode);
+  currentCodeRef.current = bookingCode;
 
   useEffect(() => {
     const cachedBooking = bookingCode ? store.getBooking(bookingCode) : null;
@@ -52,19 +56,32 @@ export default function MyBookingDetailPage() {
   const property = (booking ? store.getProperty(booking.propertyId) : null) || store.getAllProperties().find(p => p.name === booking?.propertyName) || store.getProperty(1);
   const propertyImg = property?.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80';
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    if (!booking || booking.code !== bookingCode || !bookingCode || cancelInFlight.current) return;
     if (['CHECKED_IN', 'COMPLETED'].includes(currentStatus)) {
       addToast('Từ chối hủy đơn: Khách đã nhận phòng hoặc đã hoàn tất lưu trú!', 'error');
       return;
     }
 
     if (window.confirm(`Bạn có chắc chắn muốn hủy đơn đặt phòng #${bookingCode}?`)) {
-      const res = store.cancelBooking(bookingCode);
-      if (res.success) {
-        setCurrentStatus('CANCELLED');
+      cancelInFlight.current = true;
+      setIsCancelling(true);
+      try {
+        const res = await stayApi.cancelBooking(bookingCode);
+        if (!res.success || !res.data) {
+          throw new Error(res.message || 'Lỗi khi hủy đơn');
+        }
+        store.syncBookingFromApi(res.data);
+        if (currentCodeRef.current === bookingCode) {
+          setBooking(res.data);
+          setCurrentStatus(res.data.status);
+        }
         addToast(`Đã hủy thành công đơn #${bookingCode}`, 'success');
-      } else {
-        addToast(res.message || 'Lỗi khi hủy đơn', 'error');
+      } catch (error) {
+        addToast(error instanceof Error ? error.message : 'Không thể hủy đơn, vui lòng thử lại.', 'error');
+      } finally {
+        cancelInFlight.current = false;
+        setIsCancelling(false);
       }
     }
   };
@@ -519,6 +536,8 @@ export default function MyBookingDetailPage() {
                 <button
                   type="button"
                   onClick={handleCancel}
+                  disabled={isCancelling || !booking}
+                  aria-busy={isCancelling}
                   style={{
                     width: '100%',
                     padding: '0.8rem 1.25rem',
@@ -528,7 +547,7 @@ export default function MyBookingDetailPage() {
                     borderRadius: 12,
                     fontSize: '0.9rem',
                     fontWeight: 700,
-                    cursor: 'pointer',
+                    cursor: isCancelling ? 'wait' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -544,7 +563,7 @@ export default function MyBookingDetailPage() {
                     e.currentTarget.style.borderColor = 'var(--color-danger-border)';
                   }}
                 >
-                  <XCircle /> Hủy đơn đặt phòng này
+                  <XCircle /> {isCancelling ? 'Đang hủy...' : 'Hủy đơn đặt phòng này'}
                 </button>
               )}
               <button

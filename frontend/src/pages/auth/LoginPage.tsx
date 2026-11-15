@@ -32,12 +32,12 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
 
     try {
       const res = await login(username.trim(), password);
       if (res.success) {
-        setLoading(false);
         const displayName = res.user?.fullName || username;
         addToast(`Chào mừng bạn trở lại, ${displayName}! Chúc bạn một ngày tốt lành ✨`, 'success');
         const from = (location.state as any)?.from?.pathname;
@@ -50,9 +50,13 @@ export default function LoginPage() {
         } else {
           navigate('/client', { replace: true });
         }
+      } else {
+        addToast('Không thể đăng nhập. Vui lòng kiểm tra tài khoản, mật khẩu và thử lại.', 'error');
       }
     } catch {
-      // Giữ icon loading quay liên tục khi backend chưa chạy
+      addToast('Không thể kết nối đến máy chủ. Vui lòng thử lại.', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
