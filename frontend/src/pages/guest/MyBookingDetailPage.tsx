@@ -1,9 +1,11 @@
 // Airbnb-Inspired Booking Detail Page (Redesigned)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb } from '../../components';
 import { formatVND } from '../../constants';
+import { stayApi } from '../../api/stayApi';
+import { Booking } from '../../data';
 import {
   CalendarCheck,
   HouseDoor,
@@ -28,9 +30,26 @@ export default function MyBookingDetailPage() {
   const { store, addToast } = useStore();
   const navigate = useNavigate();
 
-  const bookingCode = code || 'ODD-DEMO-0002';
-  const booking = store.getBooking(bookingCode) || store.getAllBookings()[0];
+  const bookingCode = code || '';
+  const [booking, setBooking] = useState<Booking | null>(() => bookingCode ? store.getBooking(bookingCode) : null);
   const [currentStatus, setCurrentStatus] = useState<BookingStatus>(booking?.status || 'PENDING');
+
+  useEffect(() => {
+    if (bookingCode) {
+      const b = store.getBooking(bookingCode);
+      if (b) {
+        setBooking(b);
+        setCurrentStatus(b.status);
+      } else {
+        stayApi.getBooking(bookingCode).then(res => {
+          if (res.success && res.data) {
+            setBooking(res.data as Booking);
+            setCurrentStatus((res.data as any).status || 'PENDING');
+          }
+        }).catch(() => { });
+      }
+    }
+  }, [bookingCode]);
 
   // Đơn đã được đánh giá hay chưa (hỗ trợ cả camelCase, snake_case và bảng reviews)
   const isReviewed = Boolean(
@@ -155,7 +174,7 @@ export default function MyBookingDetailPage() {
   };
 
   return (
-    <div style={{ maxWidth: 1040, margin: '2rem auto 5rem', padding: '0 1.5rem' }}>
+    <div style={{ maxWidth: 1760, margin: '2rem auto 5rem', padding: '0 2.5rem' }}>
       {/* ── Breadcrumb ── */}
       <div style={{ marginBottom: '1.25rem' }}>
         <Breadcrumb
@@ -600,9 +619,15 @@ export default function MyBookingDetailPage() {
               border: '1px solid var(--color-border-subtle)',
               fontSize: '0.84rem'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 2 }}>
-                <CashCoin style={{ color: 'var(--color-primary)', fontSize: '1.1rem' }} /> Hình thức: Tiền mặt khi nhận phòng / Chuyển khoản
-              </div>
+              {(booking?.paymentMethod === 'BANK_TRANSFER' || (booking as any)?.payment_method === 'BANK_TRANSFER') ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 2 }}>
+                  <CreditCard style={{ color: 'var(--color-primary)', fontSize: '1.1rem' }} /> Hình thức: Chuyển khoản ngân hàng (Thanh toán 100%)
+                </div>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 2 }}>
+                  <CashCoin style={{ color: 'var(--color-primary)', fontSize: '1.1rem' }} /> Hình thức: Tiền mặt khi nhận phòng (Đã cọc 30% qua ngân hàng)
+                </div>
+              )}
               <span style={{ color: 'var(--color-text-muted)', fontSize: '0.78rem' }}>Mã đối soát hệ thống: #{bookingCode}</span>
             </div>
 

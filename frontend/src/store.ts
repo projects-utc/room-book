@@ -14,6 +14,42 @@ function loadData(): InitialDataState {
       return cachedData!;
     }
     cachedData = JSON.parse(raw);
+    let hasChanged = false;
+
+    // 1. Tự động đồng bộ bổ sung các phòng mới từ INITIAL_DATA nếu cache chưa có
+    if (Array.isArray(INITIAL_DATA.rooms)) {
+      INITIAL_DATA.rooms.forEach(initRoom => {
+        if (!cachedData!.rooms.some(r => r.id === initRoom.id)) {
+          cachedData!.rooms.push(initRoom);
+          hasChanged = true;
+        }
+      });
+    }
+
+    // 2. Đồng bộ chuẩn rating, reviewsCount của properties từ INITIAL_DATA (xóa bỏ dữ liệu mock cũ gây giật giao diện)
+    if (Array.isArray(INITIAL_DATA.properties)) {
+      INITIAL_DATA.properties.forEach(initProp => {
+        const found = cachedData!.properties.find(p => p.id === initProp.id);
+        if (found) {
+          if (found.rating !== initProp.rating || found.reviewsCount !== initProp.reviewsCount) {
+            found.rating = initProp.rating;
+            found.reviewsCount = initProp.reviewsCount;
+            found.reviewCount = initProp.reviewCount;
+            hasChanged = true;
+          }
+        } else {
+          cachedData!.properties.push(initProp);
+          hasChanged = true;
+        }
+      });
+    }
+
+    if (hasChanged) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cachedData));
+      } catch {}
+    }
+
     return cachedData!;
   } catch {
     cachedData = JSON.parse(JSON.stringify(INITIAL_DATA));
@@ -193,10 +229,11 @@ export const ODDStore = {
   },
 
   // UC-03: Quote / BR-04 / BR-05 / BR-06
-  calculateQuote(roomId: number | string, checkInStr?: string, checkOutStr?: string, guestsCount?: number | string): QuoteResult {
+  calculateQuote(roomId: number | string, checkInStr?: string, checkOutStr?: string, guestsCount?: number | string, customRoom?: Room): QuoteResult {
     const data = loadData();
-    const room = data.rooms.find(r => r.id === parseInt(String(roomId), 10)) || data.rooms[0];
-    const property = data.properties.find(p => p.id === room.propertyId) || data.properties[0];
+    const parsedRoomId = parseInt(String(roomId), 10);
+    const room = customRoom || data.rooms.find(r => r.id === parsedRoomId) || INITIAL_DATA.rooms.find(r => r.id === parsedRoomId) || data.rooms[0];
+    const property = (customRoom ? this.getProperty(customRoom.propertyId) : null) || data.properties.find(p => p.id === room.propertyId) || INITIAL_DATA.properties.find(p => p.id === room.propertyId) || data.properties[0];
 
     if (!checkInStr || !checkOutStr) {
       checkInStr = '2027-01-10';
@@ -250,14 +287,14 @@ export const ODDStore = {
   checkConflict(roomId: number | string, checkInStr: string, checkOutStr: string, excludeBookingCode?: string) {
     const data = loadData();
     const rId = parseInt(String(roomId), 10);
-    const newIn = new Date(checkInStr);
-    const newOut = new Date(checkOutStr);
+    const newIn = (checkInStr || '').substring(0, 10);
+    const newOut = (checkOutStr || '').substring(0, 10);
 
     const block = data.roomBlocks.find(b => {
       if (b.roomId !== rId) return false;
-      const bIn = new Date(b.start);
-      const bOut = new Date(b.end);
-      return !(newOut <= bIn || newIn >= bOut);
+      const bIn = (b.start || '').substring(0, 10);
+      const bOut = (b.end || '').substring(0, 10);
+      return newIn <= bOut && newOut >= bIn;
     });
     if (block) {
       return {
@@ -268,12 +305,12 @@ export const ODDStore = {
     }
 
     const activeBooking = data.bookings.find(b => {
-      if (b.roomId !== rId) return false;
+      if (b.roomId && Number(b.roomId) !== rId) return false;
       if (excludeBookingCode && b.code === excludeBookingCode) return false;
-      if (!['PENDING', 'CONFIRMED', 'CHECKED_IN'].includes(b.status)) return false;
-      const bIn = new Date(b.checkIn);
-      const bOut = new Date(b.checkOut);
-      return !(newOut <= bIn || newIn >= bOut);
+      if (['CANCELLED', 'REJECTED'].includes((b.status || '').toUpperCase())) return false;
+      const bIn = (b.checkIn || '').substring(0, 10);
+      const bOut = (b.checkOut || '').substring(0, 10);
+      return newIn < bOut && newOut > bIn;
     });
     if (activeBooking) {
       return {
@@ -424,8 +461,7 @@ export const ODDStore = {
     const data = loadData();
     const isAlreadyReviewed = Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === reviewPayload.bookingCode);
     const idx = data.bookings.findIndex(b => b.code === reviewPayload.bookingCode);
-    if (idx === -1) return { success: false, message: 'Không tìm thấy đơn đặt phòng.' };
-    if (data.bookings[idx].isReviewed || (data.bookings[idx] as any).is_reviewed || isAlreadyReviewed) {
+    if (idx !== -1 && (data.bookings[idx].isReviewed || (data.bookings[idx] as any).is_reviewed || isAlreadyReviewed)) {
       return { success: false, message: 'Đơn đặt phòng này đã được đánh giá.' };
     }
 
@@ -439,11 +475,6 @@ export const ODDStore = {
       (data.bookings[idx] as any).is_reviewed = true;
     }
     saveData(data);
-    fetch('/api/reviews', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...reviewPayload, date: data.reviews[data.reviews.length - 1].date }),
-    }).catch(() => { });
     return { success: true };
   },
 

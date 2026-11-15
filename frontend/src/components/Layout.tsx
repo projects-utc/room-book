@@ -129,7 +129,7 @@ export function Header() {
 
                 {/* Center: Search pill or Category tabs */}
                 {!isAuthPage && (
-                    <div>
+                    <div className="header-center-nav">
                         {(isSearchPage && !isScrolled) ? null : (!isHome || isScrolled) ? (
                             /* Collapsed Floating Search Pill (Visible when scrolled or on other pages) */
                             <div
@@ -271,55 +271,15 @@ export function Header() {
                 )}
 
                 {/* Right Navigation & Profile Menu */}
-                <div className="header-actions" ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', position: 'relative' }}>
-                    {currentUser?.role === ROLES.ADMIN ? (
-                        <Link
-                            to="/admin"
-                            className="admin-badge-link"
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '0.4rem',
-                                fontWeight: 700,
-                                fontSize: '0.85rem',
-                                color: 'var(--color-text-inverse)',
-                                background: 'linear-gradient(135deg, var(--color-secondary-hover) 0%, var(--color-secondary) 100%)',
-                                padding: '0.5rem 0.95rem',
-                                borderRadius: '9999px',
-                                textDecoration: 'none',
-                                border: '1px solid var(--color-border-strong)',
-                                boxShadow: 'var(--shadow-sm)',
-                            }}
-                        >
-                            <Speedometer2 style={{ color: 'var(--color-primary)' }} />
-                            <span>Trang quản trị</span>
-                        </Link>
-                    ) : (
-                        <Link
-                            to={currentUser?.role === ROLES.HOST ? '/host/properties' : '/register'}
-                            className="host-link"
-                            style={{
-                                fontWeight: 600,
-                                fontSize: '0.88rem',
-                                color: 'var(--color-text-primary)',
-                                padding: '0.65rem 1rem',
-                                borderRadius: '9999px',
-                                textDecoration: 'none',
-                                transition: 'background 0.2s',
-                            }}
-                        >
-                            {currentUser?.role === ROLES.HOST ? 'Kênh Chủ nhà' : 'Đăng ký'}
-                        </Link>
-                    )}
-
+                <div className="header-actions" ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', position: 'relative' }}>
                     <button
                         type="button"
                         className="icon-btn"
                         title="Ngôn ngữ: Tiếng Việt (VN) / VNĐ"
                         aria-label="Chọn ngôn ngữ"
                         style={{
-                            width: 40,
-                            height: 40,
+                            width: 38,
+                            height: 38,
                             borderRadius: '50%',
                             border: 'none',
                             background: 'transparent',
@@ -332,75 +292,72 @@ export function Header() {
                         <Globe style={{ fontSize: '1.05rem', color: 'var(--color-text-primary)' }} />
                     </button>
 
-                    {/* Wishlist Heart Icon Button */}
-                    <Link
-                        to="/wishlist"
-                        className="icon-btn"
-                        title="Danh sách yêu thích"
-                        aria-label="Xem danh sách yêu thích"
+                    {/* User Profile Avatar Button (Không còn icon 3 gạch, chỉ hiển thị Avatar) */}
+                    <button
+                        type="button"
+                        className="user-avatar-btn"
+                        onClick={() => setMenuOpen(!menuOpen)}
+                        aria-expanded={menuOpen}
+                        aria-label="Menu tài khoản"
                         style={{
                             width: 40,
                             height: 40,
                             borderRadius: '50%',
-                            border: 'none',
-                            background: 'transparent',
+                            border: '1px solid var(--color-border-subtle)',
+                            background: 'var(--color-bg-surface)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             cursor: 'pointer',
-                            textDecoration: 'none',
-                            color: 'var(--color-primary, #FF385C)',
-                            transition: 'background 0.2s, transform 0.15s ease',
+                            padding: 0,
+                            boxShadow: 'var(--shadow-sm)',
+                            transition: 'all 0.2s ease',
+                            flexShrink: 0,
                         }}
                         onMouseEnter={e => {
-                            e.currentTarget.style.backgroundColor = 'var(--color-primary-soft, #FFF1F2)';
-                            e.currentTarget.style.transform = 'scale(1.08)';
+                            e.currentTarget.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.12)';
+                            e.currentTarget.style.transform = 'scale(1.05)';
                         }}
                         onMouseLeave={e => {
-                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
                             e.currentTarget.style.transform = 'scale(1)';
                         }}
                     >
-                        <HeartFill style={{ fontSize: '1.1rem' }} />
-                    </Link>
-
-                    {/* User Profile Pill */}
-                    <div
-                        className="user-menu-pill"
-                        onClick={() => setMenuOpen(!menuOpen)}
-                        role="button"
-                        tabIndex={0}
-                        aria-expanded={menuOpen}
-                        aria-label="Menu người dùng"
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.75rem',
-                            border: '1px solid var(--color-border-strong)',
-                            borderRadius: '9999px',
-                            padding: '0.35rem 0.6rem 0.35rem 0.85rem',
-                            cursor: 'pointer',
-                            background: 'var(--color-bg-surface)',
-                            transition: 'box-shadow 0.2s',
-                        }}
-                    >
-                        <List style={{ fontSize: '1.15rem', color: 'var(--color-text-primary)' }} />
-                        <div
-                            style={{
-                                width: 30,
-                                height: 30,
-                                borderRadius: '50%',
-                                background: 'var(--color-text-muted)',
-                                color: 'var(--color-text-inverse)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '1rem',
-                            }}
-                        >
-                            <PersonCircle />
-                        </div>
-                    </div>
+                        {currentUser ? (
+                            <div
+                                style={{
+                                    width: 34,
+                                    height: 34,
+                                    borderRadius: '50%',
+                                    background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))',
+                                    color: '#ffffff',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                    fontSize: '0.92rem',
+                                }}
+                            >
+                                {currentUser.fullName ? currentUser.fullName.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                        ) : (
+                            <div
+                                style={{
+                                    width: 34,
+                                    height: 34,
+                                    borderRadius: '50%',
+                                    background: 'var(--color-bg-muted, #717171)',
+                                    color: '#ffffff',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '1.25rem',
+                                }}
+                            >
+                                <PersonCircle />
+                            </div>
+                        )}
+                    </button>
 
                     {/* Dropdown Menu */}
                     {menuOpen && (
@@ -554,6 +511,14 @@ export function Header() {
                                         style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)', fontWeight: 600 }}
                                     >
                                         <HouseDoor style={{ fontSize: '1.05rem', color: 'var(--color-primary)' }} /> Trang chủ
+                                    </Link>
+                                    <Link
+                                        to="/wishlist"
+                                        className="dropdown-item"
+                                        onClick={() => setMenuOpen(false)}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
+                                    >
+                                        <HeartFill style={{ color: 'var(--color-primary)' }} /> Danh sách yêu thích
                                     </Link>
                                     <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
                                     <Link

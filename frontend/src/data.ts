@@ -158,6 +158,7 @@ export const INITIAL_DATA: InitialDataState = {
     { id: 2, propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', name: 'Phòng Family', capacity: 4, price: 1100000, weekendPrice: 1300000, desc: '2 giường King · Ban công lớn nhìn ra hồ · Phòng tắm kính tiện nghi', status: 'ACTIVE' },
     { id: 3, propertyId: 2, propertyName: 'ODauDay Stay Ba Vì', name: 'Villa Rừng Thông', capacity: 8, price: 2500000, weekendPrice: 3200000, desc: '3 phòng ngủ riêng biệt · Bếp nướng BBQ · Hồ bơi riêng ngoài trời', status: 'ACTIVE' },
     { id: 4, propertyId: 3, propertyName: 'ODauDay Stay Cầu Giấy', name: 'Studio Deluxe', capacity: 2, price: 900000, weekendPrice: 950000, desc: '1 giường Queen · View thành phố tầng cao · Bàn làm việc cao cấp', status: 'ACTIVE' },
+    { id: 5, propertyId: 12, propertyName: 'ODauDay Stay Vũng Tàu Ocean', name: 'Studio View Biển', capacity: 2, price: 820000, weekendPrice: 950000, desc: '1 giường đôi King · Ban công view biển Bãi Trước · Bếp hiện đại · Điều hòa 2 chiều', status: 'ACTIVE' },
   ],
   roomBlocks: [
     { id: 1, roomId: 2, roomName: 'Phòng Family', start: '2027-02-10', end: '2027-02-12', reason: 'Bảo trì hệ thống điều hòa và sơn mới ban công' },

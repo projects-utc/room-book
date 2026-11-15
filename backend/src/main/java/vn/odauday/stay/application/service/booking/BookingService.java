@@ -49,6 +49,38 @@ public class BookingService {
             booking.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         }
 
+        // Kiểm tra sức chứa phòng và trùng lịch
+        if (booking.getRoomId() != null) {
+            RoomEntity room = roomRepository.findById(booking.getRoomId()).orElse(null);
+            if (room != null && room.getCapacity() != null && booking.getGuests() != null) {
+                if (booking.getGuests() > room.getCapacity()) {
+                    throw new IllegalArgumentException("Số lượng khách (" + booking.getGuests() + ") vượt quá sức chứa tối đa của phòng (" + room.getCapacity() + " người).");
+                }
+            }
+            if (booking.getCheckIn() != null && booking.getCheckOut() != null) {
+                String newIn = booking.getCheckIn().trim().substring(0, Math.min(10, booking.getCheckIn().trim().length()));
+                String newOut = booking.getCheckOut().trim().substring(0, Math.min(10, booking.getCheckOut().trim().length()));
+                List<BookingEntity> existing = bookingRepository.findByRoomId(booking.getRoomId());
+                if (existing.isEmpty() && booking.getPropertyId() != null) {
+                    List<RoomEntity> roomsOfProp = roomRepository.findByPropertyId(booking.getPropertyId());
+                    if (roomsOfProp.size() <= 1) {
+                        existing = bookingRepository.findByPropertyId(booking.getPropertyId());
+                    }
+                }
+                for (BookingEntity b : existing) {
+                    if (b.getStatus() != null && !List.of("CANCELLED", "REJECTED").contains(b.getStatus().toUpperCase())) {
+                        if (b.getCheckIn() != null && b.getCheckOut() != null) {
+                            String existIn = b.getCheckIn().trim().substring(0, Math.min(10, b.getCheckIn().trim().length()));
+                            String existOut = b.getCheckOut().trim().substring(0, Math.min(10, b.getCheckOut().trim().length()));
+                            if (newIn.compareTo(existOut) < 0 && newOut.compareTo(existIn) > 0) {
+                                throw new IllegalStateException("Phòng đã có khách đặt trong khoảng ngày " + existIn + " đến " + existOut + ".");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // Tính lại nights, subtotal, total từ DB để đảm bảo đúng (không tin hoàn toàn vào FE)
         recalculatePricing(booking);
 

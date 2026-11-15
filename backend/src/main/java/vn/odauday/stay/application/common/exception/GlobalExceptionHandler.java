@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.List;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -15,10 +17,10 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorResponse handleValidationException(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult().getFieldErrors().stream()
-                .findFirst()
-                .map(FieldError::getDefaultMessage)
-                .orElse("Dữ liệu đầu vào không hợp lệ");
+        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+        String message = (!fieldErrors.isEmpty() && fieldErrors.get(0).getDefaultMessage() != null)
+                ? fieldErrors.get(0).getDefaultMessage()
+                : "Dữ liệu đầu vào không hợp lệ";
         log.warn("Validation failed: {}", message);
         return new ErrorResponse(message);
     }

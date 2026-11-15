@@ -77,51 +77,6 @@ public class SecurityConfig {
             .anyRequest().permitAll();
     }
 
-    // region auth
-    private static RequestMatcher[] authApiPatterns() {
-        return new RequestMatcher[]{
-            new AntPathRequestMatcher("/api/auth"),
-            new AntPathRequestMatcher("/api/auth/**")
-        };
-    }
-    // endregion
-
-    // region public
-    private static RequestMatcher[] publicApiPatterns() {
-        return new RequestMatcher[]{
-            new AntPathRequestMatcher("/api/public"),
-            new AntPathRequestMatcher("/api/public/**")
-        };
-    }
-    // endregion
-
-    // region property
-    private static RequestMatcher[] propertyApiPatterns() {
-        return new RequestMatcher[]{
-            new AntPathRequestMatcher("/api/properties"),
-            new AntPathRequestMatcher("/api/properties/**")
-        };
-    }
-    // endregion
-
-    // region room
-    private static RequestMatcher[] roomApiPatterns() {
-        return new RequestMatcher[]{
-            new AntPathRequestMatcher("/api/rooms"),
-            new AntPathRequestMatcher("/api/rooms/**")
-        };
-    }
-    // endregion
-
-    // region review
-    private static RequestMatcher[] reviewApiPatterns() {
-        return new RequestMatcher[]{
-            new AntPathRequestMatcher("/api/reviews"),
-            new AntPathRequestMatcher("/api/reviews/**")
-        };
-    }
-    // endregion
-
     // region swagger & error
     private static RequestMatcher[] swaggerApiPatterns() {
         return new RequestMatcher[]{

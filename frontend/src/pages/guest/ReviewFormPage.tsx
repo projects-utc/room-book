@@ -5,19 +5,29 @@ import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb } from '../../components/UI';
 import { ShieldCheck, StarFill } from 'react-bootstrap-icons';
 import { stayApi } from '../../api/stayApi';
-import { Property } from '../../data';
+import { Booking, Property } from '../../data';
 
 export default function ReviewFormPage() {
     const [searchParams] = useSearchParams();
     const { store, currentUser, addToast } = useStore();
     const navigate = useNavigate();
 
-    const bookingCode = searchParams.get('bookingCode') || 'ODD-DEMO-0001';
-    const booking = store.getBooking(bookingCode) || store.getAllBookings()[0];
-    const targetPropertyId = booking?.propertyId || 1;
+    const bookingCode = searchParams.get('bookingCode') || '';
+    const [booking, setBooking] = useState<Booking | null>(() => bookingCode ? store.getBooking(bookingCode) : null);
+    const targetPropertyId = booking?.propertyId || null;
+
+    useEffect(() => {
+        if (bookingCode && !booking) {
+            stayApi.getBooking(bookingCode).then(res => {
+                if (res.success && res.data) {
+                    setBooking(res.data as Booking);
+                }
+            }).catch(() => {});
+        }
+    }, [bookingCode]);
 
     // Thông tin Chỗ ở lấy từ store & API thực tế
-    const [property, setProperty] = useState<Property | null>(() => store.getProperty(targetPropertyId));
+    const [property, setProperty] = useState<Property | null>(() => targetPropertyId ? store.getProperty(targetPropertyId) : null);
 
     useEffect(() => {
         if (targetPropertyId) {
@@ -76,7 +86,7 @@ export default function ReviewFormPage() {
         try {
             const reviewPayload = {
                 bookingCode,
-                propertyId: targetPropertyId,
+                propertyId: targetPropertyId ?? booking?.propertyId ?? 1,
                 rating,
                 comment,
                 guestUsername: currentUser?.username || 'guest_user',
@@ -88,13 +98,10 @@ export default function ReviewFormPage() {
 
             if (response.success) {
                 // Đánh dấu vào store cục bộ để UI biết đơn này đã được đánh giá
-                const localRes = store.submitReview(reviewPayload);
-
-                if (localRes.success) {
-                    addToast('Cảm ơn bạn! Đánh giá đã được gửi thành công.', 'success');
-                    // Chuyển hướng về trang chi tiết chỗ ở kèm highlight và cuộn tới mục #reviews
-                    navigate(`/property/${targetPropertyId}?highlight=${bookingCode}#reviews`);
-                }
+                store.submitReview(reviewPayload);
+                addToast('Cảm ơn bạn! Đánh giá đã được gửi thành công.', 'success');
+                // Chuyển hướng về trang chi tiết chỗ ở kèm highlight và cuộn tới mục #reviews
+                navigate(`/property/${targetPropertyId ?? booking?.propertyId ?? 1}?highlight=${bookingCode}#reviews`);
             } else {
                 throw new Error(response.message || 'Không thể gửi đánh giá, vui lòng thử lại sau.');
             }
@@ -109,14 +116,14 @@ export default function ReviewFormPage() {
     };
 
     const roomImage = (booking as any)?.roomImage || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&auto=format&fit=crop&q=80';
-    const stayDate = (booking as any)?.checkIn && (booking as any)?.checkOut ? `${(booking as any).checkIn} – ${(booking as any).checkOut}` : '25 thg 10 – 27 thg 10, 2026';
+    const stayDate = (booking as any)?.checkIn && (booking as any)?.checkOut ? `${(booking as any).checkIn} – ${(booking as any).checkOut}` : 'Kỳ nghỉ đã hoàn thành';
     const activeStar = hoverRating || rating;
 
     // Nếu đã review thì không render gì cả để tránh nháy giao diện trước khi bị đá đi
     if (isReviewed) return null;
 
     return (
-        <div style={{ maxWidth: 720, margin: '2rem auto 5rem', padding: '0 1.5rem' }}>
+        <div style={{ maxWidth: 1760, margin: '2rem auto 5rem', padding: '0 2.5rem' }}>
             <Breadcrumb
                 items={[
                     { label: 'Trang chủ', to: '/' },

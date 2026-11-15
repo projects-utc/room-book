@@ -219,7 +219,7 @@ export default function MyBookingsPage() {
   const cancelledCount = myBookings.filter(b => ['CANCELLED', 'REJECTED'].includes(b.status)).length;
 
   return (
-    <div style={{ maxWidth: 1120, margin: '2rem auto 5rem', padding: '0 1.5rem' }}>
+    <div style={{ maxWidth: 1760, margin: '2rem auto 5rem', padding: '0 2.5rem' }}>
       {/* ── Top Header Section ── */}
       <div style={{
         background: 'linear-gradient(135deg, var(--color-primary-soft) 0%, var(--color-bg-surface) 60%, var(--color-bg-app) 100%)',

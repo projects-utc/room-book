@@ -778,6 +778,30 @@ export function DateRangePicker({
       onChange && onChange({ start: isoDate, end: '' });
     } else if (value.start && !value.end) {
       if (isoDate >= value.start) {
+        // Kiểm tra xem từ value.start đến isoDate có ngày nào bị khóa (disabled) hay không
+        let hasConflictBetween = false;
+        if (isDateDisabled || disabledDates?.length) {
+          const cur = parseISODate(value.start);
+          const endD = parseISODate(isoDate);
+          if (cur && endD) {
+            while (cur < endD) {
+              const curIso = formatDateToISO(cur);
+              if (
+                disabledDates?.includes(curIso) ||
+                (isDateDisabled && isDateDisabled(curIso))
+              ) {
+                hasConflictBetween = true;
+                break;
+              }
+              cur.setDate(cur.getDate() + 1);
+            }
+          }
+        }
+        if (hasConflictBetween) {
+          // Bắt đầu lại với ngày mới nếu nhảy qua khoảng ngày đã bị khóa
+          onChange && onChange({ start: isoDate, end: '' });
+          return;
+        }
         onChange && onChange({ start: value.start, end: isoDate });
         if (!inline) setIsOpen(false);
       } else {
