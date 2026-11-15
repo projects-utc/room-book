@@ -4,6 +4,7 @@ import React, { ReactNode } from 'react';
 export interface StatCardProps {
     label: string;
     value: string | number;
+    size?: 'sm' | 'md';
     sublabel?: string;
     description?: ReactNode; // Hỗ trợ thêm cho các trang Admin
     trend?: ReactNode;       // Hỗ trợ thêm prop trend
@@ -19,6 +20,7 @@ export interface StatCardProps {
 export function StatCard({
                              label,
                              value,
+                             size = 'md',
                              sublabel,
                              description,
                              trend,
@@ -63,7 +65,8 @@ export function StatCard({
                 border: '1px solid #EBEBEB',
                 borderLeft: `4px solid ${currentColor}`,
                 borderRadius: '14px',
-                padding: '1.25rem 1.5rem',
+                padding: size === 'sm' ? '0.7rem 0.9rem' : '1.25rem 1.5rem',
+                lineHeight: size === 'sm' ? 1.35 : undefined,
                 boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
                 cursor: onClick ? 'pointer' : undefined,
                 transition: 'transform 0.15s ease, box-shadow 0.15s ease',
@@ -73,7 +76,7 @@ export function StatCard({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <span
             style={{
-                fontSize: '0.78rem',
+                fontSize: size === 'sm' ? '0.72rem' : '0.78rem',
                 textTransform: 'uppercase',
                 fontWeight: 700,
                 letterSpacing: '0.04em',
@@ -83,15 +86,15 @@ export function StatCard({
         >
           {label}
         </span>
-                {icon && <span style={{ color: currentColor, fontSize: '1.25rem' }}>{icon}</span>}
+                {icon && <span style={{ color: currentColor, fontSize: size === 'sm' ? '1rem' : '1.25rem' }}>{icon}</span>}
             </div>
 
             <p
                 style={{
-                    fontSize: '1.85rem',
+                    fontSize: size === 'sm' ? '1.4rem' : '1.85rem',
                     fontWeight: 800,
                     color: effectiveAccent === 'brand' ? '#222222' : currentColor,
-                    margin: '0.35rem 0 0',
+                    margin: size === 'sm' ? '0.2rem 0 0' : '0.35rem 0 0',
                     letterSpacing: '-0.02em',
                 }}
             >
@@ -99,14 +102,14 @@ export function StatCard({
             </p>
 
             {(secondaryText || trend) && (
-                <div style={{ marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <div style={{ marginTop: size === 'sm' ? '0.2rem' : '0.35rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                     {secondaryText && (
-                        <span style={{ fontSize: '0.82rem', color: '#717171' }}>
+                        <span style={{ fontSize: size === 'sm' ? '0.75rem' : '0.82rem', color: '#717171' }}>
               {secondaryText}
             </span>
                     )}
                     {trend && (
-                        <span style={{ fontSize: '0.78rem', fontWeight: 600, color: trendColor }}>
+                        <span style={{ fontSize: size === 'sm' ? '0.72rem' : '0.78rem', fontWeight: 600, color: trendColor }}>
               {trendDirection === 'up' ? '↑ ' : trendDirection === 'down' ? '↓ ' : ''}
                             {trend}
             </span>

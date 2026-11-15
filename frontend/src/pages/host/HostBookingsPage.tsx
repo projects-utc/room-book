@@ -1,225 +1,247 @@
-// UC-08: Host Bookings Management Page (Standardized Components)
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
-import {
-  Breadcrumb,
-  Button,
-  Card,
-  StatCard,
-  Tabs,
-  Badge,
-} from '../../components';
+import { Breadcrumb, Button, Card, EmptyState, StatCard, formatDisplayDateVN } from '../../components';
 import { formatVND, BADGE_CLASS, BADGE_LABEL } from '../../constants';
 import {
-  CalendarCheck,
-  CheckLg,
-  XCircle,
-  Eye,
-  KeyFill,
-  Check2All,
+  ArrowLeftRight, ArrowRight, Calendar3, CalendarCheck,
+  Check2All, CheckLg, ChevronLeft, ChevronRight, Eye, Search, X, XCircle,
+  KeyFill, ArrowCounterclockwise,
 } from 'react-bootstrap-icons';
-import { Booking } from '../../data';
+import type { Booking } from '../../data';
+import {
+  DEFAULT_BOOKING_FILTERS, STATUS_FILTERS, filterBookings, readBookingFilters,
+} from './bookingFilters';
+import type { BookingFilters } from './bookingFilters';
+import { BOOKING_PAGE_SIZES, DEFAULT_BOOKING_PAGE_SIZE, paginateBookings } from './bookingPagination';
+import './HostBookingsPage.css';
 
 export default function HostBookingsPage() {
   const { store, addToast } = useStore();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filters = readBookingFilters(searchParams);
 
-  const [bookings, setBookings] = useState<Booking[]>(() => store.getAllBookings());
-  const [activeTab, setActiveTab] = useState<'ALL' | 'PENDING' | 'CONFIRMED' | 'COMPLETED'>('ALL');
+  // StoreContext rerenders on store updates; read the current list instead of retaining a stale copy.
+  const bookings = store.getAllBookings();
+  const { filteredBookings, statusCounts, invalidDateRange } = filterBookings(bookings, filters);
+  const { page, pageSize, pageCount, pages, visibleBookings } =
+    paginateBookings(filteredBookings, searchParams);
 
-  const refreshList = () => {
-    setBookings(store.getAllBookings());
+  const updateFilters = (patch: Partial<BookingFilters>) => {
+    setSearchParams(previous => {
+      const next = new URLSearchParams(previous);
+      next.delete('page');
+      Object.entries(patch).forEach(([key, value]) => {
+        if (!value || (key === 'status' && value === 'ALL')) {
+          next.delete(key);
+        } else {
+          next.set(key, value);
+        }
+      });
+      return next;
+    }, { replace: true });
   };
 
+  const updatePagination = (nextPage: number, nextPageSize: number = pageSize) => {
+    setSearchParams(previous => {
+      const next = new URLSearchParams(previous);
+      if (nextPage === 1) next.delete('page');
+      else next.set('page', String(nextPage));
+      if (nextPageSize === DEFAULT_BOOKING_PAGE_SIZE) next.delete('pageSize');
+      else next.set('pageSize', String(nextPageSize));
+      return next;
+    }, { replace: true });
+  };
+
+  const clearFilters = () => updateFilters(DEFAULT_BOOKING_FILTERS);
+  const hasActiveFilters = Boolean(filters.q.trim() || filters.from || filters.to || filters.status !== 'ALL');
+
   const handleUpdateStatus = (code: string, newStatus: Booking['status']) => {
-    const res = store.updateBookingStatus(code, newStatus);
-    if (res.success) {
-      addToast(`Đã chuyển trạng thái đơn #${code} sang ${newStatus}`, 'success');
-      refreshList();
+    const result = store.updateBookingStatus(code, newStatus);
+    if (result.success) {
+      addToast(`Đơn #${code}: ${BADGE_LABEL[newStatus]}`, 'success');
     } else {
-      addToast(res.message || 'Lỗi khi cập nhật trạng thái', 'error');
+      addToast(result.message || 'Lỗi khi cập nhật trạng thái', 'error');
     }
   };
 
-  const pendingCount = bookings.filter(b => b.status === 'PENDING').length;
-  const confirmedCount = bookings.filter(b => b.status === 'CONFIRMED').length;
-  const completedCount = bookings.filter(b => b.status === 'COMPLETED').length;
-
-  const filteredBookings = bookings.filter(b => {
-    if (activeTab === 'ALL') return true;
-    return b.status === activeTab;
-  });
-
   return (
-    <div style={{ maxWidth: 1200, margin: '1.5rem auto', padding: '0 1rem' }}>
-      <Breadcrumb
-        items={[
-          { label: 'Host Portal', to: '/host/properties' },
-          { label: 'Quản lý đơn đặt phòng' },
-        ]}
-      />
+    <div className="host-bookings">
+      <Breadcrumb items={[
+        { label: 'Host Portal', to: '/host/properties' },
+        { label: 'Quản lý đơn đặt phòng' },
+      ]} />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div>
-          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem', color: '#222222' }}>
-            Quản lý &amp; Xử lý đơn đặt phòng
-          </h1>
-          <p style={{ margin: 0, color: '#717171', fontSize: '0.95rem' }}>
-            Danh sách các yêu cầu lưu trú của khách thuộc các chỗ ở của chủ nhà (Tài khoản: <strong>host.demo</strong>).
-          </p>
-        </div>
-        <Badge variant="active">Tự động đồng bộ Realtime</Badge>
+      <div className="booking-page-heading">
+        <h1>Quản lý &amp; Xử lý đơn đặt phòng</h1>
       </div>
 
-      {/* KPI Metric Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '1.75rem' }}>
-        <StatCard
-          label="Yêu cầu chờ phê duyệt"
-          value={`${pendingCount} đơn`}
-          sublabel="Cần phản hồi trong 24h"
-          accent="warn"
-        />
-        <StatCard
-          label="Đơn đã xác nhận (Sắp tới)"
-          value={`${confirmedCount} đơn`}
-          sublabel="Chờ đón khách nhận phòng"
-          accent="brand"
-        />
-        <StatCard
-          label="Đơn lưu trú hoàn tất"
-          value={`${completedCount} đơn`}
-          sublabel="Đã ghi nhận doanh thu (BR-08)"
-          accent="ok"
-        />
+      <div className="booking-stats">
+        <StatCard size="sm" label="Yêu cầu chờ phê duyệt"
+          value={`${bookings.filter(b => b.status === 'PENDING').length} đơn`}
+          sublabel="Cần phản hồi trong 24h" accent="warn" />
+        <StatCard size="sm" label="Đơn đã xác nhận"
+          value={`${bookings.filter(b => b.status === 'CONFIRMED').length} đơn`}
+          sublabel="Chờ đón khách nhận phòng" accent="brand" />
+        <StatCard size="sm" label="Đơn lưu trú hoàn tất"
+          value={`${bookings.filter(b => b.status === 'COMPLETED').length} đơn`}
+          sublabel="Các kỳ lưu trú đã kết thúc" accent="ok" />
       </div>
 
-      {/* Bookings Card Container */}
-      <Card
-        variant="default"
-        padding="none"
-        title={
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <CalendarCheck style={{ color: '#FF385C', fontSize: '1.2rem' }} />
-            <span>Danh sách đơn đặt phòng ({filteredBookings.length})</span>
+      <Card padding="none" className="booking-panel" style={{ padding: 0 }}>
+        <div className="booking-panel-heading">
+          <div className="booking-heading-icon"><CalendarCheck aria-hidden="true" /></div>
+          <div>
+            <h2 id="bookings-heading">Danh sách đơn đặt phòng</h2>
           </div>
-        }
-      >
-        <div style={{ padding: '1rem 1.25rem 0.5rem', borderBottom: '1px solid #EBEBEB' }}>
-          <Tabs
-            variant="pills"
-            activeId={activeTab}
-            onChange={id => setActiveTab(id as any)}
-            items={[
-              { id: 'ALL', label: 'Tất cả đơn', count: bookings.length },
-              { id: 'PENDING', label: 'Chờ duyệt', count: pendingCount },
-              { id: 'CONFIRMED', label: 'Đã xác nhận', count: confirmedCount },
-              { id: 'COMPLETED', label: 'Hoàn tất', count: completedCount },
-            ]}
-          />
         </div>
 
-        <div className="table-responsive">
-          <table className="table table-hover align-middle mb-0" style={{ width: '100%' }}>
-            <thead>
-              <tr>
-                <th style={{ padding: '0.85rem 1rem' }}>Mã đơn</th>
-                <th style={{ padding: '0.85rem 1rem' }}>Khách đặt</th>
-                <th style={{ padding: '0.85rem 1rem' }}>Hạng phòng & Chỗ ở</th>
-                <th style={{ padding: '0.85rem 1rem' }}>Thời gian lưu trú</th>
-                <th style={{ padding: '0.85rem 1rem' }}>Tổng tiền</th>
-                <th style={{ padding: '0.85rem 1rem' }}>Trạng thái</th>
-                <th style={{ textAlign: 'right', padding: '0.85rem 1rem' }}>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredBookings.map(b => (
-                <tr key={b.code}>
-                  <td style={{ padding: '0.85rem 1rem', fontFamily: 'monospace', fontWeight: 700, color: '#222222' }}>
-                    #{b.code}
-                  </td>
-                  <td style={{ padding: '0.85rem 1rem' }}>
-                    <strong style={{ display: 'block', color: '#222222' }}>{b.guestName}</strong>
-                    <span style={{ fontSize: '0.78rem', color: '#717171' }}>
-                      {b.guestPhone}
-                    </span>
-                  </td>
-                  <td style={{ padding: '0.85rem 1rem' }}>
-                    <strong style={{ display: 'block', color: '#222222' }}>{b.roomName}</strong>
-                    <span style={{ fontSize: '0.78rem', color: '#717171' }}>
-                      {b.propertyName}
-                    </span>
-                  </td>
-                  <td style={{ padding: '0.85rem 1rem', fontSize: '0.88rem' }}>
-                    {b.checkIn} → {b.checkOut}
-                    <span style={{ display: 'block', fontSize: '0.78rem', color: '#717171' }}>
-                      {b.nights} đêm · {b.guests} khách
-                    </span>
-                  </td>
-                  <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#FF385C' }}>
-                    {formatVND(b.total)}
-                  </td>
-                  <td style={{ padding: '0.85rem 1rem' }}>
-                    <span className={`badge ${BADGE_CLASS[b.status] || 'badge-pending'}`}>
-                      {BADGE_LABEL[b.status] || b.status}
-                    </span>
-                  </td>
-                  <td style={{ textAlign: 'right', padding: '0.85rem 1rem' }}>
-                    <div style={{ display: 'inline-flex', gap: '0.35rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-                      {b.status === 'PENDING' && (
-                        <>
-                          <Button
-                            variant="primary"
-                            size="xs"
-                            icon={<CheckLg />}
-                            onClick={() => handleUpdateStatus(b.code, 'CONFIRMED')}
-                          >
-                            Duyệt đơn
-                          </Button>
-                          <Button
-                            variant="danger"
-                            size="xs"
-                            icon={<XCircle />}
-                            onClick={() => handleUpdateStatus(b.code, 'REJECTED')}
-                          >
-                            Từ chối
-                          </Button>
-                        </>
-                      )}
+        <section className="booking-filters" aria-label="Bộ lọc đơn đặt phòng">
+          <div className="booking-filter-grid">
+            <div className="booking-search" role="search" aria-label="Tìm đơn đặt phòng">
+              <Search aria-hidden="true" />
+              <input id="booking-search" type="search" className="booking-filter-control"
+                aria-label="Tìm theo mã đơn, tên khách, số điện thoại, email, chỗ ở hoặc phòng"
+                placeholder="Tìm mã đơn, tên khách, số điện thoại"
+                value={filters.q} onChange={event => updateFilters({ q: event.target.value })}
+                autoComplete="off" spellCheck={false} />
+              {filters.q && <button type="button" className="booking-search-clear"
+                aria-label="Xóa từ khóa tìm kiếm" onClick={() => updateFilters({ q: '' })}>
+                <X aria-hidden="true" />
+              </button>}
+            </div>
+            <div className="booking-field">
+              <label htmlFor="booking-from"><Calendar3 aria-hidden="true" /> Lưu trú từ ngày</label>
+              <input id="booking-from" type="date" className="booking-filter-control"
+                value={filters.from} max={filters.to || undefined} aria-invalid={invalidDateRange}
+                aria-describedby={invalidDateRange ? 'booking-date-help' : undefined}
+                onChange={event => updateFilters({ from: event.target.value })} />
+            </div>
+            <div className="booking-field">
+              <label htmlFor="booking-to"><Calendar3 aria-hidden="true" /> Đến ngày</label>
+              <input id="booking-to" type="date" className="booking-filter-control"
+                value={filters.to} min={filters.from || undefined} aria-invalid={invalidDateRange}
+                aria-describedby={invalidDateRange ? 'booking-date-help' : undefined}
+                onChange={event => updateFilters({ to: event.target.value })} />
+            </div>
+            <button type="button" className="booking-reset" onClick={clearFilters}
+              disabled={!hasActiveFilters}>
+              <ArrowCounterclockwise aria-hidden="true" /> Xóa bộ lọc
+            </button>
+          </div>
 
-                      {b.status === 'CONFIRMED' && (
-                        <Button
-                          variant="outline"
-                          size="xs"
-                          icon={<KeyFill />}
-                          onClick={() => handleUpdateStatus(b.code, 'CHECKED_IN')}
-                        >
-                          Check-in
-                        </Button>
-                      )}
+          {invalidDateRange && <p id="booking-date-help" className="booking-filter-help is-error" role="alert">
+            Ngày kết thúc cần bằng hoặc sau ngày bắt đầu.
+          </p>}
 
-                      {b.status === 'CHECKED_IN' && (
-                        <Button
-                          variant="primary"
-                          size="xs"
-                          icon={<Check2All />}
-                          onClick={() => handleUpdateStatus(b.code, 'COMPLETED')}
-                        >
-                          Hoàn tất
-                        </Button>
-                      )}
+        </section>
 
-                      <Link to={`/host/bookings/${b.code}`}>
-                        <Button variant="outline" size="xs" icon={<Eye />}>
-                          Chi tiết
-                        </Button>
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="booking-toolbar">
+          <div className="booking-status-tabs" role="group" aria-label="Lọc theo trạng thái đơn">
+            {STATUS_FILTERS.map(tab => <button key={tab.id} type="button"
+              className={`booking-status-tab${filters.status === tab.id ? ' is-active' : ''}`}
+              aria-pressed={filters.status === tab.id} onClick={() => updateFilters({ status: tab.id })}>
+              {tab.label}<span>{statusCounts[tab.id]}</span>
+            </button>)}
+          </div>
+          <div className="booking-page-size">
+            <label htmlFor="booking-page-size">Hiển thị</label>
+            <select id="booking-page-size" value={pageSize}
+              aria-label="Số bản ghi mỗi trang"
+              onChange={event => updatePagination(1, Number(event.target.value))}>
+              {BOOKING_PAGE_SIZES.map(size => <option key={size} value={size}>{size}</option>)}
+            </select>
+            <span>/ trang</span>
+          </div>
         </div>
+
+        {filteredBookings.length === 0 ? (
+          <div className="booking-empty">
+            <EmptyState icon={bookings.length ? <Search /> : <CalendarCheck />}
+              title={invalidDateRange ? 'Kiểm tra lại khoảng ngày' : bookings.length
+                ? 'Không tìm thấy đơn phù hợp' : 'Chưa có đơn đặt phòng'}
+              description={invalidDateRange ? 'Chọn lại khoảng thời gian lưu trú hợp lệ để xem kết quả.' : bookings.length
+                ? 'Thử từ khóa khác, mở rộng khoảng ngày hoặc bỏ bớt bộ lọc.'
+                : 'Các yêu cầu đặt phòng mới sẽ xuất hiện tại đây.'}
+              action={hasActiveFilters ? <Button variant="outline" size="sm"
+                icon={<ArrowCounterclockwise />} onClick={clearFilters}>Xóa tất cả bộ lọc</Button> : undefined} />
+          </div>
+        ) : (
+          <>
+            <p className="booking-scroll-hint"><ArrowLeftRight aria-hidden="true" /> Vuốt ngang để xem đầy đủ thông tin</p>
+            <div className="table-responsive booking-table-wrapper" role="region"
+              aria-labelledby="bookings-heading" tabIndex={0}>
+              <table id="host-bookings-table" className="table booking-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Mã đơn</th>
+                    <th scope="col">Khách đặt</th>
+                    <th scope="col">Hạng phòng &amp; Chỗ ở</th>
+                    <th scope="col">Thời gian lưu trú</th>
+                    <th scope="col">Tổng tiền</th>
+                    <th scope="col">Trạng thái</th>
+                    <th scope="col" className="booking-actions-heading">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visibleBookings.map(booking => (
+                    <tr key={booking.code}>
+                      <td><Link className="booking-code" to={`/host/bookings/${encodeURIComponent(booking.code)}`}>
+                        #{booking.code}
+                      </Link></td>
+                      <td><strong className="booking-cell-title">{booking.guestName}</strong>
+                        <span className="booking-cell-subtitle">{booking.guestPhone}</span></td>
+                      <td><strong className="booking-cell-title">{booking.roomName}</strong>
+                        <span className="booking-cell-subtitle">{booking.propertyName}</span></td>
+                      <td><div className="booking-stay-dates">
+                        <span>{formatDisplayDateVN(booking.checkIn)}</span><ArrowRight aria-label="đến" />
+                        <span>{formatDisplayDateVN(booking.checkOut)}</span>
+                      </div><span className="booking-cell-subtitle">{booking.nights} đêm · {booking.guests} khách</span></td>
+                      <td className="booking-total">{formatVND(booking.total)}</td>
+                      <td><span className={`badge ${BADGE_CLASS[booking.status] || 'badge-pending'}`}>
+                        {BADGE_LABEL[booking.status] || booking.status}
+                      </span></td>
+                      <td><div className="booking-actions">
+                        {booking.status === 'PENDING' && <>
+                          <Button variant="primary" size="xs" icon={<CheckLg />}
+                            onClick={() => handleUpdateStatus(booking.code, 'CONFIRMED')}>Duyệt đơn</Button>
+                          <Button variant="outline" size="xs" icon={<XCircle />}
+                            onClick={() => handleUpdateStatus(booking.code, 'REJECTED')}>Từ chối</Button>
+                        </>}
+                        {booking.status === 'CONFIRMED' && <Button variant="outline" size="xs" icon={<KeyFill />}
+                          onClick={() => handleUpdateStatus(booking.code, 'CHECKED_IN')}>Check-in</Button>}
+                        {booking.status === 'CHECKED_IN' && <Button variant="primary" size="xs" icon={<Check2All />}
+                          onClick={() => handleUpdateStatus(booking.code, 'COMPLETED')}>Hoàn tất</Button>}
+                        <Link className="btn btn-outline btn-xs" to={`/host/bookings/${encodeURIComponent(booking.code)}`}>
+                          <Eye aria-hidden="true" /> Chi tiết
+                        </Link>
+                      </div></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+        {pageCount > 1 && <nav className="booking-pagination" aria-label="Phân trang đơn đặt phòng">
+          <button type="button" className="booking-page-button" aria-label="Trang trước"
+            aria-controls="host-bookings-table" disabled={page === 1}
+            onClick={() => updatePagination(page - 1)}>
+            <ChevronLeft aria-hidden="true" /> Trước
+          </button>
+          {pages.map(item => typeof item === 'number' ? (
+            <button key={item} type="button"
+              className={`booking-page-button${item === page ? ' is-active' : ''}`}
+              aria-label={`Trang ${item}`} aria-current={item === page ? 'page' : undefined}
+              aria-controls="host-bookings-table" onClick={() => updatePagination(item)}>
+              {item}
+            </button>
+          ) : <span key={item} className="booking-page-ellipsis" aria-hidden="true">…</span>)}
+          <button type="button" className="booking-page-button" aria-label="Trang sau"
+            aria-controls="host-bookings-table" disabled={page === pageCount}
+            onClick={() => updatePagination(page + 1)}>
+            Sau <ChevronRight aria-hidden="true" />
+          </button>
+        </nav>}
       </Card>
     </div>
   );
