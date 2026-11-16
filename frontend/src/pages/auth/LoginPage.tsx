@@ -153,14 +153,9 @@ export default function LoginPage() {
 
             {/* Password Input */}
             <div className="auth-input-wrapper">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
-                <label htmlFor="login-password" style={{ margin: 0 }}>
-                  <span>Mật khẩu</span>
-                </label>
-                <span style={{ fontSize: '0.8rem', color: 'var(--color-primary)', fontWeight: 600, cursor: 'pointer' }}>
-                  Quên mật khẩu?
-                </span>
-              </div>
+              <label htmlFor="login-password">
+                <span>Mật khẩu</span>
+              </label>
               <div className="auth-input-container">
                 <LockFill className="auth-input-icon" />
                 <input

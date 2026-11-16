@@ -317,25 +317,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
           {/* Right: Quick actions & Status indicator */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            {/* Server Online Badge */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                background: 'var(--color-success-bg)',
-                border: '1px solid var(--color-success-border)',
-                color: 'var(--color-success)',
-                borderRadius: '9999px',
-                padding: '0.25rem 0.75rem',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-              }}
-            >
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block' }} />
-              <span>Hệ thống: Trực tuyến</span>
-            </div>
-
             {/* Switch to Client Button */}
             <Link
               to="/client"

@@ -85,3 +85,5 @@ desktop.ini
 .agents/
 .specify/
 graphify-out/
+scripts/
+AGENTS.md

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
-import { UCTag, Breadcrumb, Badge } from '../../components/UI';
+import { Breadcrumb, Badge } from '../../components/UI';
 import { formatVND, BADGE_CLASS, BADGE_LABEL } from '../../constants';
 import {
   CalendarCheck,
@@ -58,9 +58,6 @@ export default function HostBookingDetailPage() {
                 { label: `Chi tiết đơn #${bookingCode}` },
               ]}
           />
-          <UCTag>
-            <CalendarCheck /> Chi tiết đơn đặt phòng
-          </UCTag>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>

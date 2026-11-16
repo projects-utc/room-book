@@ -112,18 +112,6 @@ export default function HostPropertiesPage() {
           accent="brand"
           icon={<Building />}
         />
-        <StatCard
-          label="Tỷ lệ lấp đầy tháng này"
-          value="85%"
-          sublabel="Tăng 12% so với tháng trước"
-          accent="ok"
-        />
-        <StatCard
-          label="Đánh giá trung bình"
-          value="5.0 ★"
-          sublabel="Đạt tiêu chuẩn Superhost"
-          accent="warn"
-        />
       </div>
 
       {/* Standardized Add Property Modal */}

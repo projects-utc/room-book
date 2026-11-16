@@ -27,4 +27,13 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
             @Param("startDate") String startDate,
             @Param("minBookings") long minBookings
     );
+
+    @Query("SELECT b FROM BookingEntity b WHERE b.roomId = :roomId " +
+           "AND b.status IN ('PENDING', 'CONFIRMED', 'CHECKED_IN') " +
+           "AND b.checkIn < :checkOut AND b.checkOut > :checkIn")
+    List<BookingEntity> findOverlappingBookings(
+            @Param("roomId") Long roomId,
+            @Param("checkIn") String checkIn,
+            @Param("checkOut") String checkOut);
 }
+

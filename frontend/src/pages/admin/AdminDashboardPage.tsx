@@ -117,8 +117,6 @@ export default function AdminDashboardPage() {
           label="Tổng doanh thu sàn"
           value={formatVND(totalRevenue)}
           description="Từ các kỳ nghỉ đã hoàn thành"
-          trend="+18.4% tháng này"
-          trendDirection="up"
           variant="highlight"
         />
 
@@ -134,16 +132,12 @@ export default function AdminDashboardPage() {
           label="Cơ sở lưu trú & Phòng"
           value={`${properties.length} chỗ ở`}
           description={`Quy mô ${rooms.length} phòng cho thuê`}
-          trend="100% hoạt động"
-          trendDirection="neutral"
         />
 
         <StatCard
           label="Người dùng hệ thống"
           value={`${users.length} tài khoản`}
           description={`${hostCount} Chủ nhà · ${guestCount} Khách`}
-          trend="Độ tin cậy 99.8%"
-          trendDirection="up"
         />
       </div>
 

@@ -59,8 +59,10 @@ export default function ReviewFormPage() {
     };
 
     // NẾU ĐƠN NÀY ĐÃ ĐÁNH GIÁ -> ĐÁ VỀ TRANG CHUYẾN ĐI NGAY LẬP TỨC
+    const hasJustSubmittedRef = React.useRef(false);
+
     useEffect(() => {
-        if (isReviewed) {
+        if (isReviewed && !hasJustSubmittedRef.current) {
             addToast('Chuyến đi này đã được đánh giá.', 'info');
             navigate('/my-bookings');
         }
@@ -87,6 +89,7 @@ export default function ReviewFormPage() {
             const response = await stayApi.submitReview(reviewPayload);
 
             if (response.success) {
+                hasJustSubmittedRef.current = true;
                 // Đánh dấu vào store cục bộ để UI biết đơn này đã được đánh giá
                 const localRes = store.submitReview(reviewPayload);
 

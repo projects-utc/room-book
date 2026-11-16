@@ -7,14 +7,21 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.odauday.stay.application.service.audit.AuditLogService;
 import vn.odauday.stay.domain.booking.model.BookingEntity;
 import vn.odauday.stay.domain.booking.persistent.BookingRepository;
+import vn.odauday.stay.domain.property.model.PropertyEntity;
+import vn.odauday.stay.domain.property.persistent.PropertyRepository;
 import vn.odauday.stay.domain.room.model.RoomEntity;
 import vn.odauday.stay.domain.room.persistent.RoomRepository;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,6 +31,7 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final AuditLogService auditLogService;
     private final RoomRepository roomRepository;
+    private final PropertyRepository propertyRepository;
 
     @Transactional(readOnly = true)
     public List<BookingEntity> getBookings(String guestUsername) {
@@ -41,15 +49,55 @@ public class BookingService {
 
     @Transactional
     public BookingEntity createBooking(BookingEntity booking) {
-        // Tự động sinh code nếu chưa có
+        if (booking.getGuestUsername() == null || booking.getGuestUsername().isBlank()) {
+            throw new IllegalArgumentException("Tên tài khoản người đặt không được để trống");
+        }
+        if (booking.getPropertyId() == null) {
+            throw new IllegalArgumentException("Cơ sở lưu trú (propertyId) không được để trống");
+        }
+        if (booking.getRoomId() == null) {
+            throw new IllegalArgumentException("Phòng đặt (roomId) không được để trống");
+        }
+        if (booking.getCheckIn() == null || booking.getCheckIn().isBlank()) {
+            throw new IllegalArgumentException("Ngày nhận phòng không được để trống");
+        }
+        if (booking.getCheckOut() == null || booking.getCheckOut().isBlank()) {
+            throw new IllegalArgumentException("Ngày trả phòng không được để trống");
+        }
+
+        try {
+            LocalDate checkInDate = LocalDate.parse(booking.getCheckIn().trim().substring(0, Math.min(10, booking.getCheckIn().trim().length())));
+            LocalDate checkOutDate = LocalDate.parse(booking.getCheckOut().trim().substring(0, Math.min(10, booking.getCheckOut().trim().length())));
+            if (!checkOutDate.isAfter(checkInDate)) {
+                throw new IllegalArgumentException("Ngày trả phòng phải sau ngày nhận phòng");
+            }
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Định dạng ngày không hợp lệ, yêu cầu định dạng YYYY-MM-DD");
+        }
+
+        if (booking.getGuests() != null && booking.getGuests() <= 0) {
+            throw new IllegalArgumentException("Số lượng khách phải lớn hơn 0");
+        }
+        if (booking.getPricePerNight() != null && booking.getPricePerNight() < 0) {
+            throw new IllegalArgumentException("Đơn giá phòng không được là số âm");
+        }
+
+        List<BookingEntity> overlapping = bookingRepository.findOverlappingBookings(
+                booking.getRoomId(), booking.getCheckIn().trim(), booking.getCheckOut().trim());
+        if (!overlapping.isEmpty()) {
+            throw new IllegalArgumentException("Phòng đã có người đặt trong khoảng thời gian này");
+        }
+
         if (booking.getCode() == null || booking.getCode().isBlank()) {
             booking.setCode("ODD-" + LocalDateTime.now().getYear() + "-" + (int) (1000 + Math.random() * 9000));
         }
         if (booking.getCreatedAt() == null || booking.getCreatedAt().isBlank()) {
             booking.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         }
+        if (booking.getStatus() == null || booking.getStatus().isBlank()) {
+            booking.setStatus("PENDING");
+        }
 
-        // Tính lại nights, subtotal, total từ DB để đảm bảo đúng (không tin hoàn toàn vào FE)
         recalculatePricing(booking);
 
         BookingEntity saved = bookingRepository.save(booking);
@@ -57,11 +105,6 @@ public class BookingService {
         return saved;
     }
 
-    /**
-     * Tính lại số đêm và tổng tiền dựa trên giá phòng thực tế từ DB.
-     * - Nếu FE truyền nights/total hợp lệ và khớp với DB → giữ nguyên.
-     * - Nếu không → ghi đè bằng giá tính từ DB.
-     */
     private void recalculatePricing(BookingEntity booking) {
         try {
             if (booking.getCheckIn() == null || booking.getCheckOut() == null) return;
@@ -72,22 +115,21 @@ public class BookingService {
 
             booking.setNights((int) nights);
 
-            // Lấy giá phòng từ DB
             if (booking.getRoomId() != null) {
                 RoomEntity room = roomRepository.findById(booking.getRoomId()).orElse(null);
                 if (room != null) {
-                    double pricePerNight = (room.getPrice() != null) ? room.getPrice() : 0.0;
-                    double subtotal = pricePerNight * nights;
+                    double pricePerNight = (booking.getPricePerNight() != null && booking.getPricePerNight() > 0)
+                            ? booking.getPricePerNight()
+                            : (room.getPrice() != null ? room.getPrice() : 0.0);
+                    double subtotal = (booking.getSubtotal() != null && booking.getSubtotal() > 0)
+                            ? booking.getSubtotal()
+                            : pricePerNight * nights;
                     booking.setPricePerNight(pricePerNight);
                     booking.setSubtotal(subtotal);
 
                     double serviceFee = (booking.getServiceFee() != null) ? booking.getServiceFee() : 0.0;
                     booking.setServiceFee(serviceFee);
 
-                    // Nếu FE đã truyền total hợp lệ (có thể đã áp dụng mã Voucher / Khuyến mại),
-                    // ưu tiên giữ nguyên số tiền đã giảm giá từ FE để không ghi đè làm mất voucher khi lưu vào Database.
-                    // Chỉ tính lại total = subtotal + serviceFee khi FE không truyền, total <= 0,
-                    // hoặc total > subtotal + serviceFee (không hợp lệ vì voucher không làm tăng giá).
                     if (booking.getTotal() == null || booking.getTotal() <= 0 || booking.getTotal() > (subtotal + serviceFee)) {
                         booking.setTotal(subtotal + serviceFee);
                     }
@@ -111,6 +153,9 @@ public class BookingService {
     @Transactional
     public BookingEntity cancelBooking(String code) {
         BookingEntity b = getBookingByCode(code);
+        if ("COMPLETED".equalsIgnoreCase(b.getStatus()) || "CANCELLED".equalsIgnoreCase(b.getStatus())) {
+            throw new IllegalArgumentException("Không thể hủy đơn đặt phòng đã hoàn tất hoặc đã bị hủy trước đó");
+        }
         b.setStatus("CANCELLED");
         return bookingRepository.save(b);
     }
@@ -124,5 +169,44 @@ public class BookingService {
         auditLogService.logAudit("CANCEL_BOOKING", code, "Admin can thiệp hủy đơn: " + finalReason, "admin");
         return saved;
     }
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> getRevenueSummary(String ownerUsername) {
+        List<BookingEntity> allBookings = bookingRepository.findAll();
+        List<BookingEntity> scopedBookings = allBookings;
+
+        if (ownerUsername != null && !ownerUsername.isBlank()) {
+            Set<Long> ownerPropertyIds = propertyRepository.findByOwner(ownerUsername.trim()).stream()
+                    .map(PropertyEntity::getId)
+                    .collect(Collectors.toSet());
+            scopedBookings = allBookings.stream()
+                    .filter(b -> b.getPropertyId() != null && ownerPropertyIds.contains(b.getPropertyId()))
+                    .toList();
+        }
+
+        List<BookingEntity> completedBookings = scopedBookings.stream()
+                .filter(b -> "COMPLETED".equalsIgnoreCase(b.getStatus()))
+                .toList();
+        List<BookingEntity> cancelledBookings = scopedBookings.stream()
+                .filter(b -> "CANCELLED".equalsIgnoreCase(b.getStatus()))
+                .toList();
+        List<BookingEntity> pendingBookings = scopedBookings.stream()
+                .filter(b -> "PENDING".equalsIgnoreCase(b.getStatus()))
+                .toList();
+
+        double totalRevenue = completedBookings.stream()
+                .mapToDouble(b -> b.getTotal() != null ? b.getTotal() : 0.0)
+                .sum();
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("totalBookings", scopedBookings.size());
+        result.put("totalRevenue", totalRevenue);
+        result.put("count", completedBookings.size());
+        result.put("completedBookings", completedBookings);
+        result.put("cancelledBookings", cancelledBookings);
+        result.put("pendingBookings", pendingBookings);
+        return result;
+    }
 }
+
 

@@ -7,8 +7,6 @@ import { Property, Room, Review } from '../../data';
 import { formatVND } from '../../constants';
 import {
   StarFill,
-  HeartFill,
-  Heart,
   Share,
   PatchCheckFill,
   ShieldCheck,
@@ -103,13 +101,8 @@ export default function PropertyDetailPage() {
   // 3. Cờ điều kiện xác định homestay có đánh giá hay là chưa có đánh giá
   const hasReviews = Boolean(reviewCount > 0 && averageRating !== null && averageRating > 0);
 
-  // 4. State & Logic Bộ lọc Đánh giá Phong cách Shopee
-  const [reviewFilter, setReviewFilter] = useState<'ALL' | '5' | '4' | '3' | '2' | '1' | 'WITH_MEDIA'>('ALL');
+  const [reviewFilter, setReviewFilter] = useState<'ALL' | '5' | '4' | '3' | '2' | '1'>('ALL');
 
-  // Modal Lightbox xem trước ảnh phóng to
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-
-  // Thống kê số lượng theo từng bộ lọc Shopee
   const filterCounts = useMemo(() => {
     return {
       all: reviews.length,
@@ -118,16 +111,11 @@ export default function PropertyDetailPage() {
       3: reviews.filter(r => Math.round(Number(r.rating)) === 3).length,
       2: reviews.filter(r => Math.round(Number(r.rating)) === 2).length,
       1: reviews.filter(r => Math.round(Number(r.rating)) === 1).length,
-      withMedia: reviews.filter(r => Array.isArray((r as any).mediaUrls) && (r as any).mediaUrls.length > 0).length,
     };
   }, [reviews]);
 
-  // Danh sách hiển thị theo bộ lọc Shopee
   const displayedReviews = useMemo(() => {
     if (reviewFilter === 'ALL') return reviews;
-    if (reviewFilter === 'WITH_MEDIA') {
-      return reviews.filter(r => Array.isArray((r as any).mediaUrls) && (r as any).mediaUrls.length > 0);
-    }
     const starNum = Number(reviewFilter);
     return reviews.filter(r => Math.round(Number(r.rating)) === starNum);
   }, [reviews, reviewFilter]);
@@ -135,7 +123,6 @@ export default function PropertyDetailPage() {
   const [checkOut, setCheckOut] = useState(searchParams.get('out') || '');
   const [guests, setGuests] = useState(searchParams.get('guests') || '');
   const [selectedRoomId, setSelectedRoomId] = useState<number>(rooms[0]?.id || 1);
-  const [isSaved, setIsSaved] = useState(false);
 
   const selectedRoom = rooms.find(r => r.id === selectedRoomId) || rooms[0];
 
@@ -222,11 +209,6 @@ export default function PropertyDetailPage() {
     addToast('Đã sao chép liên kết vào bộ nhớ tạm!', 'success');
   };
 
-  const handleToggleSave = () => {
-    setIsSaved(!isSaved);
-    addToast(isSaved ? 'Đã xóa khỏi danh sách yêu thích' : 'Đã lưu vào danh sách yêu thích!', 'info');
-  };
-
   if (!property) {
     return (
       <div className="detail-container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>
@@ -300,10 +282,6 @@ export default function PropertyDetailPage() {
             <div className="detail-actions">
               <button type="button" className="action-link" onClick={handleShare}>
                 <Share /> Chia sẻ
-              </button>
-              <button type="button" className="action-link" onClick={handleToggleSave}>
-                {isSaved ? <HeartFill style={{ color: 'var(--airbnb-pink)' }} /> : <Heart />}
-                <span>{isSaved ? 'Đã lưu' : 'Lưu'}</span>
               </button>
             </div>
           </div>
@@ -445,7 +423,6 @@ export default function PropertyDetailPage() {
                       { key: '3', label: `3 Sao (${filterCounts['3']})` },
                       { key: '2', label: `2 Sao (${filterCounts['2']})` },
                       { key: '1', label: `1 Sao (${filterCounts['1']})` },
-                      ...(filterCounts.withMedia > 0 ? [{ key: 'WITH_MEDIA', label: `Có hình ảnh / video (${filterCounts.withMedia})` }] : []),
                     ].map(f => {
                       const isActive = reviewFilter === f.key;
                       return (
@@ -668,33 +645,6 @@ export default function PropertyDetailPage() {
                       <p style={{ margin: 0, fontSize: '0.92rem', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
                         "{rev.comment}"
                       </p>
-
-                      {/* Lưới hình ảnh / video thu nhỏ */}
-                      {Array.isArray((rev as any).mediaUrls) && (rev as any).mediaUrls.length > 0 && (
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '0.85rem' }}>
-                          {(rev as any).mediaUrls.map((mediaUrl: string, idx: number) => (
-                            <div
-                              key={idx}
-                              onClick={() => setPreviewImage(mediaUrl)}
-                              style={{
-                                width: 72,
-                                height: 72,
-                                borderRadius: 6,
-                                overflow: 'hidden',
-                                border: '1px solid var(--color-border-subtle)',
-                                cursor: 'pointer',
-                                background: 'var(--color-bg-muted)',
-                                transition: 'transform 0.18s ease, border-color 0.18s ease'
-                              }}
-                              onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.06)')}
-                              onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-                              title="Click để phóng to xem ảnh"
-                            >
-                              <img src={mediaUrl} alt={`Ảnh ${idx + 1}`} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            </div>
-                          ))}
-                        </div>
-                      )}
                       </div>
                     );
                   })}
@@ -813,65 +763,6 @@ export default function PropertyDetailPage() {
         </div>
 
         {/* Lightbox Modal xem trước ảnh đánh giá */}
-        {previewImage && (
-          <div
-            onClick={() => setPreviewImage(null)}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0, 0, 0, 0.78)',
-              backdropFilter: 'blur(4px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '1.5rem'
-            }}
-          >
-            <div onClick={e => e.stopPropagation()} style={{ position: 'relative', maxWidth: '90vw', maxHeight: '85vh' }}>
-              <button
-                type="button"
-                onClick={() => setPreviewImage(null)}
-                style={{
-                  position: 'absolute',
-                  top: -14,
-                  right: -14,
-                  background: 'rgba(0,0,0,0.75)',
-                  color: '#fff',
-                  border: '2px solid #fff',
-                  borderRadius: '50%',
-                  width: 32,
-                  height: 32,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1rem',
-                  fontWeight: 'bold',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-                }}
-                title="Đóng"
-              >
-                ✕
-              </button>
-              <img
-                src={previewImage}
-                alt="Ảnh phóng to"
-                style={{
-                  maxWidth: '90vw',
-                  maxHeight: '80vh',
-                  objectFit: 'contain',
-                  borderRadius: 8,
-                  boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
-                  display: 'block'
-                }}
-              />
-            </div>
-          </div>
-        )}
       </div>
   );
 }

@@ -1,12 +1,9 @@
 // UC-09: Host Revenue & Reports Page (Standardized Components)
-import React, { useState } from 'react';
+import React from 'react';
 import { useStore } from '../../contexts/StoreContext';
 import {
   Breadcrumb,
-  Button,
   Card,
-  InputField,
-  SelectField,
   StatCard,
   Badge,
   Table,
@@ -20,30 +17,20 @@ import {
 import { formatVND } from '../../constants';
 import {
   GraphUpArrow,
-  FileEarmarkSpreadsheet,
   CheckCircle,
   DoorClosed,
-  Filter,
   CashStack,
   ExclamationCircle,
 } from 'react-bootstrap-icons';
 
 export default function HostRevenuePage() {
-  const { store, currentUser, addToast } = useStore();
+  const { store, currentUser } = useStore();
   const owner = currentUser?.username || 'host.demo';
-
-  const [fromMonth, setFromMonth] = useState('2026-12');
-  const [toMonth, setToMonth] = useState('2027-02');
-  const [propertyFilter, setPropertyFilter] = useState('Tất cả cơ sở');
 
   const revData = store.getRevenueData(owner);
   const completedBookings = revData.completedBookings;
   const cancelledBookings = revData.cancelledBookings;
   const pendingBookings = revData.pendingBookings;
-
-  const handleExportCSV = () => {
-    addToast('Đã xuất báo cáo doanh thu tài chính định dạng CSV/Excel!', 'success');
-  };
 
   return (
     <div style={{ maxWidth: 1240, margin: '2rem auto', padding: '0 1.5rem' }}>
@@ -63,51 +50,7 @@ export default function HostRevenuePage() {
             Doanh thu được tổng hợp từ các đơn đặt phòng đã hoàn tất kỳ lưu trú thực tế.
           </p>
         </div>
-        <Button variant="outline" icon={<FileEarmarkSpreadsheet />} onClick={handleExportCSV}>
-          Xuất file Excel / CSV
-        </Button>
       </div>
-
-      {/* Filter Controls Card */}
-      <Card style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
-          <InputField
-            id="rev-from"
-            type="month"
-            label="Từ kỳ tháng"
-            value={fromMonth}
-            onChange={e => setFromMonth(e.target.value)}
-          />
-          <InputField
-            id="rev-to"
-            type="month"
-            label="Đến kỳ tháng"
-            value={toMonth}
-            onChange={e => setToMonth(e.target.value)}
-          />
-          <SelectField
-            id="rev-prop"
-            label="Cơ sở kinh doanh"
-            value={propertyFilter}
-            onChange={e => setPropertyFilter(e.target.value)}
-            options={[
-              { value: 'Tất cả cơ sở', label: 'Tất cả cơ sở sở hữu' },
-              { value: 'ODauDay Stay Hồ Tây', label: 'ODauDay Stay Hồ Tây' },
-              { value: 'ODauDay Stay Ba Vì', label: 'ODauDay Stay Ba Vì' },
-            ]}
-          />
-          <div>
-            <Button
-              variant="primary"
-              icon={<Filter />}
-              block
-              onClick={() => addToast('Đã áp dụng bộ lọc kỳ báo cáo doanh thu', 'info')}
-            >
-              Lọc dữ liệu báo cáo
-            </Button>
-          </div>
-        </div>
-      </Card>
 
       {/* Standard KPI Metric Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
