@@ -85,9 +85,10 @@ export interface PropertyCardProps {
   guests?: number | string;
   nights?: number;
   isHotSection?: boolean;
+  aspectRatio?: string;
 }
 
-export function PropertyCard({ property, checkIn, checkOut, guests, nights = 2, isHotSection }: PropertyCardProps) {
+export function PropertyCard({ property, checkIn, checkOut, guests, nights = 2, isHotSection, aspectRatio }: PropertyCardProps) {
   const navigate = useNavigate();
   const { store } = useStore();
 
@@ -190,7 +191,7 @@ export function PropertyCard({ property, checkIn, checkOut, guests, nights = 2, 
         style={{
           position: 'relative',
           width: '100%',
-          aspectRatio: '20 / 19',
+          aspectRatio: aspectRatio || '16 / 10',
           borderRadius: '14px',
           overflow: 'hidden',
           background: 'var(--color-bg-muted)',

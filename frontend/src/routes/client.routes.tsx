@@ -42,6 +42,15 @@ export function ClientRoutes() {
       <Route path="/booking-success" element={<BookingSuccessPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/order-history" element={<Navigate to="/my-bookings?tab=COMPLETED" replace />} />
+      <Route path="/client/order-history" element={<Navigate to="/client/my-bookings?tab=COMPLETED" replace />} />
+      <Route path="/history" element={<Navigate to="/my-bookings?tab=COMPLETED" replace />} />
+      <Route path="/order-details" element={<Navigate to="/my-bookings?tab=UPCOMING" replace />} />
+      <Route path="/client/order-details" element={<Navigate to="/client/my-bookings?tab=UPCOMING" replace />} />
+      <Route path="/booking-history" element={<Navigate to="/my-bookings?tab=COMPLETED" replace />} />
+      <Route path="/client/booking-history" element={<Navigate to="/client/my-bookings?tab=COMPLETED" replace />} />
+      <Route path="/booking-details" element={<Navigate to="/my-bookings?tab=UPCOMING" replace />} />
+      <Route path="/client/booking-details" element={<Navigate to="/client/my-bookings?tab=UPCOMING" replace />} />
 
       {/* ── Protected Client Pages (Yêu cầu đăng nhập) ──────── */}
       <Route

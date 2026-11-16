@@ -48,6 +48,8 @@ public class ReviewService {
                 if (!"COMPLETED".equalsIgnoreCase(b.getStatus())) {
                     throw new IllegalStateException("Chỉ có thể đánh giá sau khi kỳ lưu trú đã hoàn thành");
                 }
+                b.setIsReviewed(true);
+                bookingRepository.save(b);
             });
         }
 
@@ -67,13 +69,6 @@ public class ReviewService {
 
         // Tự động tính toán và cập nhật điểm số Property
         updatePropertyRating(request.getPropertyId());
-
-        if (request.getBookingCode() != null && !request.getBookingCode().isBlank()) {
-            bookingRepository.findByCode(request.getBookingCode()).ifPresent(b -> {
-                b.setIsReviewed(true);
-                bookingRepository.save(b);
-            });
-        }
 
         return mapToResponse(savedReview);
     }
@@ -111,7 +106,6 @@ public class ReviewService {
         }
         return saved;
     }
-
     private void updatePropertyRating(Long propertyId) {
         try {
             Double avgRating = reviewRepository.calculateAverageRating(propertyId);
@@ -120,7 +114,7 @@ public class ReviewService {
             PropertyEntity property = propertyRepository.findById(propertyId)
                     .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy chỗ ở ID: " + propertyId));
 
-            double roundedRating = avgRating != null ? Math.round(avgRating * 100.0) / 100.0 : 5.0;
+            double roundedRating = avgRating != null ? Math.round(avgRating * 10.0) / 10.0 : 5.0;
 
             property.setRating(roundedRating);
             property.setReviewsCount(totalReviews);

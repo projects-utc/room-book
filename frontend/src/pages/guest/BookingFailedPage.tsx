@@ -23,9 +23,11 @@ export interface BookingFailedPageProps {
 
 export default function BookingFailedPage({ data, onRetry }: BookingFailedPageProps) {
     return (
-        <div style={{ maxWidth: 540, margin: '3.5rem auto', padding: '0 1.5rem' }}>
+        <div style={{ maxWidth: 1760, margin: '3.5rem auto', padding: '0 2.5rem' }}>
             <div
                 style={{
+                    maxWidth: 540,
+                    margin: '0 auto',
                     background: 'var(--color-bg-surface)',
                     padding: '2.25rem 2rem',
                     borderRadius: 18,

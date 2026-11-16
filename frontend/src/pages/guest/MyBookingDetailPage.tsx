@@ -1,16 +1,17 @@
 // Airbnb-Inspired Booking Detail Page (Redesigned)
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb } from '../../components';
+import { stayApi } from '../../api/stayApi';
 import { formatVND } from '../../constants';
+import { Booking } from '../../data';
 import {
   CalendarCheck,
   HouseDoor,
   GeoAltFill,
   ClockHistory,
   XCircle,
-  PencilSquare,
   ChevronLeft,
   ShieldCheck,
   PersonCheck,
@@ -18,8 +19,6 @@ import {
   XCircleFill,
   CashCoin,
   CreditCard,
-  Building,
-  StarFill,
 } from 'react-bootstrap-icons';
 import { BookingStatus } from '../../constants';
 
@@ -28,35 +27,61 @@ export default function MyBookingDetailPage() {
   const { store, addToast } = useStore();
   const navigate = useNavigate();
 
-  const bookingCode = code || 'ODD-DEMO-0002';
-  const booking = store.getBooking(bookingCode) || store.getAllBookings()[0];
+  const bookingCode = code || '';
+  const [booking, setBooking] = useState<Booking | null>(() => bookingCode ? store.getBooking(bookingCode) : null);
   const [currentStatus, setCurrentStatus] = useState<BookingStatus>(booking?.status || 'PENDING');
+  const [isCancelling, setIsCancelling] = useState(false);
+  const cancelInFlight = useRef(false);
+  const currentCodeRef = useRef(bookingCode);
+  currentCodeRef.current = bookingCode;
 
-  // Đơn đã được đánh giá hay chưa (hỗ trợ cả camelCase, snake_case và bảng reviews)
-  const isReviewed = Boolean(
-    booking?.isReviewed === true ||
-    (booking as any)?.is_reviewed === true ||
-    (booking as any)?.is_reviewed === 1 ||
-    store.isBookingReviewed(bookingCode)
-  );
+  useEffect(() => {
+    const cachedBooking = bookingCode ? store.getBooking(bookingCode) : null;
+    setBooking(cachedBooking);
+    setCurrentStatus(cachedBooking?.status || 'PENDING');
+    if (!bookingCode) return;
+
+    let active = true;
+    stayApi.getBooking(bookingCode).then(res => {
+      if (active && res.success && res.data) {
+        setBooking(res.data);
+        setCurrentStatus(res.data.status);
+        store.syncBookingFromApi(res.data);
+      }
+    }).catch(() => {});
+    return () => { active = false; };
+  }, [bookingCode, store]);
 
   // Find real property
-  const property = store.getProperty(booking?.propertyId) || store.getAllProperties().find(p => p.name === booking?.propertyName) || store.getProperty(1);
+  const property = (booking ? store.getProperty(booking.propertyId) : null) || store.getAllProperties().find(p => p.name === booking?.propertyName) || store.getProperty(1);
   const propertyImg = property?.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80';
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    if (!booking || booking.code !== bookingCode || !bookingCode || cancelInFlight.current) return;
     if (['CHECKED_IN', 'COMPLETED'].includes(currentStatus)) {
       addToast('Từ chối hủy đơn: Khách đã nhận phòng hoặc đã hoàn tất lưu trú!', 'error');
       return;
     }
 
     if (window.confirm(`Bạn có chắc chắn muốn hủy đơn đặt phòng #${bookingCode}?`)) {
-      const res = store.cancelBooking(bookingCode);
-      if (res.success) {
-        setCurrentStatus('CANCELLED');
+      cancelInFlight.current = true;
+      setIsCancelling(true);
+      try {
+        const res = await stayApi.cancelBooking(bookingCode);
+        if (!res.success || !res.data) {
+          throw new Error(res.message || 'Lỗi khi hủy đơn');
+        }
+        store.syncBookingFromApi(res.data);
+        if (currentCodeRef.current === bookingCode) {
+          setBooking(res.data);
+          setCurrentStatus(res.data.status);
+        }
         addToast(`Đã hủy thành công đơn #${bookingCode}`, 'success');
-      } else {
-        addToast(res.message || 'Lỗi khi hủy đơn', 'error');
+      } catch (error) {
+        addToast(error instanceof Error ? error.message : 'Không thể hủy đơn, vui lòng thử lại.', 'error');
+      } finally {
+        cancelInFlight.current = false;
+        setIsCancelling(false);
       }
     }
   };
@@ -155,13 +180,16 @@ export default function MyBookingDetailPage() {
   };
 
   return (
-    <div style={{ maxWidth: 1040, margin: '2rem auto 5rem', padding: '0 1.5rem' }}>
+    <div style={{ maxWidth: 1760, margin: '2rem auto 5rem', padding: '0 clamp(1rem, 2.5vw, 2.5rem)' }}>
       {/* ── Breadcrumb ── */}
       <div style={{ marginBottom: '1.25rem' }}>
         <Breadcrumb
           items={[
             { label: 'Trang chủ', to: '/' },
-            { label: 'Chuyến đi của bạn', to: '/my-bookings' },
+            {
+              label: currentStatus === 'COMPLETED' ? 'Lịch sử đặt phòng' : 'Chi tiết đặt phòng',
+              to: currentStatus === 'COMPLETED' ? '/my-bookings?tab=COMPLETED' : '/my-bookings'
+            },
             { label: `Đơn #${bookingCode}` },
           ]}
         />
@@ -181,7 +209,7 @@ export default function MyBookingDetailPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button
             type="button"
-            onClick={() => navigate('/my-bookings')}
+            onClick={() => navigate(currentStatus === 'COMPLETED' ? '/my-bookings?tab=COMPLETED' : '/my-bookings')}
             style={{
               width: 40,
               height: 40,
@@ -272,10 +300,30 @@ export default function MyBookingDetailPage() {
             </span>
           </div>
         </div>
+      ) : currentStatus === 'COMPLETED' ? (
+        <div style={{
+          background: 'var(--color-success-bg)',
+          border: '1px solid var(--color-success-border)',
+          borderRadius: 16,
+          padding: '1.25rem 1.5rem',
+          marginBottom: '2rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          color: 'var(--color-success)'
+        }}>
+          <CheckCircleFill style={{ fontSize: '1.5rem', color: 'var(--color-success)', flexShrink: 0 }} />
+          <div>
+            <strong style={{ display: 'block', fontSize: '0.98rem', marginBottom: 2 }}>Đơn đặt phòng đã hoàn thành (Lịch sử đặt phòng)</strong>
+            <span style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
+              Kỳ nghỉ tại {booking?.propertyName} đã hoàn tất lưu trú. Đơn đặt phòng này được lưu trữ trong Lịch sử đặt phòng để bạn xem lại hoặc gửi đánh giá.
+            </span>
+          </div>
+        </div>
       ) : null}
 
       {/* ── 2-Column Content Layout ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(320px, 380px)', gap: '2.5rem', alignItems: 'start' }}>
+      <div className="booking-detail-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(320px, 380px)', gap: '2.5rem', alignItems: 'start' }}>
         {/* ── CỘT TRÁI: THÔNG TIN NGHỈ DƯỠNG ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
           {/* Card Chỗ ở */}
@@ -418,142 +466,6 @@ export default function MyBookingDetailPage() {
               </div>
             </div>
           </div>
-
-          {/* Card Đánh giá & Phản hồi */}
-          <div style={{
-            background: 'var(--color-bg-surface)',
-            borderRadius: 20,
-            border: '1px solid var(--color-border-subtle)',
-            padding: '1.75rem',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.03)'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <StarFill style={{ color: 'var(--color-star)' }} /> Đánh giá & Phản hồi kỳ nghỉ
-            </h3>
-
-            {isReviewed ? (
-              <div style={{
-                background: 'var(--color-warning-bg)',
-                borderRadius: 14,
-                padding: '1.25rem 1.4rem',
-                border: '1px solid var(--color-warning-bg)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '1rem'
-              }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-warning)', fontWeight: 700, fontSize: '0.95rem', marginBottom: 4 }}>
-                    <CheckCircleFill style={{ color: 'var(--color-success)' }} /> Đã gửi đánh giá cho kỳ nghỉ này
-                  </div>
-                  <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--color-warning)', lineHeight: 1.5 }}>
-                    Đánh giá của bạn đã được hiển thị công khai trên trang thông tin chỗ nghỉ để hỗ trợ cộng đồng du khách.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => navigate(`/property/${booking?.propertyId || 1}?highlight=${bookingCode}#reviews`)}
-                  style={{
-                    background: 'var(--color-text-primary)',
-                    color: 'var(--color-bg-surface)',
-                    border: 'none',
-                    borderRadius: 10,
-                    padding: '0.65rem 1.25rem',
-                    fontSize: '0.86rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
-                  }}
-                >
-                  <StarFill style={{ color: 'var(--color-warning)' }} /> Xem đánh giá trên trang đặt phòng ➔
-                </button>
-              </div>
-            ) : currentStatus === 'COMPLETED' ? (
-              <div style={{
-                background: 'var(--color-bg-app)',
-                borderRadius: 14,
-                padding: '1.25rem 1.4rem',
-                border: '1px solid var(--color-border-subtle)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '1rem'
-              }}>
-                <div>
-                  <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--color-text-primary)', marginBottom: 2 }}>
-                    Bạn thấy kỳ nghỉ này thế nào?
-                  </strong>
-                  <span style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)' }}>
-                    Chia sẻ trải nghiệm thực tế để giúp chủ nhà cải thiện dịch vụ và hỗ trợ các du khách khác.
-                  </span>
-                </div>
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    onClick={() => navigate(`/property/${booking?.propertyId || 1}#reviews`)}
-                    style={{
-                      background: 'var(--color-bg-surface)',
-                      color: 'var(--color-text-primary)',
-                      border: '1px solid var(--color-border-strong)',
-                      borderRadius: 10,
-                      padding: '0.65rem 1.1rem',
-                      fontSize: '0.86rem',
-                      fontWeight: 700,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Xem các đánh giá ➔
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => navigate(`/review?bookingCode=${bookingCode}`)}
-                    style={{
-                      background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))',
-                      color: 'var(--color-bg-surface)',
-                      border: 'none',
-                      borderRadius: 10,
-                      padding: '0.65rem 1.25rem',
-                      fontSize: '0.86rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6
-                    }}
-                  >
-                    <PencilSquare /> Viết đánh giá
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', background: 'var(--color-bg-app)', padding: '1rem 1.25rem', borderRadius: 14, border: '1px solid var(--color-border-subtle)' }}>
-                <span style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)' }}>
-                  Xem những nhận xét và đánh giá thực tế từ các du khách khác về <strong>{booking?.propertyName}</strong>.
-                </span>
-                <button
-                  type="button"
-                  onClick={() => navigate(`/property/${booking?.propertyId || 1}?highlight=${bookingCode}#reviews`)}
-                  style={{
-                    background: 'var(--color-bg-surface)',
-                    color: 'var(--color-text-primary)',
-                    border: '1px solid var(--color-border-strong)',
-                    borderRadius: 10,
-                    padding: '0.55rem 1.1rem',
-                    fontSize: '0.84rem',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Xem đánh giá chỗ ở ➔
-                </button>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* ── CỘT PHẢI: CHI TIẾT THANH TOÁN & THAO TÁC ── */}
@@ -600,9 +512,15 @@ export default function MyBookingDetailPage() {
               border: '1px solid var(--color-border-subtle)',
               fontSize: '0.84rem'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 2 }}>
-                <CashCoin style={{ color: 'var(--color-primary)', fontSize: '1.1rem' }} /> Hình thức: Tiền mặt khi nhận phòng / Chuyển khoản
-              </div>
+              {(booking?.paymentMethod === 'BANK_TRANSFER' || (booking as any)?.payment_method === 'BANK_TRANSFER') ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 2 }}>
+                  <CreditCard style={{ color: 'var(--color-primary)', fontSize: '1.1rem' }} /> Hình thức: Chuyển khoản ngân hàng (Thanh toán 100%)
+                </div>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 2 }}>
+                  <CashCoin style={{ color: 'var(--color-primary)', fontSize: '1.1rem' }} /> Hình thức: Tiền mặt khi nhận phòng (Đã cọc 30% qua ngân hàng)
+                </div>
+              )}
               <span style={{ color: 'var(--color-text-muted)', fontSize: '0.78rem' }}>Mã đối soát hệ thống: #{bookingCode}</span>
             </div>
 
@@ -614,85 +532,12 @@ export default function MyBookingDetailPage() {
 
             {/* Nút hành động */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1.5rem' }}>
-              {/* Nút Xem lại đánh giá nếu đã đánh giá */}
-              {isReviewed ? (
-                <button
-                  type="button"
-                  onClick={() => navigate(`/property/${booking?.propertyId || 1}?highlight=${bookingCode}#reviews`)}
-                  style={{
-                    width: '100%',
-                    padding: '0.85rem 1.25rem',
-                    background: 'var(--color-star-bg)',
-                    color: 'var(--color-star-hover)',
-                    border: '1.5px solid #FDE68A',
-                    borderRadius: 12,
-                    fontSize: '0.92rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                    boxShadow: '0 2px 8px rgba(245, 158, 11, 0.15)',
-                    transition: 'all 0.2s ease',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
-                  onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
-                >
-                  <StarFill style={{ color: 'var(--color-star)' }} /> Xem đánh giá trên trang đặt phòng
-                </button>
-              ) : currentStatus === 'COMPLETED' ? (
-                <button
-                  type="button"
-                  onClick={() => navigate(`/review?bookingCode=${bookingCode}`)}
-                  style={{
-                    width: '100%',
-                    padding: '0.85rem 1.25rem',
-                    background: 'var(--gradient-primary)',
-                    color: 'var(--color-bg-surface)',
-                    border: 'none',
-                    borderRadius: 12,
-                    fontSize: '0.95rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                    boxShadow: '0 4px 12px rgba(225, 29, 72, 0.25)'
-                  }}
-                >
-                  <PencilSquare /> Viết đánh giá kỳ nghỉ
-                </button>
-              ) : null}
-
-              {/* Nút Xem trang đặt phòng và đánh giá */}
-              <button
-                type="button"
-                onClick={() => navigate(`/property/${booking?.propertyId || 1}#reviews`)}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1.25rem',
-                  background: 'var(--color-bg-surface)',
-                  color: 'var(--color-text-primary)',
-                  border: '1px solid var(--color-border-strong)',
-                  borderRadius: 12,
-                  fontSize: '0.88rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                }}
-              >
-                <StarFill style={{ color: 'var(--color-warning)', fontSize: '0.85rem' }} /> Xem đánh giá chỗ ở này
-              </button>
-
               {(currentStatus === 'PENDING' || currentStatus === 'CONFIRMED') && (
                 <button
                   type="button"
                   onClick={handleCancel}
+                  disabled={isCancelling || !booking}
+                  aria-busy={isCancelling}
                   style={{
                     width: '100%',
                     padding: '0.8rem 1.25rem',
@@ -702,7 +547,7 @@ export default function MyBookingDetailPage() {
                     borderRadius: 12,
                     fontSize: '0.9rem',
                     fontWeight: 700,
-                    cursor: 'pointer',
+                    cursor: isCancelling ? 'wait' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -718,13 +563,12 @@ export default function MyBookingDetailPage() {
                     e.currentTarget.style.borderColor = 'var(--color-danger-border)';
                   }}
                 >
-                  <XCircle /> Hủy đơn đặt phòng này
+                  <XCircle /> {isCancelling ? 'Đang hủy...' : 'Hủy đơn đặt phòng này'}
                 </button>
               )}
-
               <button
                 type="button"
-                onClick={() => navigate('/my-bookings')}
+                onClick={() => navigate('/my-bookings?tab=COMPLETED')}
                 style={{
                   width: '100%',
                   padding: '0.75rem 1.25rem',
@@ -737,7 +581,7 @@ export default function MyBookingDetailPage() {
                   cursor: 'pointer'
                 }}
               >
-                ← Quay lại danh sách chuyến đi
+                ← Quay lại Lịch sử đặt phòng
               </button>
             </div>
           </div>

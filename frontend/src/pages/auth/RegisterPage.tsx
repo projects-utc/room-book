@@ -31,6 +31,7 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
 
     try {
@@ -44,12 +45,15 @@ export default function RegisterPage() {
       });
 
       if (res.success) {
-        setLoading(false);
         addToast('Chúc mừng bạn đã tạo tài khoản thành công! Hãy đăng nhập để bắt đầu trải nghiệm ✨', 'success');
         navigate('/login');
+      } else {
+        addToast('Không thể tạo tài khoản. Vui lòng kiểm tra thông tin và thử lại.', 'error');
       }
     } catch {
-      // Giữ loading quay liên tục nếu backend chưa chạy
+      addToast('Không thể kết nối đến máy chủ. Vui lòng thử lại.', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 

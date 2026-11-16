@@ -98,6 +98,17 @@ public class BookingService {
             booking.setStatus("PENDING");
         }
 
+        // Kiểm tra sức chứa phòng
+        if (booking.getRoomId() != null) {
+            RoomEntity room = roomRepository.findById(booking.getRoomId()).orElse(null);
+            if (room != null && room.getCapacity() != null && booking.getGuests() != null) {
+                if (booking.getGuests() > room.getCapacity()) {
+                    throw new IllegalArgumentException("Số lượng khách (" + booking.getGuests() + ") vượt quá sức chứa tối đa của phòng (" + room.getCapacity() + " người).");
+                }
+            }
+        }
+
+        // Tính lại nights, subtotal, total từ DB để đảm bảo đúng (không tin hoàn toàn vào FE)
         recalculatePricing(booking);
 
         BookingEntity saved = bookingRepository.save(booking);

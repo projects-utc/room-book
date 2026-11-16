@@ -25,6 +25,7 @@ import {
     ExclamationOctagonFill,
     HeartFill,
     HouseDoor,
+    ClockHistory,
 } from 'react-bootstrap-icons';
 
 // ── Header (ODauDay Stay Brand + Airbnb Experience) ─────────────────────────
@@ -40,6 +41,7 @@ export function Header() {
     const isHome = location.pathname === '/';
     const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
     const isSearchPage = location.pathname === '/search';
+    const isBookingPage = location.pathname.includes('/my-bookings');
 
     // Track scroll position to collapse/expand search bar
     useEffect(() => {
@@ -127,7 +129,7 @@ export function Header() {
                 </Link>
 
                 {!isAuthPage && !((isSearchPage || isHome) && !isScrolled) && (
-                    <div>
+                    <div className="header-center-nav">
                         <div
                             className="search-pill-container"
                             onClick={() => navigate('/search')}
@@ -179,7 +181,7 @@ export function Header() {
                 )}
 
                 {/* Right Navigation & Profile Menu */}
-                <div className="header-actions" ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', position: 'relative' }}>
+                <div className="header-actions" ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', position: 'relative' }}>
                     {currentUser?.role === ROLES.ADMIN ? (
                         <Link
                             to="/admin"
@@ -227,8 +229,8 @@ export function Header() {
                         title="Danh sách yêu thích"
                         aria-label="Xem danh sách yêu thích"
                         style={{
-                            width: 40,
-                            height: 40,
+                            width: 38,
+                            height: 38,
                             borderRadius: '50%',
                             border: 'none',
                             background: 'transparent',
@@ -236,59 +238,100 @@ export function Header() {
                             alignItems: 'center',
                             justifyContent: 'center',
                             cursor: 'pointer',
+                            color: 'var(--color-text-primary)',
                             textDecoration: 'none',
-                            color: 'var(--color-primary, #FF385C)',
                             transition: 'background 0.2s, transform 0.15s ease',
-                        }}
-                        onMouseEnter={e => {
-                            e.currentTarget.style.backgroundColor = 'var(--color-primary-soft, #FFF1F2)';
-                            e.currentTarget.style.transform = 'scale(1.08)';
-                        }}
-                        onMouseLeave={e => {
-                            e.currentTarget.style.backgroundColor = 'transparent';
-                            e.currentTarget.style.transform = 'scale(1)';
                         }}
                     >
                         <HeartFill style={{ fontSize: '1.1rem' }} />
                     </Link>
 
-                    {/* User Profile Pill */}
-                    <div
-                        className="user-menu-pill"
-                        onClick={() => setMenuOpen(!menuOpen)}
-                        role="button"
-                        tabIndex={0}
-                        aria-expanded={menuOpen}
-                        aria-label="Menu người dùng"
+                    <button
+                        type="button"
+                        className="icon-btn"
+                        title="Ngôn ngữ: Tiếng Việt (VN) / VNĐ"
+                        aria-label="Chọn ngôn ngữ"
                         style={{
+                            width: 38,
+                            height: 38,
+                            borderRadius: '50%',
+                            border: 'none',
+                            background: 'transparent',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '0.75rem',
-                            border: '1px solid var(--color-border-strong)',
-                            borderRadius: '9999px',
-                            padding: '0.35rem 0.6rem 0.35rem 0.85rem',
+                            justifyContent: 'center',
                             cursor: 'pointer',
-                            background: 'var(--color-bg-surface)',
-                            transition: 'box-shadow 0.2s',
                         }}
                     >
-                        <List style={{ fontSize: '1.15rem', color: 'var(--color-text-primary)' }} />
-                        <div
-                            style={{
-                                width: 30,
-                                height: 30,
-                                borderRadius: '50%',
-                                background: 'var(--color-text-muted)',
-                                color: 'var(--color-text-inverse)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '1rem',
-                            }}
-                        >
-                            <PersonCircle />
-                        </div>
-                    </div>
+                        <Globe style={{ fontSize: '1.05rem', color: 'var(--color-text-primary)' }} />
+                    </button>
+
+                    {/* User Profile Avatar Button */}
+                    <button
+                        type="button"
+                        className="user-avatar-btn"
+                        onClick={() => setMenuOpen(!menuOpen)}
+                        aria-expanded={menuOpen}
+                        aria-label="Menu tài khoản"
+                        style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: '50%',
+                            border: '1px solid var(--color-border-subtle)',
+                            background: 'var(--color-bg-surface)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            padding: 0,
+                            boxShadow: 'var(--shadow-sm)',
+                            transition: 'all 0.2s ease',
+                            flexShrink: 0,
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.12)';
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                            e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                    >
+                        {currentUser ? (
+                            <div
+                                style={{
+                                    width: 34,
+                                    height: 34,
+                                    borderRadius: '50%',
+                                    background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))',
+                                    color: '#ffffff',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                    fontSize: '0.92rem',
+                                }}
+                            >
+                                {currentUser.fullName ? currentUser.fullName.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                        ) : (
+                            <div
+                                style={{
+                                    width: 34,
+                                    height: 34,
+                                    borderRadius: '50%',
+                                    background: 'var(--color-bg-muted, #717171)',
+                                    color: '#ffffff',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '1.25rem',
+                                }}
+                            >
+                                <PersonCircle />
+                            </div>
+                        )}
+                    </button>
 
                     {/* Dropdown Menu */}
                     {menuOpen && (
@@ -332,12 +375,21 @@ export function Header() {
                                     </Link>
 
                                     <Link
-                                        to="/my-bookings"
+                                        to="/my-bookings?tab=UPCOMING"
                                         className="dropdown-item"
                                         onClick={() => setMenuOpen(false)}
                                         style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
                                     >
-                                        <BagCheck /> Chuyến đi của tôi
+                                        <BagCheck style={{ color: 'var(--color-primary)' }} /> Chi tiết đặt phòng
+                                    </Link>
+
+                                    <Link
+                                        to="/my-bookings?tab=COMPLETED"
+                                        className="dropdown-item"
+                                        onClick={() => setMenuOpen(false)}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
+                                    >
+                                        <ClockHistory style={{ color: 'var(--color-info)' }} /> Lịch sử đặt phòng
                                     </Link>
 
                                     <Link
@@ -442,6 +494,14 @@ export function Header() {
                                         style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)', fontWeight: 600 }}
                                     >
                                         <HouseDoor style={{ fontSize: '1.05rem', color: 'var(--color-primary)' }} /> Trang chủ
+                                    </Link>
+                                    <Link
+                                        to="/wishlist"
+                                        className="dropdown-item"
+                                        onClick={() => setMenuOpen(false)}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
+                                    >
+                                        <HeartFill style={{ color: 'var(--color-primary)' }} /> Danh sách yêu thích
                                     </Link>
                                     <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
                                     <Link

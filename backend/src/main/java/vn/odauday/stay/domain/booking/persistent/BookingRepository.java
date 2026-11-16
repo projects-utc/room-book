@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
     Optional<BookingEntity> findByCode(String code);
     List<BookingEntity> findByGuestUsername(String guestUsername);
+    List<BookingEntity> findByRoomId(Long roomId);
+    List<BookingEntity> findByPropertyId(Long propertyId);
 
     /**
      * Điều kiện A: Tìm các propertyId có số lượt đặt phòng >= minBookings trong vòng số ngày gần nhất (startDate)
