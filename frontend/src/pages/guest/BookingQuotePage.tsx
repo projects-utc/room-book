@@ -10,6 +10,7 @@ import { Booking, Property, Room } from '../../data';
 
 import PaymentWaitingPage from './PaymentWaitingPage';
 import BookingFailedPage, { FailedPaymentData } from './BookingFailedPage';
+import { daysFromToday } from '../../dateUtils';
 
 interface BankApiItem {
     id: number;
@@ -26,8 +27,8 @@ export default function BookingQuotePage() {
 
     const propertyId = Number(searchParams.get('propertyId')) || 1;
     const roomId = Number(searchParams.get('roomId')) || 1;
-    const rawCheckIn = searchParams.get('in') || '2026-11-04';
-    const rawCheckOut = searchParams.get('out') || '2026-11-05';
+    const rawCheckIn = searchParams.get('in') || daysFromToday(21);
+    const rawCheckOut = searchParams.get('out') || daysFromToday(22);
     const guests = searchParams.get('guests') || '1';
 
     // If checkOut <= checkIn, adjust checkOut to next day so at least 1 night stay is valid

@@ -13,6 +13,7 @@ import {
 } from 'react-bootstrap-icons';
 import { Property, Review } from '../../data';
 import { stayApi } from '../../api/stayApi';
+import { daysFromToday } from '../../dateUtils';
 
 const TYPES = ['Tất cả', 'Homestay', 'Biệt thự', 'Căn hộ', 'Nhà gỗ'];
 
@@ -394,8 +395,8 @@ export default function SearchResultsPage() {
               setKw('');
               setType('Tất cả');
               setMaxPrice(3000000);
-              setCheckIn('2027-01-10');
-              setCheckOut('2027-01-12');
+              setCheckIn(daysFromToday(21));
+              setCheckOut(daysFromToday(23));
             }}
           >
             Xem tất cả chỗ ở

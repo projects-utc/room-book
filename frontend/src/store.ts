@@ -1,6 +1,17 @@
 // ODauDay Stay — ODDStore: Client-side Business Logic Engine (TypeScript)
 import { STORAGE_KEY, USER_KEY, formatVND } from './constants';
 import { INITIAL_DATA, InitialDataState, User, Property, Room, RoomBlock, Booking, Review, Promotion, AuditLog } from './data';
+import { daysFromToday } from './dateUtils';
+
+// Các lệnh đồng bộ nền lên backend phải kèm JWT, nếu không server trả 401 và thao tác không được lưu.
+const TOKEN_KEY = 'odd_jwt_token';
+
+function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  const headers = new Headers(options.headers || {});
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) headers.set('Authorization', `Bearer ${token}`);
+  return fetch(url, { ...options, headers });
+}
 
 let cachedData: InitialDataState | null = null;
 const stateListeners: Set<(data: InitialDataState) => void> = new Set();
@@ -236,8 +247,8 @@ export const ODDStore = {
     const property = (customRoom ? this.getProperty(customRoom.propertyId) : null) || data.properties.find(p => p.id === room.propertyId) || INITIAL_DATA.properties.find(p => p.id === room.propertyId) || data.properties[0];
 
     if (!checkInStr || !checkOutStr) {
-      checkInStr = '2027-01-10';
-      checkOutStr = '2027-01-12';
+      checkInStr = daysFromToday(21);
+      checkOutStr = daysFromToday(23);
     }
     const dIn = new Date(checkInStr);
     const dOut = new Date(checkOutStr);
@@ -368,7 +379,7 @@ export const ODDStore = {
 
     data.bookings.push(newBooking);
     saveData(data);
-    fetch('/api/bookings', {
+    authFetch('/api/bookings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newBooking),
@@ -445,7 +456,7 @@ export const ODDStore = {
     }
     data.bookings[idx].status = 'CANCELLED';
     saveData(data);
-    fetch(`/api/bookings/${encodeURIComponent(code)}/cancel`, { method: 'POST' }).catch(() => { });
+    authFetch(`/api/bookings/${encodeURIComponent(code)}/cancel`, { method: 'POST' }).catch(() => { });
     return { success: true };
   },
 
@@ -475,6 +486,11 @@ export const ODDStore = {
       (data.bookings[idx] as any).is_reviewed = true;
     }
     saveData(data);
+    authFetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...reviewPayload, date: data.reviews[data.reviews.length - 1].date }),
+    }).catch(() => { });
     return { success: true };
   },
 
@@ -522,7 +538,7 @@ export const ODDStore = {
     };
     data.properties.push(newProp);
     saveData(data);
-    fetch('/api/properties', {
+    authFetch('/api/properties', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newProp),
@@ -539,7 +555,7 @@ export const ODDStore = {
     const data = loadData();
     data.properties = data.properties.filter(p => p.id !== id);
     saveData(data);
-    fetch(`/api/properties/${id}`, { method: 'DELETE' }).catch(() => { });
+    authFetch(`/api/properties/${id}`, { method: 'DELETE' }).catch(() => { });
     return { success: true };
   },
   getAllRooms(): Room[] {
@@ -562,7 +578,7 @@ export const ODDStore = {
     };
     data.rooms.push(newRoom);
     saveData(data);
-    fetch('/api/rooms', {
+    authFetch('/api/rooms', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newRoom),
@@ -579,7 +595,7 @@ export const ODDStore = {
     const data = loadData();
     data.rooms = data.rooms.filter(r => r.id !== id);
     saveData(data);
-    fetch(`/api/rooms/${id}`, { method: 'DELETE' }).catch(() => { });
+    authFetch(`/api/rooms/${id}`, { method: 'DELETE' }).catch(() => { });
     return { success: true };
   },
   addRoomBlock(blockPayload: { roomId: number | string; roomName?: string; start: string; end: string; reason: string }): {
@@ -604,7 +620,7 @@ export const ODDStore = {
     });
     saveData(data);
     const lastBlock = data.roomBlocks[data.roomBlocks.length - 1];
-    fetch('/api/room-blocks', {
+    authFetch('/api/room-blocks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(lastBlock),
@@ -620,7 +636,7 @@ export const ODDStore = {
     const data = loadData();
     data.roomBlocks = data.roomBlocks.filter(b => b.id !== id);
     saveData(data);
-    fetch(`/api/room-blocks/${id}`, { method: 'DELETE' }).catch(() => { });
+    authFetch(`/api/room-blocks/${id}`, { method: 'DELETE' }).catch(() => { });
     return { success: true };
   },
   getRoomBlocks(roomId?: number | string): RoomBlock[] {
@@ -648,7 +664,7 @@ export const ODDStore = {
     if (idx === -1) return { success: false, message: 'Không tìm thấy đơn.' };
     data.bookings[idx].status = newStatus;
     saveData(data);
-    fetch(`/api/bookings/${encodeURIComponent(code)}/status`, {
+    authFetch(`/api/bookings/${encodeURIComponent(code)}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus }),
@@ -688,7 +704,7 @@ export const ODDStore = {
     if (idx === -1) return { success: false };
     data.users[idx].status = data.users[idx].status === 'ACTIVE' ? 'LOCKED' : 'ACTIVE';
     saveData(data);
-    fetch(`/api/users/${userId}/toggle-status`, { method: 'PATCH' }).catch(() => { });
+    authFetch(`/api/users/${userId}/toggle-status`, { method: 'PATCH' }).catch(() => { });
     return { success: true, newStatus: data.users[idx].status };
   },
   changeUserRole(userId: number | string, newRole: User['role']): { success: boolean } {
@@ -697,7 +713,7 @@ export const ODDStore = {
     if (idx === -1) return { success: false };
     data.users[idx].role = newRole;
     saveData(data);
-    fetch(`/api/users/${userId}/role`, {
+    authFetch(`/api/users/${userId}/role`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ role: newRole }),
@@ -727,7 +743,7 @@ export const ODDStore = {
     });
 
     saveData(data);
-    fetch(`/api/properties/${id}/toggle-status`, { method: 'PATCH' }).catch(() => { });
+    authFetch(`/api/properties/${id}/toggle-status`, { method: 'PATCH' }).catch(() => { });
     return { success: true, newStatus: nextStatus };
   },
   adminCancelBooking(code: string, reason: string): { success: boolean; message?: string } {
@@ -745,7 +761,7 @@ export const ODDStore = {
     });
 
     saveData(data);
-    fetch(`/api/bookings/${encodeURIComponent(code)}/admin-cancel`, {
+    authFetch(`/api/bookings/${encodeURIComponent(code)}/admin-cancel`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reason }),
@@ -776,7 +792,7 @@ export const ODDStore = {
       usageLimit: Number(promo.usageLimit) || 100,
       usedCount: 0,
       validFrom: promo.validFrom || new Date().toISOString().slice(0, 10),
-      validTo: promo.validTo || '2027-12-31',
+      validTo: promo.validTo || daysFromToday(365),
       status: 'ACTIVE',
       hostUsername: promo.hostUsername,
     };
@@ -791,7 +807,7 @@ export const ODDStore = {
     });
 
     saveData(data);
-    fetch('/api/promotions', {
+    authFetch('/api/promotions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newPromo),
@@ -812,7 +828,7 @@ export const ODDStore = {
     const nextStatus = cur === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     data.promotions[idx].status = nextStatus;
     saveData(data);
-    fetch(`/api/promotions/${id}/toggle`, { method: 'PATCH' }).catch(() => { });
+    authFetch(`/api/promotions/${id}/toggle`, { method: 'PATCH' }).catch(() => { });
     return { success: true, newStatus: nextStatus };
   },
   deletePromotion(id: number): { success: boolean } {
@@ -831,7 +847,7 @@ export const ODDStore = {
     }
 
     saveData(data);
-    fetch(`/api/promotions/${id}`, { method: 'DELETE' }).catch(() => { });
+    authFetch(`/api/promotions/${id}`, { method: 'DELETE' }).catch(() => { });
     return { success: true };
   },
   getAuditLogs(): AuditLog[] {
@@ -855,7 +871,7 @@ export const ODDStore = {
     });
     saveData(data);
     const lastLog = data.auditLogs[data.auditLogs.length - 1];
-    fetch('/api/audit-logs', {
+    authFetch('/api/audit-logs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(lastLog),

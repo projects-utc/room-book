@@ -34,14 +34,20 @@ public class UserService {
     @Transactional
     public UserResponse createUser(Map<String, String> body) {
         String username = body.get("username");
-        String password = body.getOrDefault("password", "123");
+        String password = body.get("password");
         String fullName = body.get("fullName");
         String phone = body.getOrDefault("phone", "");
         String email = body.getOrDefault("email", "");
-        String role = body.getOrDefault("role", "GUEST");
+        String role = body.getOrDefault("role", "GUEST").trim().toUpperCase();
 
         if (username == null || username.isBlank() || fullName == null || fullName.isBlank()) {
             throw new IllegalArgumentException("Thông tin người dùng không hợp lệ");
+        }
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Mật khẩu không được để trống");
+        }
+        if (!List.of("GUEST", "HOST", "ADMIN").contains(role)) {
+            throw new IllegalArgumentException("Vai trò không hợp lệ: " + role);
         }
         if (userRepository.existsByUsername(username.trim().toLowerCase())) {
             throw new IllegalArgumentException("Tên đăng nhập đã tồn tại");
@@ -53,7 +59,7 @@ public class UserService {
                 .fullName(fullName.trim())
                 .phone(phone.trim())
                 .email(email.trim())
-                .role(role.toUpperCase())
+                .role(role)
                 .status("ACTIVE")
                 .build();
 
@@ -89,7 +95,11 @@ public class UserService {
             throw new IllegalArgumentException("Không thể hạ quyền của tài khoản admin");
         }
 
-        u.setRole(newRole.trim().toUpperCase());
+        String normalizedRole = newRole.trim().toUpperCase();
+        if (!List.of("GUEST", "HOST", "ADMIN").contains(normalizedRole)) {
+            throw new IllegalArgumentException("Vai trò không hợp lệ: " + normalizedRole);
+        }
+        u.setRole(normalizedRole);
         User saved = userRepository.save(u);
         auditLogService.logAudit("CHANGE_ROLE", u.getUsername(), "Thay đổi vai trò thành " + u.getRole(), "admin");
         return authService.toUserResponse(saved);

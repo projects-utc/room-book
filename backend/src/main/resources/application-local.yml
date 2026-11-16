@@ -1,3 +1,6 @@
+# Profile chạy thử trên máy cá nhân: DB H2 trong bộ nhớ + dữ liệu demo.
+# Chạy: SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
+# Các giá trị dưới đây CHỈ dùng cho máy local, không dùng cho môi trường triển khai.
 spring:
   datasource:
     url: jdbc:h2:mem:odaudaydb;DB_CLOSE_DELAY=-1;MODE=MySQL
@@ -12,6 +15,8 @@ spring:
 
 app:
   jwt:
-    secret: ${APP_JWT_SECRET:odaudaystaysecretkeyforjwttokengenerationshouldbelongenough256bit}
+    secret: ${APP_JWT_SECRET:local-dev-only-secret-do-not-use-in-production-0123456789}
     expiration-ms: 86400000
-
+  seed:
+    enabled: true
+    password: ${APP_SEED_PASSWORD:123}

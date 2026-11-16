@@ -149,7 +149,7 @@ export default function HostBookingDetailPage() {
           </span>
           </div>
           <span className="muted" style={{ fontSize: '0.85rem' }}>
-          <ClockHistory /> Ngày tạo: {booking.createdAt || 'Chưa có thông tin'}
+          <ClockHistory /> Ngày tạo: {booking.createdAt || '—'}
         </span>
         </div>
 

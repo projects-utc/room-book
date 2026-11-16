@@ -1,4 +1,5 @@
 // ODauDay Stay — Initial data with TypeScript models
+import { daysFromToday, daysFromTodayVi, timestampFromToday } from './dateUtils';
 
 export interface User {
   id: number;
@@ -161,13 +162,13 @@ export const INITIAL_DATA: InitialDataState = {
     { id: 5, propertyId: 12, propertyName: 'ODauDay Stay Vũng Tàu Ocean', name: 'Studio View Biển', capacity: 2, price: 820000, weekendPrice: 950000, desc: '1 giường đôi King · Ban công view biển Bãi Trước · Bếp hiện đại · Điều hòa 2 chiều', status: 'ACTIVE' },
   ],
   roomBlocks: [
-    { id: 1, roomId: 2, roomName: 'Phòng Family', start: '2027-02-10', end: '2027-02-12', reason: 'Bảo trì hệ thống điều hòa và sơn mới ban công' },
+    { id: 1, roomId: 2, roomName: 'Phòng Family', start: daysFromToday(40), end: daysFromToday(42), reason: 'Bảo trì hệ thống điều hòa và sơn mới ban công' },
   ],
   bookings: [
-    { code: 'ODD-DEMO-0001', guestUsername: 'guest.demo', guestName: 'Khách thuê Demo (Lê Hoàng Nam)', guestPhone: '0900000003', guestEmail: 'nam.le@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 1, roomName: 'Phòng Garden', checkIn: '2027-01-10', checkOut: '2027-01-12', nights: 2, guests: 2, pricePerNight: 650000, subtotal: 1300000, serviceFee: 0, total: 1300000, status: 'COMPLETED', createdAt: '2026-12-20', isReviewed: true },
-    { code: 'ODD-DEMO-0002', guestUsername: 'guest.demo', guestName: 'Khách thuê Demo (Lê Hoàng Nam)', guestPhone: '0900000003', guestEmail: 'nam.le@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 1, roomName: 'Phòng Garden', checkIn: '2027-02-20', checkOut: '2027-02-22', nights: 2, guests: 2, pricePerNight: 650000, subtotal: 1300000, serviceFee: 0, total: 1300000, status: 'PENDING', createdAt: '2027-01-02', isReviewed: false },
-    { code: 'ODD-DEMO-0003', guestUsername: 'guest.demo', guestName: 'Khách thuê Demo (Lê Hoàng Nam)', guestPhone: '0900000003', guestEmail: 'nam.le@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 1, roomName: 'Phòng Garden', checkIn: '2027-03-01', checkOut: '2027-03-04', nights: 3, guests: 2, pricePerNight: 650000, subtotal: 1950000, serviceFee: 0, total: 1950000, status: 'CHECKED_IN', createdAt: '2027-01-01', isReviewed: false },
-    { code: 'ODD-DEMO-0004', guestUsername: 'linh.tran', guestName: 'Trần Thùy Linh', guestPhone: '0912345678', guestEmail: 'linh.tran@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 2, roomName: 'Phòng Family', checkIn: '2027-01-20', checkOut: '2027-01-22', nights: 2, guests: 4, pricePerNight: 1100000, subtotal: 2200000, serviceFee: 0, total: 2200000, status: 'CONFIRMED', createdAt: '2027-01-15', isReviewed: false },
+    { code: 'ODD-DEMO-0001', guestUsername: 'guest.demo', guestName: 'Khách thuê Demo (Lê Hoàng Nam)', guestPhone: '0900000003', guestEmail: 'nam.le@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 1, roomName: 'Phòng Garden', checkIn: daysFromToday(-20), checkOut: daysFromToday(-18), nights: 2, guests: 2, pricePerNight: 650000, subtotal: 1300000, serviceFee: 0, total: 1300000, status: 'COMPLETED', createdAt: daysFromToday(-25), isReviewed: true },
+    { code: 'ODD-DEMO-0002', guestUsername: 'guest.demo', guestName: 'Khách thuê Demo (Lê Hoàng Nam)', guestPhone: '0900000003', guestEmail: 'nam.le@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 1, roomName: 'Phòng Garden', checkIn: daysFromToday(14), checkOut: daysFromToday(16), nights: 2, guests: 2, pricePerNight: 650000, subtotal: 1300000, serviceFee: 0, total: 1300000, status: 'PENDING', createdAt: daysFromToday(-3), isReviewed: false },
+    { code: 'ODD-DEMO-0003', guestUsername: 'guest.demo', guestName: 'Khách thuê Demo (Lê Hoàng Nam)', guestPhone: '0900000003', guestEmail: 'nam.le@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 1, roomName: 'Phòng Garden', checkIn: daysFromToday(-1), checkOut: daysFromToday(2), nights: 3, guests: 2, pricePerNight: 650000, subtotal: 1950000, serviceFee: 0, total: 1950000, status: 'CHECKED_IN', createdAt: daysFromToday(-10), isReviewed: false },
+    { code: 'ODD-DEMO-0004', guestUsername: 'linh.tran', guestName: 'Trần Thùy Linh', guestPhone: '0912345678', guestEmail: 'linh.tran@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 2, roomName: 'Phòng Family', checkIn: daysFromToday(7), checkOut: daysFromToday(9), nights: 2, guests: 4, pricePerNight: 1100000, subtotal: 2200000, serviceFee: 0, total: 2200000, status: 'CONFIRMED', createdAt: daysFromToday(-2), isReviewed: false },
   ],
   reviews: [
     {
@@ -178,7 +179,7 @@ export const INITIAL_DATA: InitialDataState = {
       guestName: 'Khách thuê Demo (Lê Hoàng Nam)',
       rating: 5,
       comment: 'Phòng sạch sẽ, không gian thoáng đãng mát mẻ, chủ nhà hỗ trợ check-in rất nhanh chóng và nhiệt tình. Vị trí đi bộ ra hồ Tây rất gần!',
-      date: '13/01/2027',
+      date: daysFromTodayVi(-17),
     },
     {
       id: 2,
@@ -188,7 +189,7 @@ export const INITIAL_DATA: InitialDataState = {
       guestName: 'Trần Thùy Linh',
       rating: 5,
       comment: 'Chỗ ở cực kỳ ưng ý, decor tone ấm cúng, đầy đủ tiện nghi bếp và máy giặt sấy. Tự nhận phòng bằng khóa số rất an tâm!',
-      date: '20/01/2027',
+      date: daysFromTodayVi(-12),
     },
     {
       id: 3,
@@ -198,19 +199,19 @@ export const INITIAL_DATA: InitialDataState = {
       guestName: 'Phạm Hồng Ánh',
       rating: 4,
       comment: 'View hồ Tây chiều hoàng hôn rất thơ mộng. Phòng ấm cúng, chủ nhà thân thiện. Sẽ quay lại khi có dịp ra Hà Nội!',
-      date: '28/01/2027'
+      date: daysFromTodayVi(-5)
     }
   ],
   promotions: [
-    { id: 1, code: 'ODAUDAY10', type: 'PERCENT', value: 10, maxDiscount: 200000, minOrder: 500000, usageLimit: 100, usedCount: 18, validFrom: '2026-01-01', validTo: '2027-12-31', status: 'ACTIVE' },
+    { id: 1, code: 'ODAUDAY10', type: 'PERCENT', value: 10, maxDiscount: 200000, minOrder: 500000, usageLimit: 100, usedCount: 18, validFrom: daysFromToday(-300), validTo: daysFromToday(365), status: 'ACTIVE' },
     { id: 2, code: 'CHAOHE2027', type: 'FIXED', value: 150000, minOrder: 1000000, usageLimit: 50, usedCount: 12, validFrom: '2027-05-01', validTo: '2027-08-31', status: 'ACTIVE' },
     { id: 3, code: 'VIPTRAVEL', type: 'PERCENT', value: 20, maxDiscount: 500000, minOrder: 2000000, usageLimit: 30, usedCount: 30, validFrom: '2027-01-01', validTo: '2027-06-30', status: 'INACTIVE' },
-    { id: 4, code: 'WELCOME50K', type: 'FIXED', value: 50000, minOrder: 300000, usageLimit: 200, usedCount: 45, validFrom: '2026-01-01', validTo: '2027-12-31', status: 'ACTIVE' },
+    { id: 4, code: 'WELCOME50K', type: 'FIXED', value: 50000, minOrder: 300000, usageLimit: 200, usedCount: 45, validFrom: daysFromToday(-300), validTo: daysFromToday(365), status: 'ACTIVE' },
   ],
   auditLogs: [
-    { id: 1, action: 'LOCK', target: 'minh.pham', details: 'Khóa tài khoản do vi phạm chính sách tiếp đón khách', performedBy: 'admin', timestamp: '2027-01-15 14:30:22' },
-    { id: 2, action: 'CHANGE_ROLE', target: 'host.demo', details: 'Phê duyệt nâng cấp vai trò từ GUEST sang HOST', performedBy: 'admin', timestamp: '2027-01-10 09:15:00' },
-    { id: 3, action: 'CREATE_PROMO', target: 'CHAOHE2027', details: 'Phát hành chiến dịch voucher mùa hè toàn sàn', performedBy: 'admin', timestamp: '2027-01-05 11:20:45' },
-    { id: 4, action: 'TOGGLE_PROPERTY', target: 'ODauDay Stay Hồ Tây', details: 'Kiểm duyệt chất lượng và xác thực cơ sở lưu trú đạt chuẩn', performedBy: 'admin', timestamp: '2027-01-02 16:45:10' },
+    { id: 1, action: 'LOCK', target: 'minh.pham', details: 'Khóa tài khoản do vi phạm chính sách tiếp đón khách', performedBy: 'admin', timestamp: timestampFromToday(-2, '14:30:22') },
+    { id: 2, action: 'CHANGE_ROLE', target: 'host.demo', details: 'Phê duyệt nâng cấp vai trò từ GUEST sang HOST', performedBy: 'admin', timestamp: timestampFromToday(-6, '09:15:00') },
+    { id: 3, action: 'CREATE_PROMO', target: 'CHAOHE2027', details: 'Phát hành chiến dịch voucher mùa hè toàn sàn', performedBy: 'admin', timestamp: timestampFromToday(-10, '11:20:45') },
+    { id: 4, action: 'TOGGLE_PROPERTY', target: 'ODauDay Stay Hồ Tây', details: 'Kiểm duyệt chất lượng và xác thực cơ sở lưu trú đạt chuẩn', performedBy: 'admin', timestamp: timestampFromToday(-14, '16:45:10') },
   ],
 };

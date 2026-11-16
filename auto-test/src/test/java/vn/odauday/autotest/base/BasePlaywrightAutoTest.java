@@ -162,6 +162,15 @@ public abstract class BasePlaywrightAutoTest {
         return api.patch(path, jsonOptions(body, bearerToken));
     }
 
+    /** Đưa đơn PENDING đến COMPLETED theo đúng state machine: CONFIRMED -> CHECKED_IN -> COMPLETED. */
+    protected void completeBooking(String code, String hostOrAdminToken) {
+        for (String status : new String[]{"CONFIRMED", "CHECKED_IN", "COMPLETED"}) {
+            APIResponse res = patchJson("/api/bookings/" + code + "/status",
+                    Map.of("status", status), hostOrAdminToken);
+            assertEquals(200, res.status(), "Chuyen " + code + " sang " + status + " that bai: " + res.text());
+        }
+    }
+
     protected APIResponse deleteApi(String path, String bearerToken) {
         RequestOptions opts = RequestOptions.create();
         if (bearerToken != null && !bearerToken.isBlank()) {

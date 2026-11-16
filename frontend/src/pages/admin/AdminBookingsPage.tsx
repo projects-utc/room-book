@@ -101,11 +101,24 @@ export default function AdminBookingsPage() {
     }
   };
 
-  const handleChangeStatus = (code: string, newStatus: Booking['status']) => {
-    const res = store.updateBookingStatus(code, newStatus);
+  // Phải khớp BookingStatus.allowedNext() ở backend; server mới là nơi quyết định cuối cùng.
+  const NEXT_STATUSES: Record<string, string[]> = {
+    PENDING: ['CONFIRMED', 'REJECTED', 'CANCELLED'],
+    CONFIRMED: ['CHECKED_IN', 'CANCELLED'],
+    CHECKED_IN: ['COMPLETED'],
+    COMPLETED: [],
+    CANCELLED: [],
+    REJECTED: [],
+  };
+
+  const handleChangeStatus = async (code: string, newStatus: Booking['status']) => {
+    const res = await stayApi.updateBookingStatus(code, newStatus);
     if (res.success) {
+      store.updateBookingStatus(code, newStatus);
       addToast(`Đã chuyển trạng thái đơn ${code} sang ${newStatus}`, 'info');
       refreshList();
+    } else {
+      addToast(res.message || 'Không thể đổi trạng thái đơn này', 'error');
     }
   };
 
@@ -289,6 +302,7 @@ export default function AdminBookingsPage() {
                       {/* Status Override Shortcut */}
                       <select
                         value={b.status}
+                        disabled={(NEXT_STATUSES[b.status] ?? []).length === 0}
                         onChange={(e) => handleChangeStatus(b.code, e.target.value as any)}
                         style={{
                           fontSize: '0.75rem',
@@ -301,11 +315,9 @@ export default function AdminBookingsPage() {
                           cursor: 'pointer',
                         }}
                       >
-                        <option value="PENDING">PENDING</option>
-                        <option value="CONFIRMED">CONFIRMED</option>
-                        <option value="CHECKED_IN">CHECKED_IN</option>
-                        <option value="COMPLETED">COMPLETED</option>
-                        <option value="CANCELLED">CANCELLED</option>
+                        {[b.status, ...(NEXT_STATUSES[b.status] ?? [])].map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
                       </select>
                     </div>
                   </TableCell>

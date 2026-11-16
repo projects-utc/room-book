@@ -174,6 +174,35 @@ Một luồng xử lý API chuẩn tuân theo nguyên tắc Dependency Inversion
 - **JDK**: Java 17 trở lên (`java -version`)
 - Sử dụng script Gradle Wrapper (`gradlew` / `gradlew.bat`) có sẵn trong repo.
 
+### Cấu hình bảo mật & biến môi trường
+
+Không có mật khẩu hoặc secret nào nằm trong mã nguồn. Xem mẫu tại `backend/.env.example`.
+
+| Biến | Bắt buộc | Ý nghĩa |
+| :--- | :--- | :--- |
+| `ORACLE_DB_URL`, `ORACLE_DB_USER`, `ORACLE_DB_PASSWORD` | Có (trừ profile `local`) | Kết nối Oracle |
+| `APP_JWT_SECRET` | Có (trừ profile `local`) | Khóa ký JWT, tối thiểu 32 ký tự. Sinh bằng `openssl rand -base64 48` |
+| `APP_CORS_ORIGINS` | Không | Origin frontend được phép, mặc định `http://localhost:5173` |
+| `APP_SEED_ENABLED`, `APP_SEED_PASSWORD` | Không | Tạo dữ liệu và tài khoản demo khi DB trống. Mặc định tắt |
+
+**Chạy thử trên máy (H2 trong bộ nhớ, có dữ liệu demo, mật khẩu demo là `123`):**
+
+```bash
+SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
+```
+
+**Phân quyền (JWT, kiểm tra ở `SecurityConfig` và `BookingService`):** đăng ký chỉ tạo được `GUEST` hoặc `HOST`; `ADMIN` chỉ do admin cấp.
+`/api/users`, `/api/auth/users`, `/api/audit-logs`, `/api/promotions` chỉ `ADMIN`. Ghi dữ liệu property/room chỉ `HOST`/`ADMIN`.
+Đặt phòng cần đăng nhập; người đặt lấy từ token, đơn giá và tổng tiền do server tính từ giá phòng, khách chỉ xem và hủy được đơn của mình.
+
+**Vòng đời đơn đặt phòng (`BookingStatus`):**
+`PENDING → CONFIRMED → CHECKED_IN → COMPLETED`; hủy được từ `PENDING` và `CONFIRMED`; `PENDING → REJECTED` khi chủ nhà từ chối.
+Ba trạng thái `COMPLETED`, `CANCELLED`, `REJECTED` là trạng thái kết thúc. Bước chuyển sai trả HTTP 400.
+Riêng `admin-cancel` là thao tác ngoại lệ có ghi audit log, được hủy cả đơn đã nhận phòng hoặc hoàn tất.
+
+**Chống đặt trùng khi đặt đồng thời:** `createBooking` khóa dòng phòng (`SELECT ... FOR UPDATE`) trước khi kiểm tra trùng lịch,
+nên nhiều yêu cầu cùng phòng được xử lý lần lượt và chỉ một yêu cầu thành công.
+
 ### Các lệnh cơ bản
 
 - **Biên dịch mã nguồn (Compile Classes)**:

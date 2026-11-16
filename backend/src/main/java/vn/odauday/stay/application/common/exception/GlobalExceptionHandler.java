@@ -2,6 +2,7 @@ package vn.odauday.stay.application.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,6 +45,13 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleUnauthorizedException(UnauthorizedException ex) {
         log.warn("Unauthorized access: {}", ex.getMessage());
         return new ErrorResponse(ex.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AccessDeniedException.class)
+    public ErrorResponse handleAccessDeniedException(AccessDeniedException ex) {
+        log.warn("Access denied: {}", ex.getMessage());
+        return new ErrorResponse(ex.getMessage() != null ? ex.getMessage() : "Bạn không có quyền thực hiện thao tác này");
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
