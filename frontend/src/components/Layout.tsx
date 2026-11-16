@@ -204,9 +204,9 @@ export function Header() {
                             <Speedometer2 style={{ color: 'var(--color-primary)' }} />
                             <span>Trang quản trị</span>
                         </Link>
-                    ) : (
+                    ) : currentUser?.role === ROLES.HOST ? (
                         <Link
-                            to={currentUser?.role === ROLES.HOST ? '/host/properties' : '/register'}
+                            to="/host/properties"
                             className="host-link"
                             style={{
                                 fontWeight: 600,
@@ -218,9 +218,43 @@ export function Header() {
                                 transition: 'background 0.2s',
                             }}
                         >
-                            {currentUser?.role === ROLES.HOST ? 'Kênh Chủ nhà' : 'Đăng ký'}
+                            Kênh Chủ nhà
                         </Link>
-                    )}
+                    ) : !currentUser ? (
+                        <>
+                            <Link
+                                to="/login"
+                                className="host-link"
+                                style={{
+                                    fontWeight: 600,
+                                    fontSize: '0.88rem',
+                                    color: 'var(--color-text-primary)',
+                                    padding: '0.55rem 0.9rem',
+                                    borderRadius: '9999px',
+                                    textDecoration: 'none',
+                                    transition: 'background 0.2s',
+                                }}
+                            >
+                                Đăng nhập
+                            </Link>
+                            <Link
+                                to="/register"
+                                className="host-link"
+                                style={{
+                                    fontWeight: 600,
+                                    fontSize: '0.88rem',
+                                    color: 'var(--color-primary)',
+                                    padding: '0.55rem 0.9rem',
+                                    borderRadius: '9999px',
+                                    textDecoration: 'none',
+                                    border: '1px solid var(--color-border-subtle)',
+                                    transition: 'background 0.2s',
+                                }}
+                            >
+                                Đăng ký
+                            </Link>
+                        </>
+                    ) : null}
 
                     {/* Wishlist Heart Icon Button */}
                     <Link
@@ -466,14 +500,6 @@ export function Header() {
                                             Admin
                                         </button>
                                     </div>
-                                    <button
-                                        type="button"
-                                        className="dropdown-item"
-                                        onClick={handleResetData}
-                                        style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-                                    >
-                                        <ArrowCounterclockwise /> Khôi phục CSDL mẫu
-                                    </button>
 
                                     <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
                                     <button
@@ -530,7 +556,6 @@ export function Header() {
                                         Cho thuê chỗ ở qua ODauDay
                                     </Link>
                                     <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
-                                    <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)' }}>Đăng nhập nhanh thử nghiệm</div>
                                     <div style={{ display: 'flex', gap: '0.25rem', padding: '0.25rem 1rem 0.5rem', flexWrap: 'wrap' }}>
                                         <button
                                             type="button"

@@ -100,8 +100,8 @@ export default function ReviewFormPage() {
 
             if (response.success) {
                 hasJustSubmittedRef.current = true;
-                // Đánh dấu vào store cục bộ để UI biết đơn này đã được đánh giá
-                store.submitReview(reviewPayload);
+                // Đánh dấu vào store cục bộ để UI biết đơn này đã được đánh giá (đã gọi qua stayApi ở trên nên bỏ qua gọi lặp lại)
+                store.submitReview(reviewPayload, { skipApiSync: true });
                 addToast('Cảm ơn bạn! Đánh giá đã được gửi thành công.', 'success');
                 // Chuyển hướng về trang chi tiết chỗ ở kèm highlight và cuộn tới mục #reviews
                 navigate(`/property/${targetPropertyId ?? booking?.propertyId ?? 1}?highlight=${bookingCode}#reviews`);

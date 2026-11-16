@@ -27,7 +27,7 @@ import { stayApi } from '../../api/stayApi';
 export default function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-  const { store, addToast } = useStore();
+  const { store, currentUser, addToast } = useStore();
   const navigate = useNavigate();
 
   const propertyId = Number(id) || 1;
@@ -49,12 +49,14 @@ export default function PropertyDetailPage() {
         });
       }
     });
-    stayApi.getBookings().then(res => {
-      if (res.success && Array.isArray(res.data)) {
-        setBookings(res.data);
-        res.data.forEach((b: Booking) => store.syncBookingFromApi(b));
-      }
-    }).catch(() => {});
+    if (currentUser) {
+      stayApi.getBookings().then(res => {
+        if (res.success && Array.isArray(res.data)) {
+          setBookings(res.data);
+          res.data.forEach((b: Booking) => store.syncBookingFromApi(b));
+        }
+      }).catch(() => {});
+    }
     stayApi.getReviews(propertyId).then(res => {
       if (res.success && Array.isArray(res.data) && res.data.length > 0) {
         // Hợp nhất với reviews cục bộ để bài vừa đánh giá luôn hiển thị tức thì
@@ -68,7 +70,7 @@ export default function PropertyDetailPage() {
         if (localRevs.length > 0) setReviews(localRevs);
       }
     });
-  }, [propertyId]);
+  }, [propertyId, currentUser]);
 
   const highlightCode = searchParams.get('highlight');
 
@@ -202,11 +204,6 @@ export default function PropertyDetailPage() {
       return;
     }
 
-    if (!checkIn || !checkOut) {
-      addToast('Vui lòng chọn ngày nhận và trả phòng.', 'warn');
-      return;
-    }
-
     const rId = roomId || selectedRoomId || rooms[0]?.id;
     const activeRoom = rooms.find(r => r.id === rId) || store.getAllRooms().find(r => r.id === rId);
     if (!activeRoom) {
@@ -222,7 +219,31 @@ export default function PropertyDetailPage() {
       return;
     }
 
-    // Chặn 2: Kiểm tra trùng lịch trước khi chuyển trang (kiểm tra cả danh sách đơn từ API và Store)
+    // Chặn 2: Bắt buộc đăng nhập trước khi thực hiện đặt phòng
+    if (!currentUser) {
+      addToast('Vui lòng đăng nhập hoặc đăng ký tài khoản để tiếp tục đặt phòng.', 'warn');
+      const params = new URLSearchParams({
+        propertyId: String(property?.id || propertyId),
+        roomId: String(activeRoom.id),
+        ...(checkIn ? { in: checkIn } : {}),
+        ...(checkOut ? { out: checkOut } : {}),
+        guests: guests || '1',
+      });
+      navigate('/login', {
+        state: {
+          from: `/booking-quote?${params.toString()}`,
+        },
+      });
+      return;
+    }
+
+    // Chặn 3: Kiểm tra ngày nhận và trả phòng
+    if (!checkIn || !checkOut) {
+      addToast('Vui lòng chọn ngày nhận và trả phòng.', 'warn');
+      return;
+    }
+
+    // Chặn 4: Kiểm tra trùng lịch trước khi chuyển trang (kiểm tra cả danh sách đơn từ API và Store)
     const allBookings = bookings.length > 0 ? bookings : store.getAllBookings();
     const in1 = checkIn.substring(0, 10);
     const out1 = checkOut.substring(0, 10);
@@ -700,20 +721,20 @@ export default function PropertyDetailPage() {
 
                 {/* Cột Phải: Lưới Nút Bấm Lọc Shopee */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', flex: 1, alignItems: 'center' }}>
-                  {[
-                    { key: 'ALL', label: `Tất cả (${filterCounts.all})` },
-                    { key: '5', label: `5 Sao (${filterCounts['5']})` },
-                    { key: '4', label: `4 Sao (${filterCounts['4']})` },
-                    { key: '3', label: `3 Sao (${filterCounts['3']})` },
-                    { key: '2', label: `2 Sao (${filterCounts['2']})` },
-                    { key: '1', label: `1 Sao (${filterCounts['1']})` },
-                  ].map(f => {
+                  {([
+                    { key: 'ALL' as const, label: `Tất cả (${filterCounts.all})` },
+                    { key: '5' as const, label: `5 Sao (${filterCounts['5']})` },
+                    { key: '4' as const, label: `4 Sao (${filterCounts['4']})` },
+                    { key: '3' as const, label: `3 Sao (${filterCounts['3']})` },
+                    { key: '2' as const, label: `2 Sao (${filterCounts['2']})` },
+                    { key: '1' as const, label: `1 Sao (${filterCounts['1']})` },
+                  ]).map(f => {
                     const isActive = reviewFilter === f.key;
                     return (
                       <button
                         key={f.key}
                         type="button"
-                        onClick={() => setReviewFilter(f.key as any)}
+                        onClick={() => setReviewFilter(f.key)}
                         style={{
                           height: 36,
                           padding: '0 16px',

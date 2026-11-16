@@ -155,7 +155,7 @@ export default function BookingSuccessPage() {
                 {/* Nút bấm đồng bộ kiểu dáng */}
                 <button
                     type="button"
-                    onClick={() => navigate('/my-bookings')}
+                    onClick={() => navigate('/my-bookings?tab=UPCOMING')}
                     style={{
                         width: '100%',
                         padding: '0.9rem 1.25rem',
