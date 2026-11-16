@@ -20,6 +20,7 @@ import {
   ShieldCheck,
 } from 'react-bootstrap-icons';
 import { RoomBlock } from '../../data';
+import { daysFromToday } from '../../dateUtils';
 
 export default function HostRoomBlockPage() {
   const [searchParams] = useSearchParams();
@@ -29,8 +30,8 @@ export default function HostRoomBlockPage() {
   const room = store.getAllRooms().find(r => r.id === roomId) || store.getAllRooms()[1];
 
   const [blocks, setBlocks] = useState<RoomBlock[]>(() => store.getRoomBlocks());
-  const [start, setStart] = useState('2027-02-10');
-  const [end, setEnd] = useState('2027-02-12');
+  const [start, setStart] = useState(daysFromToday(50));
+  const [end, setEnd] = useState(daysFromToday(52));
   const [reason, setReason] = useState('Bảo trì điều hoà trung tâm & sơn mới ban công');
   const [conflictError, setConflictError] = useState('');
 

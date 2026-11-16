@@ -2,8 +2,12 @@ package vn.odauday.stay.application.service.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.odauday.stay.application.common.CurrentUser;
+import vn.odauday.stay.application.common.enums.BookingStatus;
+import vn.odauday.stay.application.model.booking.CreateBookingRequest;
 import vn.odauday.stay.application.service.audit.AuditLogService;
 import vn.odauday.stay.domain.booking.model.BookingEntity;
 import vn.odauday.stay.domain.booking.persistent.BookingRepository;
@@ -13,7 +17,6 @@ import vn.odauday.stay.domain.room.model.RoomEntity;
 import vn.odauday.stay.domain.room.persistent.RoomRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -21,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -28,158 +32,218 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BookingService {
 
+    private static final int MAX_NIGHTS = 365;
+
     private final BookingRepository bookingRepository;
     private final AuditLogService auditLogService;
     private final RoomRepository roomRepository;
     private final PropertyRepository propertyRepository;
 
+    // ------------------------------------------------------------------ đọc
+
+    /**
+     * ADMIN xem tất cả; HOST xem đơn thuộc chỗ nghỉ của mình; người dùng khác chỉ xem đơn của chính mình.
+     * guestUsername chỉ là bộ lọc thu hẹp, không bao giờ mở rộng quyền xem.
+     */
     @Transactional(readOnly = true)
-    public List<BookingEntity> getBookings(String guestUsername) {
-        if (guestUsername != null && !guestUsername.isBlank()) {
-            return bookingRepository.findByGuestUsername(guestUsername.trim());
+    public List<BookingEntity> getBookings(String guestUsername, CurrentUser user) {
+        String filter = guestUsername != null && !guestUsername.isBlank() ? guestUsername.trim() : null;
+
+        if (user.isAdmin()) {
+            return filter != null ? bookingRepository.findByGuestUsername(filter) : bookingRepository.findAll();
         }
-        return bookingRepository.findAll();
+
+        if (user.isHost() && (filter == null || !filter.equals(user.username()))) {
+            Set<Long> ownPropertyIds = ownedPropertyIds(user.username());
+            return bookingRepository.findAll().stream()
+                    .filter(b -> b.getPropertyId() != null && ownPropertyIds.contains(b.getPropertyId()))
+                    .filter(b -> filter == null || filter.equals(b.getGuestUsername()))
+                    .toList();
+        }
+
+        if (filter != null && !filter.equals(user.username())) {
+            return List.of();
+        }
+        return bookingRepository.findByGuestUsername(user.username());
     }
 
     @Transactional(readOnly = true)
-    public BookingEntity getBookingByCode(String code) {
+    public BookingEntity getBookingByCode(String code, CurrentUser user) {
+        BookingEntity booking = findByCode(code);
+        assertCanView(booking, user);
+        return booking;
+    }
+
+    private BookingEntity findByCode(String code) {
         return bookingRepository.findByCode(code)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn đặt phòng có mã: " + code));
     }
 
+    // ------------------------------------------------------------------ tạo đơn
+
+    /**
+     * Tạo đơn đặt phòng. Người đặt lấy từ JWT; đơn giá, thành tiền, tổng tiền, trạng thái và
+     * tên chỗ nghỉ/phòng đều do server tính từ dữ liệu trong DB, không nhận từ client.
+     */
     @Transactional
-    public BookingEntity createBooking(BookingEntity booking) {
-        if (booking.getGuestUsername() == null || booking.getGuestUsername().isBlank()) {
-            throw new IllegalArgumentException("Tên tài khoản người đặt không được để trống");
+    public BookingEntity createBooking(CreateBookingRequest request, String guestUsername) {
+        LocalDate checkIn = parseDate(request.getCheckIn());
+        LocalDate checkOut = parseDate(request.getCheckOut());
+        if (!checkOut.isAfter(checkIn)) {
+            throw new IllegalArgumentException("Ngày trả phòng phải sau ngày nhận phòng");
         }
-        if (booking.getPropertyId() == null) {
-            throw new IllegalArgumentException("Cơ sở lưu trú (propertyId) không được để trống");
-        }
-        if (booking.getRoomId() == null) {
-            throw new IllegalArgumentException("Phòng đặt (roomId) không được để trống");
-        }
-        if (booking.getCheckIn() == null || booking.getCheckIn().isBlank()) {
-            throw new IllegalArgumentException("Ngày nhận phòng không được để trống");
-        }
-        if (booking.getCheckOut() == null || booking.getCheckOut().isBlank()) {
-            throw new IllegalArgumentException("Ngày trả phòng không được để trống");
+        long nights = ChronoUnit.DAYS.between(checkIn, checkOut);
+        if (nights > MAX_NIGHTS) {
+            throw new IllegalArgumentException("Thời gian lưu trú tối đa là " + MAX_NIGHTS + " đêm");
         }
 
-        try {
-            LocalDate checkInDate = LocalDate.parse(booking.getCheckIn().trim().substring(0, Math.min(10, booking.getCheckIn().trim().length())));
-            LocalDate checkOutDate = LocalDate.parse(booking.getCheckOut().trim().substring(0, Math.min(10, booking.getCheckOut().trim().length())));
-            if (!checkOutDate.isAfter(checkInDate)) {
-                throw new IllegalArgumentException("Ngày trả phòng phải sau ngày nhận phòng");
-            }
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Định dạng ngày không hợp lệ, yêu cầu định dạng YYYY-MM-DD");
+        // Khóa dòng phòng đến hết giao dịch: hai người đặt cùng phòng cùng lúc sẽ được xử lý lần lượt,
+        // nên bước kiểm tra trùng lịch bên dưới luôn thấy đơn vừa được lưu của người đến trước.
+        RoomEntity room = roomRepository.findByIdForUpdate(request.getRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phòng có ID: " + request.getRoomId()));
+        if (!room.getPropertyId().equals(request.getPropertyId())) {
+            throw new IllegalArgumentException("Phòng không thuộc cơ sở lưu trú đã chọn");
+        }
+        if (room.getStatus() != null && !"ACTIVE".equalsIgnoreCase(room.getStatus())) {
+            throw new IllegalArgumentException("Phòng hiện không nhận đặt");
+        }
+        if (room.getPrice() == null || room.getPrice() < 0) {
+            throw new IllegalArgumentException("Phòng chưa có đơn giá hợp lệ");
+        }
+        if (room.getCapacity() != null && request.getGuests() > room.getCapacity()) {
+            throw new IllegalArgumentException("Số khách vượt quá sức chứa tối đa của phòng (" + room.getCapacity() + " khách)");
         }
 
-        if (booking.getGuests() != null && booking.getGuests() <= 0) {
-            throw new IllegalArgumentException("Số lượng khách phải lớn hơn 0");
-        }
-        if (booking.getPricePerNight() != null && booking.getPricePerNight() < 0) {
-            throw new IllegalArgumentException("Đơn giá phòng không được là số âm");
-        }
+        PropertyEntity property = propertyRepository.findById(request.getPropertyId())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy cơ sở lưu trú có ID: " + request.getPropertyId()));
 
-        List<BookingEntity> overlapping = bookingRepository.findOverlappingBookings(
-                booking.getRoomId(), booking.getCheckIn().trim(), booking.getCheckOut().trim());
-        if (!overlapping.isEmpty()) {
+        String checkInStr = checkIn.toString();
+        String checkOutStr = checkOut.toString();
+        if (!bookingRepository.findOverlappingBookings(room.getId(), checkInStr, checkOutStr).isEmpty()) {
             throw new IllegalArgumentException("Phòng đã có người đặt trong khoảng thời gian này");
         }
 
-        if (booking.getCode() == null || booking.getCode().isBlank()) {
-            booking.setCode("ODD-" + LocalDateTime.now().getYear() + "-" + (int) (1000 + Math.random() * 9000));
-        }
-        if (booking.getCreatedAt() == null || booking.getCreatedAt().isBlank()) {
-            booking.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        }
-        if (booking.getStatus() == null || booking.getStatus().isBlank()) {
-            booking.setStatus("PENDING");
-        }
+        double pricePerNight = room.getPrice();
+        double subtotal = pricePerNight * nights;
+        double serviceFee = 0.0;
 
-        recalculatePricing(booking);
+        BookingEntity booking = BookingEntity.builder()
+                .code(generateUniqueCode())
+                .guestUsername(guestUsername)
+                .guestName(hasText(request.getGuestName()) ? request.getGuestName().trim() : guestUsername)
+                .guestPhone(trimOrNull(request.getGuestPhone()))
+                .guestEmail(trimOrNull(request.getGuestEmail()))
+                .propertyId(property.getId())
+                .propertyName(property.getName())
+                .roomId(room.getId())
+                .roomName(room.getName())
+                .checkIn(checkInStr)
+                .checkOut(checkOutStr)
+                .nights((int) nights)
+                .guests(request.getGuests())
+                .pricePerNight(pricePerNight)
+                .subtotal(subtotal)
+                .serviceFee(serviceFee)
+                .total(subtotal + serviceFee)
+                .status(BookingStatus.PENDING.name())
+                .paymentMethod(trimOrNull(request.getPaymentMethod()))
+                .createdAt(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+                .isReviewed(false)
+                .build();
 
         BookingEntity saved = bookingRepository.save(booking);
-        log.info("Booking created: {} | nights={} | total={}", saved.getCode(), saved.getNights(), saved.getTotal());
+        log.info("Booking created: {} | guest={} | nights={} | total={}",
+                saved.getCode(), guestUsername, saved.getNights(), saved.getTotal());
         return saved;
     }
 
-    private void recalculatePricing(BookingEntity booking) {
-        try {
-            if (booking.getCheckIn() == null || booking.getCheckOut() == null) return;
-            LocalDate dIn  = LocalDate.parse(booking.getCheckIn().trim().substring(0, 10));
-            LocalDate dOut = LocalDate.parse(booking.getCheckOut().trim().substring(0, 10));
-            long nights = ChronoUnit.DAYS.between(dIn, dOut);
-            if (nights <= 0) nights = 1;
-
-            booking.setNights((int) nights);
-
-            if (booking.getRoomId() != null) {
-                RoomEntity room = roomRepository.findById(booking.getRoomId()).orElse(null);
-                if (room != null) {
-                    double pricePerNight = (booking.getPricePerNight() != null && booking.getPricePerNight() > 0)
-                            ? booking.getPricePerNight()
-                            : (room.getPrice() != null ? room.getPrice() : 0.0);
-                    double subtotal = (booking.getSubtotal() != null && booking.getSubtotal() > 0)
-                            ? booking.getSubtotal()
-                            : pricePerNight * nights;
-                    booking.setPricePerNight(pricePerNight);
-                    booking.setSubtotal(subtotal);
-
-                    double serviceFee = (booking.getServiceFee() != null) ? booking.getServiceFee() : 0.0;
-                    booking.setServiceFee(serviceFee);
-
-                    if (booking.getTotal() == null || booking.getTotal() <= 0 || booking.getTotal() > (subtotal + serviceFee)) {
-                        booking.setTotal(subtotal + serviceFee);
-                    }
-                }
+    private String generateUniqueCode() {
+        for (int attempt = 0; attempt < 10; attempt++) {
+            String code = "ODD-" + LocalDate.now().getYear() + "-"
+                    + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+            if (bookingRepository.findByCode(code).isEmpty()) {
+                return code;
             }
-        } catch (Exception e) {
-            log.warn("Không thể tính lại giá booking {}: {}", booking.getCode(), e.getMessage());
+        }
+        throw new IllegalStateException("Không thể sinh mã đặt phòng duy nhất, vui lòng thử lại");
+    }
+
+    private static LocalDate parseDate(String raw) {
+        String s = raw.trim();
+        try {
+            return LocalDate.parse(s.substring(0, Math.min(10, s.length())));
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Định dạng ngày không hợp lệ, yêu cầu định dạng YYYY-MM-DD");
         }
     }
 
+    // ------------------------------------------------------------------ đổi trạng thái / hủy
+
+    /** Đổi trạng thái theo state machine {@link BookingStatus}; bước nhảy không hợp lệ bị từ chối. */
     @Transactional
-    public BookingEntity updateBookingStatus(String code, String newStatus) {
-        if (newStatus == null || newStatus.isBlank()) {
-            throw new IllegalArgumentException("Trạng thái mới không được để trống");
-        }
-        BookingEntity b = getBookingByCode(code);
-        b.setStatus(newStatus.trim().toUpperCase());
+    public BookingEntity updateBookingStatus(String code, String newStatus, CurrentUser user) {
+        BookingStatus next = BookingStatus.parse(newStatus);
+        BookingEntity b = findByCode(code);
+        assertCanManage(b, user);
+        transition(b, next);
         return bookingRepository.save(b);
     }
 
+    /** Khách tự hủy đơn của chính mình (hoặc ADMIN). Chỉ hủy được khi đơn còn PENDING hoặc CONFIRMED. */
     @Transactional
-    public BookingEntity cancelBooking(String code) {
-        BookingEntity b = getBookingByCode(code);
-        if ("COMPLETED".equalsIgnoreCase(b.getStatus()) || "CANCELLED".equalsIgnoreCase(b.getStatus())) {
-            throw new IllegalArgumentException("Không thể hủy đơn đặt phòng đã hoàn tất hoặc đã bị hủy trước đó");
+    public BookingEntity cancelBooking(String code, CurrentUser user) {
+        BookingEntity b = findByCode(code);
+        if (!user.isAdmin() && !user.username().equals(b.getGuestUsername())) {
+            throw new AccessDeniedException("Bạn chỉ được hủy đơn đặt phòng của chính mình");
         }
-        b.setStatus("CANCELLED");
+        transition(b, BookingStatus.CANCELLED);
         return bookingRepository.save(b);
     }
 
+    /**
+     * Admin can thiệp hủy đơn. Đây là thao tác ngoại lệ có ghi audit log nên được phép hủy cả đơn đang ở
+     * trạng thái CHECKED_IN hoặc COMPLETED (ví dụ gian lận, hoàn tiền). Đơn đã CANCELLED/REJECTED thì không hủy lại.
+     */
     @Transactional
-    public BookingEntity adminCancelBooking(String code, String reason) {
-        BookingEntity b = getBookingByCode(code);
-        b.setStatus("CANCELLED");
+    public BookingEntity adminCancelBooking(String code, String reason, CurrentUser admin) {
+        admin.requireAdmin();
+        BookingEntity b = findByCode(code);
+        BookingStatus current = BookingStatus.fromStored(b.getStatus());
+        if (current == BookingStatus.CANCELLED || current == BookingStatus.REJECTED) {
+            throw new IllegalArgumentException("Đơn đặt phòng đã ở trạng thái " + current + ", không thể hủy lại");
+        }
+        b.setStatus(BookingStatus.CANCELLED.name());
         BookingEntity saved = bookingRepository.save(b);
         String finalReason = reason != null && !reason.isBlank() ? reason : "Admin can thiệp hủy đơn";
-        auditLogService.logAudit("CANCEL_BOOKING", code, "Admin can thiệp hủy đơn: " + finalReason, "admin");
+        auditLogService.logAudit("CANCEL_BOOKING", code, "Admin can thiệp hủy đơn: " + finalReason, admin.username());
         return saved;
     }
 
-    @Transactional(readOnly = true)
-    public Map<String, Object> getRevenueSummary(String ownerUsername) {
-        List<BookingEntity> allBookings = bookingRepository.findAll();
-        List<BookingEntity> scopedBookings = allBookings;
+    private void transition(BookingEntity booking, BookingStatus next) {
+        BookingStatus current = BookingStatus.fromStored(booking.getStatus());
+        if (!current.canMoveTo(next)) {
+            String allowed = current.allowedNext().isEmpty() ? "không có (trạng thái kết thúc)" : current.allowedNext().toString();
+            throw new IllegalArgumentException(
+                    "Không thể chuyển đơn từ " + current + " sang " + next + ". Trạng thái tiếp theo hợp lệ: " + allowed);
+        }
+        booking.setStatus(next.name());
+    }
 
-        if (ownerUsername != null && !ownerUsername.isBlank()) {
-            Set<Long> ownerPropertyIds = propertyRepository.findByOwner(ownerUsername.trim()).stream()
-                    .map(PropertyEntity::getId)
-                    .collect(Collectors.toSet());
-            scopedBookings = allBookings.stream()
+    // ------------------------------------------------------------------ doanh thu
+
+    /** HOST chỉ thấy doanh thu của chính mình; ADMIN có thể lọc theo owner hoặc xem toàn hệ thống. */
+    @Transactional(readOnly = true)
+    public Map<String, Object> getRevenueSummary(String ownerUsername, CurrentUser user) {
+        String owner = user.isHost() ? user.username()
+                : (ownerUsername != null && !ownerUsername.isBlank() ? ownerUsername.trim() : null);
+        if (!user.isHost() && !user.isAdmin()) {
+            throw new AccessDeniedException("Bạn không có quyền xem báo cáo doanh thu");
+        }
+
+        List<BookingEntity> scopedBookings = bookingRepository.findAll();
+        if (owner != null) {
+            Set<Long> ownerPropertyIds = ownedPropertyIds(owner);
+            scopedBookings = scopedBookings.stream()
                     .filter(b -> b.getPropertyId() != null && ownerPropertyIds.contains(b.getPropertyId()))
                     .toList();
         }
@@ -207,6 +271,45 @@ public class BookingService {
         result.put("pendingBookings", pendingBookings);
         return result;
     }
+
+    // ------------------------------------------------------------------ kiểm tra quyền
+
+    /** Xem được: ADMIN, người đặt, hoặc chủ của chỗ nghỉ được đặt. */
+    private void assertCanView(BookingEntity booking, CurrentUser user) {
+        if (user.isAdmin() || user.username().equals(booking.getGuestUsername()) || ownsProperty(booking, user)) {
+            return;
+        }
+        throw new AccessDeniedException("Bạn không có quyền xem đơn đặt phòng này");
+    }
+
+    /** Quản lý (đổi trạng thái): ADMIN hoặc chủ của chỗ nghỉ được đặt. */
+    private void assertCanManage(BookingEntity booking, CurrentUser user) {
+        if (user.isAdmin() || ownsProperty(booking, user)) {
+            return;
+        }
+        throw new AccessDeniedException("Bạn không có quyền quản lý đơn đặt phòng này");
+    }
+
+    private boolean ownsProperty(BookingEntity booking, CurrentUser user) {
+        if (!user.isHost() || booking.getPropertyId() == null) {
+            return false;
+        }
+        return propertyRepository.findById(booking.getPropertyId())
+                .map(p -> user.username().equalsIgnoreCase(p.getOwner()))
+                .orElse(false);
+    }
+
+    private Set<Long> ownedPropertyIds(String ownerUsername) {
+        return propertyRepository.findByOwner(ownerUsername).stream()
+                .map(PropertyEntity::getId)
+                .collect(Collectors.toSet());
+    }
+
+    private static boolean hasText(String s) {
+        return s != null && !s.isBlank();
+    }
+
+    private static String trimOrNull(String s) {
+        return hasText(s) ? s.trim() : null;
+    }
 }
-
-

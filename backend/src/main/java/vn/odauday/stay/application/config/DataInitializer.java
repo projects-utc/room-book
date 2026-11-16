@@ -2,7 +2,9 @@ package vn.odauday.stay.application.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.seed.enabled", havingValue = "true")
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -41,6 +44,9 @@ public class DataInitializer implements CommandLineRunner {
     private final PromotionRepository promotionRepository;
     private final AuditLogRepository auditLogRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${app.seed.password:}")
+    private String seedPassword;
 
     @Override
     @Transactional
@@ -75,8 +81,22 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Reset and re-seeded all demo data in Oracle database.");
     }
 
+    /** Ngày mẫu tính theo hôm nay (yyyy-MM-dd), để dữ liệu demo luôn hợp lý dù chạy vào lúc nào. */
+    private static String day(int offsetDays) {
+        return LocalDate.now().plusDays(offsetDays).format(DateTimeFormatter.ISO_LOCAL_DATE);
+    }
+
+    /** Cùng ngày nhưng theo định dạng dd/MM/yyyy dùng cho đánh giá. */
+    private static String viDay(int offsetDays) {
+        return LocalDate.now().plusDays(offsetDays).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
     private void seedUsers() {
-        String encodedPassword = passwordEncoder.encode("123");
+        if (seedPassword == null || seedPassword.isBlank()) {
+            throw new IllegalStateException(
+                    "app.seed.enabled=true nhưng thiếu app.seed.password (biến môi trường APP_SEED_PASSWORD)");
+        }
+        String encodedPassword = passwordEncoder.encode(seedPassword);
         List<User> initialUsers = List.of(
             User.builder().username("admin").password(encodedPassword).fullName("Quản trị viên Hệ thống").phone("0900000001").email("admin@odauday.vn").role("ADMIN").status("ACTIVE").build(),
             User.builder().username("host.demo").password(encodedPassword).fullName("Chủ nhà Demo (Nguyễn Văn An)").phone("0900000002").email("host.an@gmail.com").role("HOST").status("ACTIVE").build(),
@@ -134,7 +154,7 @@ public class DataInitializer implements CommandLineRunner {
         if (roomBlockRepository.count() > 0) return;
 
         List<RoomBlockEntity> blocks = List.of(
-            RoomBlockEntity.builder().roomId(2L).roomName("Phòng Family").start("2027-02-10").end("2027-02-12").reason("Bảo trì hệ thống điều hòa và sơn mới ban công").build()
+            RoomBlockEntity.builder().roomId(2L).roomName("Phòng Family").start(day(40)).end(day(42)).reason("Bảo trì hệ thống điều hòa và sơn mới ban công").build()
         );
 
         roomBlockRepository.saveAll(blocks);
@@ -144,18 +164,12 @@ public class DataInitializer implements CommandLineRunner {
     private void seedBookings() {
         if (bookingRepository.count() > 0) return;
 
-        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String dayMinus2 = LocalDate.now().minusDays(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String dayMinus5 = LocalDate.now().minusDays(5).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String dayMinus10 = LocalDate.now().minusDays(10).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String dayMinus15 = LocalDate.now().minusDays(15).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
         List<BookingEntity> bookings = List.of(
-            BookingEntity.builder().code("ODD-DEMO-0001").guestUsername("guest.demo").guestName("Khách thuê Demo (Lê Hoàng Nam)").guestPhone("0900000003").guestEmail("nam.le@gmail.com").propertyId(1L).propertyName("ODauDay Stay Hồ Tây").roomId(1L).roomName("Phòng Garden").checkIn("2027-01-10").checkOut("2027-01-12").nights(2).guests(2).pricePerNight(650000.0).subtotal(1300000.0).serviceFee(0.0).total(1300000.0).status("COMPLETED").paymentMethod("BANK_TRANSFER").createdAt(dayMinus15).isReviewed(true).build(),
-            BookingEntity.builder().code("ODD-DEMO-0002").guestUsername("guest.demo").guestName("Khách thuê Demo (Lê Hoàng Nam)").guestPhone("0900000003").guestEmail("nam.le@gmail.com").propertyId(1L).propertyName("ODauDay Stay Hồ Tây").roomId(1L).roomName("Phòng Garden").checkIn("2027-02-20").checkOut("2027-02-22").nights(2).guests(2).pricePerNight(650000.0).subtotal(1300000.0).serviceFee(0.0).total(1300000.0).status("PENDING").paymentMethod("CASH").createdAt(dayMinus10).isReviewed(false).build(),
-            BookingEntity.builder().code("ODD-DEMO-0003").guestUsername("guest.demo").guestName("Khách thuê Demo (Lê Hoàng Nam)").guestPhone("0900000003").guestEmail("nam.le@gmail.com").propertyId(1L).propertyName("ODauDay Stay Hồ Tây").roomId(1L).roomName("Phòng Garden").checkIn("2027-03-01").checkOut("2027-03-04").nights(3).guests(2).pricePerNight(650000.0).subtotal(1950000.0).serviceFee(0.0).total(1950000.0).status("CHECKED_IN").paymentMethod("BANK_TRANSFER").createdAt(dayMinus5).isReviewed(false).build(),
-            BookingEntity.builder().code("ODD-DEMO-0004").guestUsername("linh.tran").guestName("Trần Thùy Linh").guestPhone("0912345678").guestEmail("linh.tran@gmail.com").propertyId(1L).propertyName("ODauDay Stay Hồ Tây").roomId(2L).roomName("Phòng Family").checkIn("2027-01-20").checkOut("2027-01-22").nights(2).guests(4).pricePerNight(1100000.0).subtotal(2200000.0).serviceFee(0.0).total(2200000.0).status("CONFIRMED").paymentMethod("BANK_TRANSFER").createdAt(dayMinus2).isReviewed(false).build(),
-            BookingEntity.builder().code("ODD-DEMO-0005").guestUsername("hoang.anh").guestName("Nguyễn Hoàng Anh").guestPhone("0987654321").guestEmail("hoang.anh@gmail.com").propertyId(1L).propertyName("ODauDay Stay Hồ Tây").roomId(1L).roomName("Phòng Garden").checkIn("2027-02-01").checkOut("2027-02-03").nights(2).guests(2).pricePerNight(650000.0).subtotal(1300000.0).serviceFee(0.0).total(1300000.0).status("CONFIRMED").paymentMethod("CASH").createdAt(today).isReviewed(false).build()
+            BookingEntity.builder().code("ODD-DEMO-0001").guestUsername("guest.demo").guestName("Khách thuê Demo (Lê Hoàng Nam)").guestPhone("0900000003").guestEmail("nam.le@gmail.com").propertyId(1L).propertyName("ODauDay Stay Hồ Tây").roomId(1L).roomName("Phòng Garden").checkIn(day(-20)).checkOut(day(-18)).nights(2).guests(2).pricePerNight(650000.0).subtotal(1300000.0).serviceFee(0.0).total(1300000.0).status("COMPLETED").paymentMethod("BANK_TRANSFER").createdAt(day(-25)).isReviewed(true).build(),
+            BookingEntity.builder().code("ODD-DEMO-0002").guestUsername("guest.demo").guestName("Khách thuê Demo (Lê Hoàng Nam)").guestPhone("0900000003").guestEmail("nam.le@gmail.com").propertyId(1L).propertyName("ODauDay Stay Hồ Tây").roomId(1L).roomName("Phòng Garden").checkIn(day(14)).checkOut(day(16)).nights(2).guests(2).pricePerNight(650000.0).subtotal(1300000.0).serviceFee(0.0).total(1300000.0).status("PENDING").paymentMethod("CASH").createdAt(day(-3)).isReviewed(false).build(),
+            BookingEntity.builder().code("ODD-DEMO-0003").guestUsername("guest.demo").guestName("Khách thuê Demo (Lê Hoàng Nam)").guestPhone("0900000003").guestEmail("nam.le@gmail.com").propertyId(1L).propertyName("ODauDay Stay Hồ Tây").roomId(1L).roomName("Phòng Garden").checkIn(day(-1)).checkOut(day(2)).nights(3).guests(2).pricePerNight(650000.0).subtotal(1950000.0).serviceFee(0.0).total(1950000.0).status("CHECKED_IN").paymentMethod("BANK_TRANSFER").createdAt(day(-10)).isReviewed(false).build(),
+            BookingEntity.builder().code("ODD-DEMO-0004").guestUsername("linh.tran").guestName("Trần Thùy Linh").guestPhone("0912345678").guestEmail("linh.tran@gmail.com").propertyId(1L).propertyName("ODauDay Stay Hồ Tây").roomId(2L).roomName("Phòng Family").checkIn(day(7)).checkOut(day(9)).nights(2).guests(4).pricePerNight(1100000.0).subtotal(2200000.0).serviceFee(0.0).total(2200000.0).status("CONFIRMED").paymentMethod("BANK_TRANSFER").createdAt(day(-2)).isReviewed(false).build(),
+            BookingEntity.builder().code("ODD-DEMO-0005").guestUsername("hoang.anh").guestName("Nguyễn Hoàng Anh").guestPhone("0987654321").guestEmail("hoang.anh@gmail.com").propertyId(1L).propertyName("ODauDay Stay Hồ Tây").roomId(1L).roomName("Phòng Garden").checkIn(day(30)).checkOut(day(32)).nights(2).guests(2).pricePerNight(650000.0).subtotal(1300000.0).serviceFee(0.0).total(1300000.0).status("CONFIRMED").paymentMethod("CASH").createdAt(day(0)).isReviewed(false).build()
         );
 
         bookingRepository.saveAll(bookings);
@@ -166,7 +180,7 @@ public class DataInitializer implements CommandLineRunner {
         if (reviewRepository.count() > 0) return;
 
         List<ReviewEntity> reviews = List.of(
-            ReviewEntity.builder().bookingCode("ODD-DEMO-0001").propertyId(1L).guestUsername("guest.demo").guestName("Khách thuê Demo").rating(5).comment("Phòng sạch sẽ, không gian thoáng đãng mát mẻ, chủ nhà hỗ trợ check-in rất nhanh chóng và nhiệt tình. Vị trí đi bộ ra hồ Tây rất gần!").date("13/01/2027").build()
+            ReviewEntity.builder().bookingCode("ODD-DEMO-0001").propertyId(1L).guestUsername("guest.demo").guestName("Khách thuê Demo").rating(5).comment("Phòng sạch sẽ, không gian thoáng đãng mát mẻ, chủ nhà hỗ trợ check-in rất nhanh chóng và nhiệt tình. Vị trí đi bộ ra hồ Tây rất gần!").date(viDay(-17)).build()
         );
 
         reviewRepository.saveAll(reviews);
@@ -177,10 +191,10 @@ public class DataInitializer implements CommandLineRunner {
         if (promotionRepository.count() > 0) return;
 
         List<PromotionEntity> promos = List.of(
-            PromotionEntity.builder().code("ODAUDAY10").type("PERCENT").value(10.0).maxDiscount(200000.0).minOrder(500000.0).usageLimit(100).usedCount(18).validFrom("2026-01-01").validTo("2027-12-31").status("ACTIVE").build(),
+            PromotionEntity.builder().code("ODAUDAY10").type("PERCENT").value(10.0).maxDiscount(200000.0).minOrder(500000.0).usageLimit(100).usedCount(18).validFrom(day(-300)).validTo(day(365)).status("ACTIVE").build(),
             PromotionEntity.builder().code("CHAOHE2027").type("FIXED").value(150000.0).minOrder(1000000.0).usageLimit(50).usedCount(12).validFrom("2027-05-01").validTo("2027-08-31").status("ACTIVE").build(),
             PromotionEntity.builder().code("VIPTRAVEL").type("PERCENT").value(20.0).maxDiscount(500000.0).minOrder(2000000.0).usageLimit(30).usedCount(30).validFrom("2027-01-01").validTo("2027-06-30").status("INACTIVE").build(),
-            PromotionEntity.builder().code("WELCOME50K").type("FIXED").value(50000.0).minOrder(300000.0).usageLimit(200).usedCount(45).validFrom("2026-01-01").validTo("2027-12-31").status("ACTIVE").build()
+            PromotionEntity.builder().code("WELCOME50K").type("FIXED").value(50000.0).minOrder(300000.0).usageLimit(200).usedCount(45).validFrom(day(-300)).validTo(day(365)).status("ACTIVE").build()
         );
 
         promotionRepository.saveAll(promos);
@@ -191,10 +205,10 @@ public class DataInitializer implements CommandLineRunner {
         if (auditLogRepository.count() > 0) return;
 
         List<AuditLogEntity> logs = List.of(
-            AuditLogEntity.builder().action("LOCK").target("minh.pham").details("Khóa tài khoản do vi phạm chính sách tiếp đón khách").performedBy("admin").timestamp("2027-01-15 14:30:22").build(),
-            AuditLogEntity.builder().action("CHANGE_ROLE").target("host.demo").details("Phê duyệt nâng cấp vai trò từ GUEST sang HOST").performedBy("admin").timestamp("2027-01-10 09:15:00").build(),
-            AuditLogEntity.builder().action("CREATE_PROMO").target("CHAOHE2027").details("Phát hành chiến dịch voucher mùa hè toàn sàn").performedBy("admin").timestamp("2027-01-05 11:20:45").build(),
-            AuditLogEntity.builder().action("TOGGLE_PROPERTY").target("ODauDay Stay Hồ Tây").details("Kiểm duyệt chất lượng và xác thực cơ sở lưu trú đạt chuẩn").performedBy("admin").timestamp("2027-01-02 16:45:10").build()
+            AuditLogEntity.builder().action("LOCK").target("minh.pham").details("Khóa tài khoản do vi phạm chính sách tiếp đón khách").performedBy("admin").timestamp(day(-2) + " 14:30:22").build(),
+            AuditLogEntity.builder().action("CHANGE_ROLE").target("host.demo").details("Phê duyệt nâng cấp vai trò từ GUEST sang HOST").performedBy("admin").timestamp(day(-6) + " 09:15:00").build(),
+            AuditLogEntity.builder().action("CREATE_PROMO").target("CHAOHE2027").details("Phát hành chiến dịch voucher mùa hè toàn sàn").performedBy("admin").timestamp(day(-10) + " 11:20:45").build(),
+            AuditLogEntity.builder().action("TOGGLE_PROPERTY").target("ODauDay Stay Hồ Tây").details("Kiểm duyệt chất lượng và xác thực cơ sở lưu trú đạt chuẩn").performedBy("admin").timestamp(day(-14) + " 16:45:10").build()
         );
 
         auditLogRepository.saveAll(logs);

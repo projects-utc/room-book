@@ -145,7 +145,7 @@ public class FeGuestBookingWebAutoTest extends BasePlaywrightAutoTest {
 
         String[] dates = uniqueFutureDates(2);
         String code = bookThroughQuoteUi(dates);
-        assertEquals(200, patchJson("/api/bookings/" + code + "/status", Map.of("status", "COMPLETED"), adminToken).status());
+        completeBooking(code, adminToken);
 
         String reviewText = "Playwright UI Review Clean Stay " + uniqueTag();
         page.navigate(feUrl() + "/review?bookingCode=" + code);

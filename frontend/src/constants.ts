@@ -1,6 +1,6 @@
 // ODauDay Stay — Global Constants
 export const APP_NAME = 'ODauDay Stay';
-export const STORAGE_KEY = 'ODD_STAY_DATA_V1';
+export const STORAGE_KEY = 'ODD_STAY_DATA_V2';
 export const USER_KEY = 'ODD_CURRENT_USER_V1';
 
 export const ROLES = {

@@ -29,6 +29,7 @@ import {
 } from 'react-bootstrap-icons';
 import { Promotion } from '../../data';
 import { formatVND } from '../../constants';
+import { daysFromToday } from '../../dateUtils';
 
 export default function AdminPromotionsPage() {
   const { store, addToast } = useStore();
@@ -45,7 +46,7 @@ export default function AdminPromotionsPage() {
   const [maxDiscount, setMaxDiscount] = useState(250000);
   const [minOrder, setMinOrder] = useState(500000);
   const [usageLimit, setUsageLimit] = useState(100);
-  const [validTo, setValidTo] = useState('2027-12-31');
+  const [validTo, setValidTo] = useState(daysFromToday(365));
 
   const refreshList = () => {
     setPromotions(store.getPromotions());

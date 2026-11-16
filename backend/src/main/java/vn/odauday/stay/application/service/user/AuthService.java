@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,11 +33,20 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${app.jwt.secret:odaudaystaysecretkeyforjwttokengenerationshouldbelongenough256bit}")
+    /** Bắt buộc cấu hình qua biến môi trường APP_JWT_SECRET, không có giá trị mặc định trong mã nguồn. */
+    @Value("${app.jwt.secret}")
     private String jwtSecret;
 
     @Value("${app.jwt.expiration-ms:86400000}")
     private long jwtExpirationMs;
+
+    @PostConstruct
+    void validateJwtSecret() {
+        if (jwtSecret == null || jwtSecret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException(
+                    "app.jwt.secret (biến môi trường APP_JWT_SECRET) phải có tối thiểu 32 ký tự (256 bit)");
+        }
+    }
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
@@ -83,10 +93,9 @@ public class AuthService {
             throw new IllegalArgumentException("Email này đã được sử dụng");
         }
 
-        String role = StringUtils.hasText(request.getRole()) ? request.getRole().toUpperCase() : "GUEST";
-        if (!"HOST".equals(role) && !"ADMIN".equals(role)) {
-            role = "GUEST";
-        }
+        // Tự đăng ký chỉ được làm GUEST hoặc HOST. ADMIN chỉ do admin cấp qua API quản trị.
+        String requestedRole = StringUtils.hasText(request.getRole()) ? request.getRole().trim().toUpperCase() : "GUEST";
+        String role = "HOST".equals(requestedRole) ? "HOST" : "GUEST";
 
         User user = User.builder()
                 .username(username)

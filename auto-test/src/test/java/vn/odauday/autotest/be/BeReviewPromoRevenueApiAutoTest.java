@@ -15,24 +15,17 @@ public class BeReviewPromoRevenueApiAutoTest extends BasePlaywrightAutoTest {
 
     private String createTempBooking(String prefix, String token) {
         String[] dates = uniqueFutureDates(2);
-        String code = prefix + "-" + uniqueTag();
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("code", code);
-        body.put("guestUsername", "guest.demo");
-        body.put("guestName", "Nguyen Khach Test");
+        body.put("guestName", "Nguyen Khach Test " + prefix);
         body.put("propertyId", 1L);
-        body.put("propertyName", "ODauDay Stay Hồ Tây");
         body.put("roomId", 1L);
-        body.put("roomName", "Phòng Garden View Tầng 1");
         body.put("checkIn", dates[0]);
         body.put("checkOut", dates[1]);
         body.put("guests", 2);
-        body.put("pricePerNight", 650000.0);
-        body.put("serviceFee", 0.0);
         body.put("paymentMethod", "BANK_TRANSFER");
         APIResponse created = postJson("/api/bookings", body, token);
-        assertEquals(201, created.status());
-        return code;
+        assertEquals(201, created.status(), created.text());
+        return readJson(created).path("data").path("code").asText();
     }
 
     @Test
@@ -57,7 +50,7 @@ public class BeReviewPromoRevenueApiAutoTest extends BasePlaywrightAutoTest {
         String adminToken = loginBearer("admin", "123");
         String code = createTempBooking("AUTO-REV-OK", guestToken);
 
-        assertEquals(200, patchJson("/api/bookings/" + code + "/status", Map.of("status", "COMPLETED"), adminToken).status());
+        completeBooking(code, adminToken);
 
         APIResponse revRes = postJson("/api/reviews", Map.of(
                 "bookingCode", code,
@@ -183,7 +176,7 @@ public class BeReviewPromoRevenueApiAutoTest extends BasePlaywrightAutoTest {
         int countBefore = readJson(beforeRes).path("data").path("count").asInt();
 
         String code = createTempBooking("AUTO-REV-SUM", hostToken);
-        assertEquals(200, patchJson("/api/bookings/" + code + "/status", Map.of("status", "COMPLETED"), hostToken).status());
+        completeBooking(code, hostToken);
 
         APIResponse afterRes = getApi("/api/bookings/revenue?owner=host.demo", hostToken);
         assertEquals(200, afterRes.status());

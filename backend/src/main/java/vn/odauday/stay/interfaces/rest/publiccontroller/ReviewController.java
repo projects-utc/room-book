@@ -4,7 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.StringUtils;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import vn.odauday.stay.application.common.ApiResponse;
+import vn.odauday.stay.application.common.CurrentUser;
 import vn.odauday.stay.application.model.review.CreateReviewRequest;
 import vn.odauday.stay.application.model.review.ReviewResponse;
 import vn.odauday.stay.application.model.user.UserResponse;
@@ -45,53 +47,27 @@ public class ReviewController {
         return ApiResponse.ok(reviewService.getReviews(propertyId));
     }
 
+    /**
+     * Danh tính người đánh giá lấy từ JWT (SecurityConfig đã bắt buộc đăng nhập),
+     * không đọc guestUsername/guestName từ body.
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ReviewResponse> createReview(
-            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @RequestHeader("Authorization") String authHeader,
+            Authentication authentication,
             @Valid @RequestBody CreateReviewRequest request) {
 
-        String resolvedUsername = "guest_user";
-        String resolvedFullName = "Khách Hàng Ẩn Danh";
+        CurrentUser current = CurrentUser.from(authentication);
+        UserResponse user = authService.getMe(authHeader);
 
-        // 1. Xác thực người dùng qua JWT Bearer Token (chuẩn bảo mật)
-        if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
-            try {
-                UserResponse user = authService.getMe(authHeader);
-                if (user != null) {
-                    if (StringUtils.hasText(user.getUsername())) resolvedUsername = user.getUsername();
-                    if (StringUtils.hasText(user.getFullName())) resolvedFullName = user.getFullName();
-                }
-            } catch (Exception e) {
-                log.debug("Không thể trích xuất người dùng từ JWT token: {}", e.getMessage());
+        bookingRepository.findByCode(request.getBookingCode().trim()).ifPresent(booking -> {
+            if (!current.username().equals(booking.getGuestUsername())) {
+                throw new AccessDeniedException("Bạn chỉ được đánh giá đơn đặt phòng của chính mình");
             }
-        }
+        });
 
-        // 2. Fallback: lấy từ thông tin request body nếu chưa xác thực qua JWT
-        if ("guest_user".equals(resolvedUsername)) {
-            if (StringUtils.hasText(request.getGuestUsername())) {
-                resolvedUsername = request.getGuestUsername();
-            }
-            if (StringUtils.hasText(request.getGuestName())) {
-                resolvedFullName = request.getGuestName();
-            }
-        }
-
-        // 3. Fallback: lấy từ thông tin người đặt trong booking
-        if ("guest_user".equals(resolvedUsername) && StringUtils.hasText(request.getBookingCode())) {
-            var optBooking = bookingRepository.findByCode(request.getBookingCode());
-            if (optBooking.isPresent()) {
-                var booking = optBooking.get();
-                if (StringUtils.hasText(booking.getGuestUsername())) {
-                    resolvedUsername = booking.getGuestUsername();
-                }
-                if (StringUtils.hasText(booking.getGuestName())) {
-                    resolvedFullName = booking.getGuestName();
-                }
-            }
-        }
-
-        ReviewResponse response = reviewService.createReview(resolvedUsername, resolvedFullName, request);
+        ReviewResponse response = reviewService.createReview(current.username(), user.getFullName(), request);
         return ApiResponse.ok("Đánh giá thành công!", response);
     }
 }

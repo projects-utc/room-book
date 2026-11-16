@@ -52,24 +52,19 @@ public class FeHostAdminPortalWebAutoTest extends BasePlaywrightAutoTest {
     void ui_13_hostApproveBookingFromHostBookingsUiShouldPersistConfirmedStatus() {
         String guestToken = loginBearer("guest.demo", "123");
         String[] dates = uniqueFutureDates(2);
-        String code = "UI-HOST-" + uniqueTag();
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("code", code);
-        body.put("guestUsername", "guest.demo");
         body.put("guestName", "UI Host Approval Guest");
         body.put("guestPhone", "0900000003");
         body.put("propertyId", 1L);
-        body.put("propertyName", "ODauDay Stay Hồ Tây");
         body.put("roomId", 1L);
-        body.put("roomName", "Phòng Garden View Tầng 1");
         body.put("checkIn", dates[0]);
         body.put("checkOut", dates[1]);
         body.put("guests", 2);
-        body.put("pricePerNight", 650000.0);
-        body.put("serviceFee", 0.0);
         body.put("paymentMethod", "BANK_TRANSFER");
-        assertEquals(201, postJson("/api/bookings", body, guestToken).status());
+        APIResponse created = postJson("/api/bookings", body, guestToken);
+        assertEquals(201, created.status(), created.text());
+        String code = readJson(created).path("data").path("code").asText();
 
         loginViaUi("host.demo", "123");
         page.navigate(feUrl() + "/host/bookings");
