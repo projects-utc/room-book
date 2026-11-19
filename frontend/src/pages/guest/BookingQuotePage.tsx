@@ -1,6 +1,6 @@
 // Airbnb-Inspired Booking Checkout Page (Standardized Components)
 import React, { useState, useEffect, useRef } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { InputField, Button, Card, Badge, Breadcrumb } from '../../components';
 import { formatVND } from '../../constants';
@@ -24,6 +24,7 @@ export default function BookingQuotePage() {
     const [searchParams] = useSearchParams();
     const { store, currentUser, addToast } = useStore();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const propertyId = Number(searchParams.get('propertyId')) || 1;
     const roomId = Number(searchParams.get('roomId')) || 1;
@@ -40,9 +41,20 @@ export default function BookingQuotePage() {
         checkOut = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
-    const [guestName, setGuestName] = useState(currentUser?.fullName || 'Khách thuê');
-    const [guestPhone, setGuestPhone] = useState(currentUser?.phone || '0900000003');
-    const [guestEmail, setGuestEmail] = useState(currentUser?.email || 'guest@odauday.vn');
+    const [guestName, setGuestName] = useState(currentUser?.fullName || '');
+    const [guestPhone, setGuestPhone] = useState(currentUser?.phone || '');
+    const [guestEmail, setGuestEmail] = useState(currentUser?.email || '');
+
+    useEffect(() => {
+        if (!currentUser) {
+            addToast('Vui lòng đăng nhập hoặc đăng ký tài khoản để tiếp tục đặt phòng.', 'warn');
+            navigate('/login', { state: { from: location }, replace: true });
+        } else {
+            setGuestName(prev => prev || currentUser.fullName || '');
+            setGuestPhone(prev => prev || currentUser.phone || '');
+            setGuestEmail(prev => prev || currentUser.email || '');
+        }
+    }, [currentUser, navigate, location, addToast]);
 
     const [paymentMethod, setPaymentMethod] = useState<'cod' | 'bank'>('bank');
     const [banksList, setBanksList] = useState<BankApiItem[]>([]);
@@ -100,6 +112,12 @@ export default function BookingQuotePage() {
     const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        if (!currentUser) {
+            addToast('Vui lòng đăng nhập hoặc đăng ký tài khoản để tiếp tục đặt phòng.', 'warn');
+            navigate('/login', { state: { from: location } });
+            return;
+        }
+
         if (isAlreadyPaid) {
             addToast('Đơn đặt phòng này đã được ghi nhận thanh toán.', 'error');
             return;
@@ -151,7 +169,7 @@ export default function BookingQuotePage() {
                     checkOut,
                     nights,
                     guests: Number(guests) || 1,
-                    guestUsername: currentUser?.username || 'guest_user',
+                    guestUsername: currentUser.username,
                     guestName,
                     guestPhone,
                     guestEmail,

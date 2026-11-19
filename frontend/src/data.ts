@@ -59,6 +59,7 @@ export interface RoomBlock {
 }
 
 export interface Booking {
+  id?: number;
   code: string;
   guestUsername: string;
   guestName: string;

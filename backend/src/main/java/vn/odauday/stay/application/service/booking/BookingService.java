@@ -54,12 +54,12 @@ public class BookingService {
         String filter = guestUsername != null && !guestUsername.isBlank() ? guestUsername.trim() : null;
 
         if (user.isAdmin()) {
-            return filter != null ? bookingRepository.findByGuestUsername(filter) : bookingRepository.findAll();
+            return filter != null ? bookingRepository.findByGuestUsernameOrderByIdDesc(filter) : bookingRepository.findAllByOrderByIdDesc();
         }
 
         if (user.isHost() && (filter == null || !filter.equals(user.username()))) {
             Set<Long> ownPropertyIds = ownedPropertyIds(user.username());
-            return bookingRepository.findAll().stream()
+            return bookingRepository.findAllByOrderByIdDesc().stream()
                     .filter(b -> b.getPropertyId() != null && ownPropertyIds.contains(b.getPropertyId()))
                     .filter(b -> filter == null || filter.equals(b.getGuestUsername()))
                     .toList();
@@ -68,7 +68,7 @@ public class BookingService {
         if (filter != null && !filter.equals(user.username())) {
             return List.of();
         }
-        return bookingRepository.findByGuestUsername(user.username());
+        return bookingRepository.findByGuestUsernameOrderByIdDesc(user.username());
     }
 
     @Transactional(readOnly = true)

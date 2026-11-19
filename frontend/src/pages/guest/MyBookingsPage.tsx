@@ -25,14 +25,14 @@ export default function MyBookingsPage() {
   const { store, currentUser, addToast } = useStore();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const username = currentUser?.username || 'guest.demo';
+  const username = currentUser?.username || '';
 
   const [activeTab, setActiveTab] = useState<'UPCOMING' | 'COMPLETED' | 'CANCELLED' | 'ALL'>(() => {
     const tabParam = searchParams.get('tab')?.toUpperCase();
-    if (tabParam === 'UPCOMING' || tabParam === 'ACTIVE' || tabParam === 'DETAIL') return 'UPCOMING';
-    if (!tabParam || tabParam === 'COMPLETED' || tabParam === 'HISTORY') return 'COMPLETED';
+    if (tabParam === 'COMPLETED' || tabParam === 'HISTORY') return 'COMPLETED';
     if (tabParam === 'CANCELLED') return 'CANCELLED';
-    return 'ALL';
+    if (tabParam === 'ALL') return 'ALL';
+    return 'UPCOMING';
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [cancellingCode, setCancellingCode] = useState<string | null>(null);
@@ -43,14 +43,12 @@ export default function MyBookingsPage() {
     const tabParam = searchParams.get('tab')?.toUpperCase();
     if (tabParam === 'COMPLETED' || tabParam === 'HISTORY') {
       setActiveTab('COMPLETED');
-    } else if (tabParam === 'UPCOMING' || tabParam === 'ACTIVE' || tabParam === 'DETAIL') {
-      setActiveTab('UPCOMING');
     } else if (tabParam === 'CANCELLED') {
       setActiveTab('CANCELLED');
     } else if (tabParam === 'ALL') {
       setActiveTab('ALL');
-    } else if (!tabParam) {
-      setActiveTab('COMPLETED');
+    } else {
+      setActiveTab('UPCOMING');
     }
   }, [searchParams]);
 
@@ -126,10 +124,23 @@ export default function MyBookingsPage() {
     if (activeTab === 'CANCELLED') return ['CANCELLED', 'REJECTED'].includes(b.status);
     return true;
   }).sort((a, b) => {
-    const dateOrder = Date.parse(b.createdAt || '') - Date.parse(a.createdAt || '');
-    return Number.isNaN(dateOrder) || dateOrder === 0
-      ? b.code.localeCompare(a.code, undefined, { numeric: true })
-      : dateOrder;
+    // 1. So sánh id giảm dần nếu có (đơn mới nhất luôn có ID cao nhất)
+    if (b.id && a.id && b.id !== a.id) return Number(b.id) - Number(a.id);
+
+    // 2. So sánh ngày tạo (createdAt) mới nhất lên đầu
+    const dateA = Date.parse(a.createdAt || '');
+    const dateB = Date.parse(b.createdAt || '');
+    if (!Number.isNaN(dateA) && !Number.isNaN(dateB) && dateB !== dateA) {
+      return dateB - dateA;
+    }
+
+    // 3. Ưu tiên đơn mới tạo thực tế lên trước dữ liệu demo (ODD-DEMO)
+    const aIsDemo = (a.code || '').includes('DEMO');
+    const bIsDemo = (b.code || '').includes('DEMO');
+    if (aIsDemo !== bIsDemo) return aIsDemo ? 1 : -1;
+
+    // 4. So sánh mã đơn giảm dần
+    return (b.code || '').localeCompare(a.code || '', undefined, { numeric: true });
   });
   const pageCount = Math.max(1, Math.ceil(filteredBookings.length / pageSize));
   const visibleBookings = filteredBookings.slice((currentPage - 1) * pageSize, currentPage * pageSize);

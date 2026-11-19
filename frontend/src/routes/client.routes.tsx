@@ -28,8 +28,6 @@ export function ClientRoutes() {
       <Route path="/client/rooms" element={<SearchResultsPage />} />
       <Route path="/client/wishlist" element={<WishlistPage />} />
       <Route path="/client/property/:id" element={<PropertyDetailPage />} />
-      <Route path="/client/booking-quote" element={<BookingQuotePage />} />
-      <Route path="/client/booking-success" element={<BookingSuccessPage />} />
       <Route path="/client/login" element={<LoginPage />} />
       <Route path="/client/register" element={<RegisterPage />} />
 
@@ -38,8 +36,6 @@ export function ClientRoutes() {
       <Route path="/rooms" element={<SearchResultsPage />} />
       <Route path="/wishlist" element={<WishlistPage />} />
       <Route path="/property/:id" element={<PropertyDetailPage />} />
-      <Route path="/booking-quote" element={<BookingQuotePage />} />
-      <Route path="/booking-success" element={<BookingSuccessPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/order-history" element={<Navigate to="/my-bookings?tab=COMPLETED" replace />} />
@@ -53,6 +49,38 @@ export function ClientRoutes() {
       <Route path="/client/booking-details" element={<Navigate to="/client/my-bookings?tab=UPCOMING" replace />} />
 
       {/* ── Protected Client Pages (Yêu cầu đăng nhập) ──────── */}
+      <Route
+        path="/client/booking-quote"
+        element={
+          <ProtectedRoute unauthenticatedMessage="Vui lòng đăng nhập hoặc đăng ký tài khoản để tiếp tục đặt phòng.">
+            <BookingQuotePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/booking-quote"
+        element={
+          <ProtectedRoute unauthenticatedMessage="Vui lòng đăng nhập hoặc đăng ký tài khoản để tiếp tục đặt phòng.">
+            <BookingQuotePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/client/booking-success"
+        element={
+          <ProtectedRoute unauthenticatedMessage="Vui lòng đăng nhập để xem thông tin đặt phòng.">
+            <BookingSuccessPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/booking-success"
+        element={
+          <ProtectedRoute unauthenticatedMessage="Vui lòng đăng nhập để xem thông tin đặt phòng.">
+            <BookingSuccessPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/client/my-bookings"
         element={

@@ -76,6 +76,14 @@ export default function AdminBookingsPage() {
 
     const matchStatus = statusFilter === 'ALL' || b.status === statusFilter;
     return matchKw && matchStatus;
+  }).sort((a, b) => {
+    if (b.id && a.id && b.id !== a.id) return Number(b.id) - Number(a.id);
+    const dateDiff = (b.createdAt || '').localeCompare(a.createdAt || '');
+    if (dateDiff !== 0) return dateDiff;
+    const aIsDemo = (a.code || '').includes('DEMO');
+    const bIsDemo = (b.code || '').includes('DEMO');
+    if (aIsDemo !== bIsDemo) return aIsDemo ? 1 : -1;
+    return (b.code || '').localeCompare(a.code || '', undefined, { numeric: true });
   });
 
   const handleOpenDetail = (b: Booking) => {

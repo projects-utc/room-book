@@ -40,9 +40,25 @@ export default function LoginPage() {
       if (res.success) {
         const displayName = res.user?.fullName || username;
         addToast(`Chào mừng bạn trở lại, ${displayName}! Chúc bạn một ngày tốt lành ✨`, 'success');
-        const from = (location.state as any)?.from?.pathname;
-        if (from && from !== '/login' && from !== '/client/login' && from !== '/register') {
-          navigate(from, { replace: true });
+        const fromState = (location.state as any)?.from;
+        let fromUrl: string | null = null;
+        if (typeof fromState === 'string') {
+          fromUrl = fromState;
+        } else if (fromState && typeof fromState === 'object') {
+          const path = fromState.pathname || '';
+          const search = fromState.search || '';
+          fromUrl = `${path}${search}`;
+        }
+
+        const isAuthPage = fromUrl && (
+          fromUrl.startsWith('/login') ||
+          fromUrl.startsWith('/client/login') ||
+          fromUrl.startsWith('/register') ||
+          fromUrl.startsWith('/client/register')
+        );
+
+        if (fromUrl && !isAuthPage) {
+          navigate(fromUrl, { replace: true });
         } else if (res.user?.role === 'HOST') {
           navigate('/host/properties', { replace: true });
         } else if (res.user?.role === 'ADMIN') {
@@ -217,22 +233,7 @@ export default function LoginPage() {
           {/* Quick Demo Section */}
           <div style={{ margin: '1.75rem 0 1.25rem', textAlign: 'center', position: 'relative' }}>
             <div style={{ height: 1, background: 'var(--color-border-subtle)', width: '100%' }} />
-            <span
-              style={{
-                position: 'absolute',
-                top: -11,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: 'var(--color-bg-surface)',
-                padding: '0 0.85rem',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                color: 'var(--color-text-muted)',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              ĐĂNG NHẬP NHANH THỬ NGHIỆM
-            </span>
+            
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.65rem' }}>

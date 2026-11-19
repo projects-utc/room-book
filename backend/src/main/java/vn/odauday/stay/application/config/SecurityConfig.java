@@ -27,7 +27,7 @@ import java.util.List;
 public class SecurityConfig {
 
     /** Danh sách origin được phép gọi API từ trình duyệt, ngăn cách bằng dấu phẩy. */
-    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:8080}")
+    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:8080,https://frontend-vx35.onrender.com}")
     private List<String> allowedOrigins;
 
     @Bean
@@ -40,7 +40,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

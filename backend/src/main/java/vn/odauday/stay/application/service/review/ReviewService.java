@@ -73,39 +73,6 @@ public class ReviewService {
         return mapToResponse(savedReview);
     }
 
-    @Transactional
-    public ReviewEntity submitReview(ReviewEntity review) {
-        if (review.getBookingCode() != null && !review.getBookingCode().isBlank()) {
-            if (reviewRepository.existsByBookingCode(review.getBookingCode().trim())) {
-                throw new IllegalStateException("Đơn đặt phòng này đã được đánh giá trước đó.");
-            }
-            bookingRepository.findByCode(review.getBookingCode().trim()).ifPresent(b -> {
-                if (Boolean.TRUE.equals(b.getIsReviewed())) {
-                    throw new IllegalStateException("Đơn đặt phòng này đã được đánh giá trước đó.");
-                }
-                if (!"COMPLETED".equalsIgnoreCase(b.getStatus())) {
-                    throw new IllegalStateException("Chỉ có thể đánh giá sau khi kỳ lưu trú đã hoàn thành");
-                }
-            });
-        }
-        if (review.getDate() == null || review.getDate().isBlank()) {
-            review.setDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        }
-        ReviewEntity saved = reviewRepository.save(review);
-
-        // Cập nhật điểm property nếu có propertyId
-        if (review.getPropertyId() != null) {
-            updatePropertyRating(review.getPropertyId());
-        }
-
-        if (review.getBookingCode() != null && !review.getBookingCode().isBlank()) {
-            bookingRepository.findByCode(review.getBookingCode()).ifPresent(b -> {
-                b.setIsReviewed(true);
-                bookingRepository.save(b);
-            });
-        }
-        return saved;
-    }
     private void updatePropertyRating(Long propertyId) {
         try {
             Double avgRating = reviewRepository.calculateAverageRating(propertyId);

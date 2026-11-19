@@ -1,6 +1,6 @@
 // Standardized Luxury Register Page (TypeScript)
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import {
   HouseDoorFill,
@@ -19,6 +19,7 @@ import {
 export default function RegisterPage() {
   const { register, addToast } = useStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -46,7 +47,7 @@ export default function RegisterPage() {
 
       if (res.success) {
         addToast('Chúc mừng bạn đã tạo tài khoản thành công! Hãy đăng nhập để bắt đầu trải nghiệm ✨', 'success');
-        navigate('/login');
+        navigate('/login', { state: location.state });
       } else {
         addToast('Không thể tạo tài khoản. Vui lòng kiểm tra thông tin và thử lại.', 'error');
       }

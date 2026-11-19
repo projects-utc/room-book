@@ -20,28 +20,18 @@ function AppContent() {
     return () => window.clearTimeout(timer);
   }, [isBackendReady]);
 
-  if (!isBackendReady) {
-    if (backendWaitExpired) {
-      return (
-        <main style={{ minHeight: '100vh', display: 'grid', placeContent: 'center', gap: 12, padding: 24, textAlign: 'center', background: 'var(--color-bg-app)', color: 'var(--color-text-primary)' }}>
-          <h1 style={{ margin: 0, fontSize: '1.35rem' }}>Không kết nối được backend</h1>
-          <p style={{ maxWidth: 480, margin: 0, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-            Frontend đang chạy, nhưng API tại localhost:8080 chưa phản hồi. Kiểm tra backend Java 21 và kết nối Oracle; trang sẽ tự mở khi backend sẵn sàng.
-          </p>
-          <button type="button" onClick={() => window.location.reload()} style={{ justifySelf: 'center', marginTop: 8, padding: '0.7rem 1rem', border: 0, borderRadius: 8, background: 'var(--color-primary)', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
-            Thử tải lại
-          </button>
-        </main>
-      );
-    }
-
+  // Nếu backend chưa sẵn sàng trong 6 giây đầu, hiển thị hiệu ứng tải;
+  // Sau đó cho phép tải giao diện với dữ liệu cục bộ để tránh treo trắng trang (hỗ trợ Render cold-start)
+  if (!isBackendReady && !backendWaitExpired) {
     return (
       <div
         style={{
           minHeight: '100vh',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
+          gap: '1rem',
           background: 'var(--color-bg-app)',
         }}
       >
@@ -55,6 +45,9 @@ function AppContent() {
           }}
           className="animate-spin"
         />
+        <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
+          Đang kết nối hệ thống ODauDay Stay...
+        </span>
       </div>
     );
   }

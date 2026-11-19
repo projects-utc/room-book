@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
     Optional<BookingEntity> findByCode(String code);
     List<BookingEntity> findByGuestUsername(String guestUsername);
+    List<BookingEntity> findByGuestUsernameOrderByIdDesc(String guestUsername);
+    List<BookingEntity> findAllByOrderByIdDesc();
     List<BookingEntity> findByRoomId(Long roomId);
     List<BookingEntity> findByPropertyId(Long propertyId);
 

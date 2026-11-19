@@ -28,7 +28,7 @@ const BOOKING_SORT_BY_STATUS: Record<BookingStatusFilter, {
   direction: 1 | -1;
 }> = {
   ALL: { field: 'createdAt', direction: -1 },
-  PENDING: { field: 'createdAt', direction: 1 },
+  PENDING: { field: 'createdAt', direction: -1 },
   CONFIRMED: { field: 'checkIn', direction: 1 },
   CHECKED_IN: { field: 'checkOut', direction: 1 },
   COMPLETED: { field: 'checkOut', direction: -1 },
@@ -88,11 +88,15 @@ export function filterBookings(bookings: Booking[], filters: BookingFilters) {
     filters.status === 'ALL' || booking.status === filters.status,
   );
   const { field, direction } = BOOKING_SORT_BY_STATUS[filters.status];
-  filteredBookings.sort((a, b) =>
-    direction * (a[field] || '').localeCompare(b[field] || '')
-      || (b.createdAt || '').localeCompare(a.createdAt || '')
-      || a.code.localeCompare(b.code),
-  );
+  filteredBookings.sort((a, b) => {
+    if (b.id && a.id && b.id !== a.id) return Number(b.id) - Number(a.id);
+    const primary = direction * (a[field] || '').localeCompare(b[field] || '');
+    if (primary !== 0) return primary;
+    const aIsDemo = (a.code || '').includes('DEMO');
+    const bIsDemo = (b.code || '').includes('DEMO');
+    if (aIsDemo !== bIsDemo) return aIsDemo ? 1 : -1;
+    return (b.code || '').localeCompare(a.code || '');
+  });
 
   return { filteredBookings, statusCounts, invalidDateRange };
 }

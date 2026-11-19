@@ -349,14 +349,17 @@ export const ODDStore = {
 
     const data = loadData();
     const currentUser = getCurrentUser();
+    if (!currentUser) {
+      return { success: false, message: 'Vui lòng đăng nhập hoặc đăng ký tài khoản để tiếp tục đặt phòng.' };
+    }
     const code = 'ODD-' + new Date().getFullYear() + '-' + String(Math.floor(1000 + Math.random() * 9000));
 
     const newBooking: Booking = {
       code,
-      guestUsername: currentUser?.username || 'guest.demo',
-      guestName: payload.guestName || currentUser?.fullName || 'Khách thuê Demo',
-      guestPhone: payload.guestPhone || '0900000003',
-      guestEmail: payload.guestEmail || 'guest@odauday.vn',
+      guestUsername: currentUser.username,
+      guestName: payload.guestName || currentUser.fullName || 'Khách thuê',
+      guestPhone: payload.guestPhone || currentUser.phone || '',
+      guestEmail: payload.guestEmail || currentUser.email || '',
       propertyId: quote.property!.id,
       propertyName: quote.property!.name,
       roomId: quote.room!.id,
@@ -377,7 +380,7 @@ export const ODDStore = {
       payment_method: payload.paymentMethod || 'CASH',
     };
 
-    data.bookings.push(newBooking);
+    data.bookings.unshift(newBooking);
     saveData(data);
     authFetch('/api/bookings', {
       method: 'POST',
@@ -430,7 +433,15 @@ export const ODDStore = {
         );
         return { ...b, isReviewed, is_reviewed: isReviewed };
       })
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      .sort((a, b) => {
+        if (b.id && a.id && b.id !== a.id) return Number(b.id) - Number(a.id);
+        const dateDiff = (b.createdAt || '').localeCompare(a.createdAt || '');
+        if (dateDiff !== 0) return dateDiff;
+        const aIsDemo = (a.code || '').includes('DEMO');
+        const bIsDemo = (b.code || '').includes('DEMO');
+        if (aIsDemo !== bIsDemo) return aIsDemo ? 1 : -1;
+        return (b.code || '').localeCompare(a.code || '', undefined, { numeric: true });
+      });
   },
 
   getBooking(code: string): Booking | null {
@@ -468,7 +479,7 @@ export const ODDStore = {
     guestName: string;
     rating: number;
     comment: string;
-  }): { success: boolean; message?: string } {
+  }, options?: { skipApiSync?: boolean }): { success: boolean; message?: string } {
     const data = loadData();
     const isAlreadyReviewed = Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === reviewPayload.bookingCode);
     const idx = data.bookings.findIndex(b => b.code === reviewPayload.bookingCode);
@@ -486,11 +497,13 @@ export const ODDStore = {
       (data.bookings[idx] as any).is_reviewed = true;
     }
     saveData(data);
-    authFetch('/api/reviews', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...reviewPayload, date: data.reviews[data.reviews.length - 1].date }),
-    }).catch(() => { });
+    if (!options?.skipApiSync) {
+      authFetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...reviewPayload, date: data.reviews[data.reviews.length - 1].date }),
+      }).catch(() => { });
+    }
     return { success: true };
   },
 
@@ -648,7 +661,15 @@ export const ODDStore = {
   // UC-08: Host booking management
   getAllBookings(): Booking[] {
     const data = loadData();
-    return data.bookings;
+    return [...data.bookings].sort((a, b) => {
+      if (b.id && a.id && b.id !== a.id) return Number(b.id) - Number(a.id);
+      const dateDiff = (b.createdAt || '').localeCompare(a.createdAt || '');
+      if (dateDiff !== 0) return dateDiff;
+      const aIsDemo = (a.code || '').includes('DEMO');
+      const bIsDemo = (b.code || '').includes('DEMO');
+      if (aIsDemo !== bIsDemo) return aIsDemo ? 1 : -1;
+      return (b.code || '').localeCompare(a.code || '', undefined, { numeric: true });
+    });
   },
 
   // Cache server responses without issuing another backend request.
