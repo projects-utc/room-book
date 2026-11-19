@@ -29,3 +29,5 @@ app:
   jwt:
     secret: ${APP_JWT_SECRET:odaudaystaysecretkeyforjwttokengenerationshouldbelongenough256bit}
     expiration-ms: 86400000
+  revenue:
+    platform-fee-rate: ${APP_PLATFORM_FEE_RATE:0.15}

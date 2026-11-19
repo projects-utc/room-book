@@ -172,19 +172,31 @@ public class BeReviewPromoRevenueApiAutoTest extends BasePlaywrightAutoTest {
 
         APIResponse beforeRes = getApi("/api/bookings/revenue?owner=host.demo", hostToken);
         assertEquals(200, beforeRes.status());
-        double revBefore = readJson(beforeRes).path("data").path("totalRevenue").asDouble();
-        int countBefore = readJson(beforeRes).path("data").path("count").asInt();
+        JsonNode beforeData = readJson(beforeRes).path("data");
+        double revBefore = beforeData.path("totalRevenue").asDouble();
+        double feeBefore = beforeData.path("platformFee").asDouble();
+        double netBefore = beforeData.path("netRevenue").asDouble();
+        double feeRate = beforeData.path("platformFeeRate").asDouble();
+        int countBefore = beforeData.path("count").asInt();
+        assertEquals(0.15, feeRate, 0.0001);
+        assertEquals(Math.round(revBefore * feeRate), feeBefore, 0.01);
+        assertEquals(revBefore - feeBefore, netBefore, 0.01);
 
         String code = createTempBooking("AUTO-REV-SUM", hostToken);
         completeBooking(code, hostToken);
 
         APIResponse afterRes = getApi("/api/bookings/revenue?owner=host.demo", hostToken);
         assertEquals(200, afterRes.status());
-        double revAfter = readJson(afterRes).path("data").path("totalRevenue").asDouble();
-        int countAfter = readJson(afterRes).path("data").path("count").asInt();
+        JsonNode afterData = readJson(afterRes).path("data");
+        double revAfter = afterData.path("totalRevenue").asDouble();
+        double feeAfter = afterData.path("platformFee").asDouble();
+        double netAfter = afterData.path("netRevenue").asDouble();
+        int countAfter = afterData.path("count").asInt();
 
         assertEquals(countBefore + 1, countAfter);
         assertEquals(revBefore + 1300000.0, revAfter, 0.01);
+        assertEquals(feeBefore + 195000.0, feeAfter, 0.01);
+        assertEquals(netBefore + 1105000.0, netAfter, 0.01);
 
         postJson("/api/bookings/" + code + "/admin-cancel", Map.of("reason", "Restore revenue baseline"), adminToken);
     }
