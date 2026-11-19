@@ -31,7 +31,7 @@ public class FeGuestBookingWebAutoTest extends BasePlaywrightAutoTest {
         page.click("button:has-text('Xác nhận thanh toán')");
 
         page.waitForFunction(
-                "() => window.location.pathname === '/booking-success' && document.body.innerText.includes('Thanh toán thành công!')",
+                "() => window.location.pathname === '/booking-success' && document.body.innerText.includes('Đã gửi yêu cầu đặt phòng')",
                 null,
                 new Page.WaitForFunctionOptions().setTimeout(20000)
         );
@@ -118,21 +118,21 @@ public class FeGuestBookingWebAutoTest extends BasePlaywrightAutoTest {
         loginViaUi("guest.demo", "123");
         page.navigate(feUrl() + "/my-bookings");
         page.waitForFunction(
-                "() => document.body.innerText.includes('Đơn đặt phòng của tôi')",
+                "() => document.body.innerText.includes('Đơn đặt phòng sắp tới') && document.body.innerText.includes('ODD-DEMO-0002')",
                 null,
                 new Page.WaitForFunctionOptions().setTimeout(15000)
         );
 
-        page.getByText("Đã hoàn thành").first().click();
+        page.navigate(feUrl() + "/my-bookings?tab=completed");
         page.waitForFunction(
-                "() => document.body.innerText.includes('ODD-DEMO-0001')",
+                "() => document.body.innerText.includes('Lịch sử đặt phòng') && document.body.innerText.includes('ODD-DEMO-0001')",
                 null,
-                new Page.WaitForFunctionOptions().setTimeout(10000)
+                new Page.WaitForFunctionOptions().setTimeout(15000)
         );
 
-        page.getByText("Sắp tới & Chờ xác nhận").first().click();
+        page.getByText("Đơn đã hủy").first().click();
         page.waitForFunction(
-                "() => document.body.innerText.includes('ODD-DEMO-0002')",
+                "() => document.body.innerText.includes('Đơn đặt phòng đã hủy')",
                 null,
                 new Page.WaitForFunctionOptions().setTimeout(10000)
         );
@@ -165,6 +165,62 @@ public class FeGuestBookingWebAutoTest extends BasePlaywrightAutoTest {
         }
 
         postJson("/api/bookings/" + code + "/admin-cancel", Map.of("reason", "Cleanup E2E review test"), adminToken);
+    }
+
+    @Test
+    void ui_12_quotePageShouldBlockExcessGuestsHideDebugAndApplyPromo() {
+        String guestToken = loginBearer("guest.demo", "123");
+        loginViaUi("guest.demo", "123");
+
+        String[] dates = uniqueFutureDates(2);
+        String overCapacityUrl = String.format(
+                "%s/booking-quote?propertyId=1&roomId=1&in=%s&out=%s&guests=5",
+                feUrl(), dates[0], dates[1]
+        );
+        page.navigate(overCapacityUrl);
+        page.waitForSelector("#name", new Page.WaitForSelectorOptions().setTimeout(15000));
+
+        assertFalse(page.locator("button:has-text('FAILED')").count() > 0,
+                "Khong duoc hien nut debug FAILED tren trang thanh toan");
+        assertTrue(page.locator("button[type='submit']").isDisabled(),
+                "Nut thanh toan phai bi khoa khi vuot suc chua");
+
+        page.click("button:has-text('Sửa ngày / số khách ngay')");
+        page.selectOption("#quote-guests", "2");
+        page.waitForFunction(
+                "() => !document.querySelector(\"button[type='submit']\").disabled",
+                null,
+                new Page.WaitForFunctionOptions().setTimeout(10000)
+        );
+
+        page.fill("#promo-code-input", "ODAUDAY10");
+        page.click("button:has-text('Áp dụng')");
+        page.waitForFunction(
+                "() => document.body.innerText.includes('1.170.000')",
+                null,
+                new Page.WaitForFunctionOptions().setTimeout(10000)
+        );
+
+        page.click("button:has-text('Xác nhận thanh toán')");
+        page.waitForFunction(
+                "() => window.location.pathname === '/booking-success' && document.body.innerText.includes('Đã gửi yêu cầu đặt phòng')",
+                null,
+                new Page.WaitForFunctionOptions().setTimeout(20000)
+        );
+
+        String query = URI.create(page.url()).getQuery();
+        String code = null;
+        for (String param : query.split("&")) {
+            if (param.startsWith("code=")) {
+                code = param.substring("code=".length());
+            }
+        }
+        assertTrue(code != null && !code.isBlank());
+        APIResponse apiCheck = getApi("/api/bookings/" + code, guestToken);
+        assertEquals(200, apiCheck.status());
+        assertEquals(1170000.0, readJson(apiCheck).path("data").path("total").asDouble(), 0.01);
+
+        postJson("/api/bookings/" + code + "/cancel", Map.of(), guestToken);
     }
 }
 

@@ -414,7 +414,7 @@ export function Header() {
                                         onClick={() => setMenuOpen(false)}
                                         style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
                                     >
-                                        <BagCheck style={{ color: 'var(--color-primary)' }} /> Chi tiết đặt phòng
+                                        <BagCheck style={{ color: 'var(--color-primary)' }} /> Đơn đặt phòng sắp tới
                                     </Link>
 
                                     <Link

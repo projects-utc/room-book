@@ -123,7 +123,7 @@ export const stayApi = {
     return fetchJson<Booking>(`/api/bookings/${encodeURIComponent(code)}`);
   },
 
-  async createBooking(booking: Partial<Booking>) {
+  async createBooking(booking: Partial<Booking> & { promoCode?: string }) {
     return fetchJson<Booking>('/api/bookings', {
       method: 'POST',
       body: JSON.stringify(booking),
@@ -174,6 +174,13 @@ export const stayApi = {
   // 6. Promotions
   async getPromotions() {
     return fetchJson<Promotion[]>('/api/promotions');
+  },
+
+  async applyPromotion(code: string, orderAmount: number) {
+    return fetchJson<{ code: string; discountAmount: number; finalAmount: number }>('/api/promotions/apply', {
+      method: 'POST',
+      body: JSON.stringify({ code, orderAmount }),
+    });
   },
 
   async createPromotion(promo: Partial<Promotion>) {

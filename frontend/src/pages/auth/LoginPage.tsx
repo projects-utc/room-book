@@ -231,9 +231,11 @@ export default function LoginPage() {
           </form>
 
           {/* Quick Demo Section */}
-          <div style={{ margin: '1.75rem 0 1.25rem', textAlign: 'center', position: 'relative' }}>
-            <div style={{ height: 1, background: 'var(--color-border-subtle)', width: '100%' }} />
-            
+          <div style={{ margin: '1.75rem 0 1rem', textAlign: 'center' }}>
+            <div style={{ height: 1, background: 'var(--color-border-subtle)', width: '100%', marginBottom: '0.65rem' }} />
+            <span style={{ fontSize: '0.76rem', fontWeight: 600, color: 'var(--color-text-muted)' }}>
+              Tài khoản dùng thử hệ thống
+            </span>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.65rem' }}>
@@ -289,7 +291,7 @@ export default function LoginPage() {
           {/* Security Assurance Badge */}
           <div className="auth-trust-badge">
             <ShieldCheck style={{ fontSize: '1.05rem', color: 'var(--color-success)' }} />
-            <span>Bảo vệ quyền riêng tư &amp; an toàn dữ liệu 100%</span>
+            <span>Xác thực an toàn bằng JWT &amp; mã hóa BCrypt</span>
           </div>
         </div>
       </div>
