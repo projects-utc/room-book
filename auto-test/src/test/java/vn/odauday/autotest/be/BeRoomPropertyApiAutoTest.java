@@ -76,9 +76,19 @@ public class BeRoomPropertyApiAutoTest extends BasePlaywrightAutoTest {
         assertEquals(200, toggled.status());
         assertEquals("LOCKED", readJson(toggled).path("data").path("status").asText());
 
+        Map<String, Object> roomBody = Map.of(
+                "propertyId", propId,
+                "propertyName", "Auto Test Villa " + tag,
+                "name", "Child Room " + tag,
+                "capacity", 2,
+                "price", 500000.0
+        );
+        assertEquals(201, postJson("/api/rooms", roomBody, hostToken).status());
+
         APIResponse deleted = deleteApi("/api/properties/" + propId, hostToken);
         assertEquals(200, deleted.status());
         assertEquals(400, getApi("/api/properties/" + propId).status());
+        assertEquals(0, readJson(getApi("/api/rooms?propertyId=" + propId)).path("data").size());
     }
 
     @Test
