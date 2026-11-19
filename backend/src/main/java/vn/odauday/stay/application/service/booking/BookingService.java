@@ -2,6 +2,7 @@ package vn.odauday.stay.application.service.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,9 @@ public class BookingService {
     private final AuditLogService auditLogService;
     private final RoomRepository roomRepository;
     private final PropertyRepository propertyRepository;
+
+    @Value("${app.revenue.platform-fee-rate:0.15}")
+    private double platformFeeRate = 0.15;
 
     // ------------------------------------------------------------------ đọc
 
@@ -261,10 +265,15 @@ public class BookingService {
         double totalRevenue = completedBookings.stream()
                 .mapToDouble(b -> b.getTotal() != null ? b.getTotal() : 0.0)
                 .sum();
+        double platformFee = Math.round(totalRevenue * platformFeeRate);
+        double netRevenue = totalRevenue - platformFee;
 
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("totalBookings", scopedBookings.size());
         result.put("totalRevenue", totalRevenue);
+        result.put("platformFeeRate", platformFeeRate);
+        result.put("platformFee", platformFee);
+        result.put("netRevenue", netRevenue);
         result.put("count", completedBookings.size());
         result.put("completedBookings", completedBookings);
         result.put("cancelledBookings", cancelledBookings);

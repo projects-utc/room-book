@@ -38,3 +38,5 @@ app:
     # và bắt buộc đặt APP_SEED_PASSWORD (mật khẩu chung cho tài khoản demo).
     enabled: ${APP_SEED_ENABLED:false}
     password: ${APP_SEED_PASSWORD:}
+  revenue:
+    platform-fee-rate: ${APP_PLATFORM_FEE_RATE:0.15}

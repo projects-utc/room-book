@@ -6,6 +6,18 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export interface RevenueSummary {
+  totalBookings: number;
+  totalRevenue: number;
+  platformFeeRate: number;
+  platformFee: number;
+  netRevenue: number;
+  count: number;
+  completedBookings: Booking[];
+  cancelledBookings: Booking[];
+  pendingBookings: Booking[];
+}
+
 const TOKEN_KEY = 'odd_jwt_token';
 
 async function fetchJson<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
@@ -136,6 +148,11 @@ export const stayApi = {
       method: 'POST',
       body: JSON.stringify({ reason }),
     });
+  },
+
+  async getRevenueSummary(owner?: string) {
+    const qs = owner ? `?owner=${encodeURIComponent(owner)}` : '';
+    return fetchJson<RevenueSummary>(`/api/bookings/revenue${qs}`);
   },
 
   // 5. Reviews

@@ -42,7 +42,15 @@ public class FeHostAdminPortalWebAutoTest extends BasePlaywrightAutoTest {
 
         page.navigate(feUrl() + "/host/revenue");
         page.waitForFunction(
-                "() => document.body.innerText.includes('Báo cáo doanh thu') && document.body.innerText.toLowerCase().includes('doanh thu thực nhận')",
+                "() => {" +
+                        "const t = document.body.innerText.toLowerCase();" +
+                        "return t.includes('báo cáo doanh thu')" +
+                        " && t.includes('phí nền tảng phải trả')" +
+                        " && t.includes('15%')" +
+                        " && t.includes('195.000')" +
+                        " && t.includes('1.105.000')" +
+                        " && t.includes('doanh thu thực nhận');" +
+                        "}",
                 null,
                 new Page.WaitForFunctionOptions().setTimeout(15000)
         );

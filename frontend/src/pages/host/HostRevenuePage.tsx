@@ -1,11 +1,13 @@
 // UC-09: Host Revenue & Reports Page (Standardized Components)
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStore } from '../../contexts/StoreContext';
+import { stayApi, RevenueSummary } from '../../api/stayApi';
 import {
   Breadcrumb,
   Card,
   StatCard,
   Badge,
+  Alert,
   Table,
   TableHead,
   TableBody,
@@ -20,17 +22,55 @@ import {
   CheckCircle,
   DoorClosed,
   CashStack,
-  ExclamationCircle,
+  Percent,
+  Wallet2,
 } from 'react-bootstrap-icons';
 
+const EMPTY_SUMMARY: RevenueSummary = {
+  totalBookings: 0,
+  totalRevenue: 0,
+  platformFeeRate: 0.15,
+  platformFee: 0,
+  netRevenue: 0,
+  count: 0,
+  completedBookings: [],
+  cancelledBookings: [],
+  pendingBookings: [],
+};
+
 export default function HostRevenuePage() {
-  const { store, currentUser } = useStore();
+  const { currentUser } = useStore();
   const owner = currentUser?.username || 'host.demo';
 
-  const revData = store.getRevenueData(owner);
-  const completedBookings = revData.completedBookings;
-  const cancelledBookings = revData.cancelledBookings;
-  const pendingBookings = revData.pendingBookings;
+  const [revData, setRevData] = useState<RevenueSummary>(EMPTY_SUMMARY);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError(null);
+
+    stayApi.getRevenueSummary(owner).then(res => {
+      if (!active) return;
+      if (res.success && res.data) {
+        setRevData(res.data);
+      } else {
+        setError(res.message || 'Không thể tải báo cáo doanh thu từ máy chủ.');
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [owner]);
+
+  const completedBookings = revData.completedBookings || [];
+  const cancelledBookings = revData.cancelledBookings || [];
+  const pendingBookings = revData.pendingBookings || [];
+  const feePercent = Math.round((revData.platformFeeRate ?? 0.15) * 100);
+  const netPercent = 100 - feePercent;
 
   return (
     <div style={{ maxWidth: 1240, margin: '2rem auto', padding: '0 1.5rem' }}>
@@ -47,33 +87,48 @@ export default function HostRevenuePage() {
             Báo cáo doanh thu &amp; Thống kê lưu trú
           </h1>
           <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
-            Doanh thu được tổng hợp từ các đơn đặt phòng đã hoàn tất kỳ lưu trú thực tế.
+            Doanh thu được tổng hợp trực tiếp từ cơ sở dữ liệu theo các đơn đặt phòng đã hoàn tất kỳ lưu trú thực tế.
           </p>
         </div>
       </div>
 
+      {error && (
+        <div style={{ marginBottom: '1.5rem' }}>
+          <Alert type="error" title="Không tải được dữ liệu doanh thu">
+            {error}
+          </Alert>
+        </div>
+      )}
+
       {/* Standard KPI Metric Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
         <StatCard
-          label="Doanh thu thực nhận"
-          value={formatVND(revData.totalRevenue)}
-          sublabel="Phí nền tảng 0đ · Thực nhận 100%"
+          label="Doanh thu gộp"
+          value={loading ? '...' : formatVND(revData.totalRevenue)}
+          sublabel="Tổng giá trị các đơn đã hoàn tất"
           accent="brand"
           icon={<CashStack />}
         />
         <StatCard
-          label="Đơn lưu trú thành công"
-          value={`${completedBookings.length} đơn`}
-          sublabel="Khách đã hoàn tất trả phòng (Check-out)"
-          accent="ok"
-          icon={<CheckCircle />}
+          label="Phí nền tảng phải trả"
+          value={loading ? '...' : formatVND(revData.platformFee)}
+          sublabel={`Mức phí ${feePercent}% trên doanh thu gộp`}
+          accent="warn"
+          icon={<Percent />}
         />
         <StatCard
-          label="Đơn chưa tính doanh thu"
-          value={`${cancelledBookings.length + pendingBookings.length} đơn`}
-          sublabel="Bao gồm đơn đã hủy & đơn chờ xác nhận"
-          accent="warn"
-          icon={<ExclamationCircle />}
+          label="Doanh thu thực nhận"
+          value={loading ? '...' : formatVND(revData.netRevenue)}
+          sublabel={`Thực nhận ${netPercent}% sau khi trừ phí nền tảng`}
+          accent="ok"
+          icon={<Wallet2 />}
+        />
+        <StatCard
+          label="Đơn lưu trú thành công"
+          value={loading ? '...' : `${completedBookings.length} đơn`}
+          sublabel={`Chưa tính doanh thu: ${cancelledBookings.length + pendingBookings.length} đơn (hủy & chờ duyệt)`}
+          accent="info"
+          icon={<CheckCircle />}
         />
       </div>
 
