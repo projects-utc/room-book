@@ -20,12 +20,12 @@ public class FeAuthWebAutoTest extends BasePlaywrightAutoTest {
     void ui_01_loginGuestAndLogoutModalShouldWork() {
         loginViaUi("guest.demo", "123");
 
-        page.click(".user-menu-pill");
+        page.click(".user-avatar-btn");
         Locator dropdown = page.locator(".user-dropdown");
         dropdown.waitFor();
         String dropdownText = dropdown.innerText();
         assertTrue(dropdownText.contains("@guest.demo"));
-        assertTrue(dropdownText.contains("Chuyến đi của tôi"));
+        assertTrue(dropdownText.contains("Đơn đặt phòng sắp tới"));
 
         dropdown.locator("button:has-text('Đăng xuất')").click();
         page.locator(".logout-modal-box").waitFor();
@@ -37,7 +37,7 @@ public class FeAuthWebAutoTest extends BasePlaywrightAutoTest {
                 new Page.WaitForFunctionOptions().setTimeout(10000)
         );
 
-        page.click(".user-menu-pill");
+        page.click(".user-avatar-btn");
         page.locator(".user-dropdown").waitFor();
         assertTrue(page.locator(".user-dropdown").innerText().contains("Đăng nhập"));
     }
@@ -89,7 +89,7 @@ public class FeAuthWebAutoTest extends BasePlaywrightAutoTest {
         );
 
         loginViaUi(username, "Pass123!");
-        page.click(".user-menu-pill");
+        page.click(".user-avatar-btn");
         page.locator(".user-dropdown").waitFor();
         assertTrue(page.locator(".user-dropdown").innerText().contains("@" + username));
     }

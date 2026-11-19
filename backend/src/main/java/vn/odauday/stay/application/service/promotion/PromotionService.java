@@ -65,6 +65,13 @@ public class PromotionService {
             throw new IllegalStateException("Mã giảm giá hiện đang tạm ngưng hoạt động");
         }
 
+        if (promo.getValidFrom() != null && !promo.getValidFrom().isBlank()) {
+            LocalDate startDate = LocalDate.parse(promo.getValidFrom().trim().substring(0, Math.min(10, promo.getValidFrom().trim().length())));
+            if (startDate.isAfter(LocalDate.now())) {
+                throw new IllegalStateException("Mã giảm giá chưa đến thời gian áp dụng");
+            }
+        }
+
         if (promo.getValidTo() != null && !promo.getValidTo().isBlank()) {
             LocalDate expiryDate = LocalDate.parse(promo.getValidTo().trim().substring(0, Math.min(10, promo.getValidTo().trim().length())));
             if (expiryDate.isBefore(LocalDate.now())) {
@@ -97,6 +104,16 @@ public class PromotionService {
         result.put("finalAmount", Math.max(0.0, orderTotal - discountAmount));
         result.put("promotion", promo);
         return result;
+    }
+
+    @Transactional
+    public void incrementUsedCount(String rawCode) {
+        if (rawCode == null || rawCode.isBlank()) return;
+        promotionRepository.findByCode(rawCode.trim().toUpperCase()).ifPresent(promo -> {
+            int current = promo.getUsedCount() != null ? promo.getUsedCount() : 0;
+            promo.setUsedCount(current + 1);
+            promotionRepository.save(promo);
+        });
     }
 
     @Transactional

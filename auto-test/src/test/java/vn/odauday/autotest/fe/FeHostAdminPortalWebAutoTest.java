@@ -76,6 +76,8 @@ public class FeHostAdminPortalWebAutoTest extends BasePlaywrightAutoTest {
 
         loginViaUi("host.demo", "123");
         page.navigate(feUrl() + "/host/bookings");
+        page.waitForSelector("#booking-search", new Page.WaitForSelectorOptions().setTimeout(15000));
+        page.fill("#booking-search", code);
         Locator row = page.locator("tr", new Page.LocatorOptions().setHasText(code));
         row.waitFor(new Locator.WaitForOptions().setTimeout(15000));
 

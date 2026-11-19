@@ -285,11 +285,11 @@ export default function MyBookingsPage() {
       }}>
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 999, background: 'var(--color-primary-soft)', color: 'var(--color-primary)', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>
-            <span>{activeTab === 'UPCOMING' ? 'Chi tiết đặt phòng' : 'Lịch sử đặt phòng'}</span>
+            <span>{activeTab === 'UPCOMING' ? 'Đơn đặt phòng sắp tới' : 'Lịch sử đặt phòng'}</span>
           </div>
           <h1 style={{ fontSize: '2.15rem', fontWeight: 800, margin: '0 0 0.5rem', color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
             {activeTab === 'UPCOMING'
-              ? 'Chi tiết đặt phòng'
+              ? 'Đơn đặt phòng sắp tới'
               : activeTab === 'COMPLETED'
               ? 'Lịch sử đặt phòng'
               : activeTab === 'CANCELLED'

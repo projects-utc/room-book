@@ -43,4 +43,7 @@ public class CreateBookingRequest {
     @Size(max = 50, message = "Phương thức thanh toán tối đa 50 ký tự")
     @JsonAlias({"payment_method", "paymentMethod"})
     private String paymentMethod;
+
+    @Size(max = 50, message = "Mã giảm giá tối đa 50 ký tự")
+    private String promoCode;
 }

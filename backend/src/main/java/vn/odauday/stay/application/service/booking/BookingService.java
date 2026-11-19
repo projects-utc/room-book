@@ -10,11 +10,13 @@ import vn.odauday.stay.application.common.CurrentUser;
 import vn.odauday.stay.application.common.enums.BookingStatus;
 import vn.odauday.stay.application.model.booking.CreateBookingRequest;
 import vn.odauday.stay.application.service.audit.AuditLogService;
+import vn.odauday.stay.application.service.promotion.PromotionService;
 import vn.odauday.stay.domain.booking.model.BookingEntity;
 import vn.odauday.stay.domain.booking.persistent.BookingRepository;
 import vn.odauday.stay.domain.property.model.PropertyEntity;
 import vn.odauday.stay.domain.property.persistent.PropertyRepository;
 import vn.odauday.stay.domain.room.model.RoomEntity;
+import vn.odauday.stay.domain.room.persistent.RoomBlockRepository;
 import vn.odauday.stay.domain.room.persistent.RoomRepository;
 
 import java.time.LocalDate;
@@ -38,7 +40,9 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final AuditLogService auditLogService;
     private final RoomRepository roomRepository;
+    private final RoomBlockRepository roomBlockRepository;
     private final PropertyRepository propertyRepository;
+    private final PromotionService promotionService;
 
     @Value("${app.revenue.platform-fee-rate:0.15}")
     private double platformFeeRate = 0.15;
@@ -93,6 +97,9 @@ public class BookingService {
     public BookingEntity createBooking(CreateBookingRequest request, String guestUsername) {
         LocalDate checkIn = parseDate(request.getCheckIn());
         LocalDate checkOut = parseDate(request.getCheckOut());
+        if (checkIn.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Ngày nhận phòng không được nhỏ hơn ngày hiện tại");
+        }
         if (!checkOut.isAfter(checkIn)) {
             throw new IllegalArgumentException("Ngày trả phòng phải sau ngày nhận phòng");
         }
@@ -120,16 +127,28 @@ public class BookingService {
 
         PropertyEntity property = propertyRepository.findById(request.getPropertyId())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy cơ sở lưu trú có ID: " + request.getPropertyId()));
+        if (property.getStatus() != null && !"ACTIVE".equalsIgnoreCase(property.getStatus())) {
+            throw new IllegalArgumentException("Cơ sở lưu trú hiện đang tạm khóa, không thể đặt phòng");
+        }
 
         String checkInStr = checkIn.toString();
         String checkOutStr = checkOut.toString();
         if (!bookingRepository.findOverlappingBookings(room.getId(), checkInStr, checkOutStr).isEmpty()) {
             throw new IllegalArgumentException("Phòng đã có người đặt trong khoảng thời gian này");
         }
+        if (!roomBlockRepository.findOverlappingBlocks(room.getId(), checkInStr, checkOutStr).isEmpty()) {
+            throw new IllegalArgumentException("Phòng đang được chủ nhà khóa bảo trì trong khoảng thời gian này");
+        }
 
         double pricePerNight = room.getPrice();
         double subtotal = pricePerNight * nights;
         double serviceFee = 0.0;
+        double discountAmount = 0.0;
+        if (hasText(request.getPromoCode())) {
+            Map<String, Object> promoResult = promotionService.validateAndCalculateDiscount(request.getPromoCode(), subtotal);
+            discountAmount = ((Number) promoResult.get("discountAmount")).doubleValue();
+        }
+        double total = Math.max(0.0, subtotal + serviceFee - discountAmount);
 
         BookingEntity booking = BookingEntity.builder()
                 .code(generateUniqueCode())
@@ -148,7 +167,7 @@ public class BookingService {
                 .pricePerNight(pricePerNight)
                 .subtotal(subtotal)
                 .serviceFee(serviceFee)
-                .total(subtotal + serviceFee)
+                .total(total)
                 .status(BookingStatus.PENDING.name())
                 .paymentMethod(trimOrNull(request.getPaymentMethod()))
                 .createdAt(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
@@ -156,6 +175,9 @@ public class BookingService {
                 .build();
 
         BookingEntity saved = bookingRepository.save(booking);
+        if (hasText(request.getPromoCode())) {
+            promotionService.incrementUsedCount(request.getPromoCode());
+        }
         log.info("Booking created: {} | guest={} | nights={} | total={}",
                 saved.getCode(), guestUsername, saved.getNights(), saved.getTotal());
         return saved;

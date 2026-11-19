@@ -69,11 +69,11 @@ export default function BookingSuccessPage() {
                 </div>
 
                 <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                    Thanh toán thành công!
+                    Đã gửi yêu cầu đặt phòng
                 </h3>
                 <p style={{ margin: '0 0 1.5rem', fontSize: '0.92rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-                    Đơn #{booking?.code || code} đã hoàn tất{' '}
-                    {dbMethod === 'CASH' ? 'đặt cọc 30% giữ chỗ' : 'thanh toán 100%'}. Phương thức thanh toán đã được khóa.
+                    Đơn #{booking?.code || code} đã được ghi nhận (
+                    {dbMethod === 'CASH' ? 'đặt cọc 30% giữ chỗ' : 'thanh toán 100%'}) và đang chờ chủ nhà xác nhận.
                 </p>
 
                 {/* Khung thông tin chi tiết đồng bộ với PaymentFailedScreen */}

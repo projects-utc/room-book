@@ -358,4 +358,90 @@ public class BeBookingApiAutoTest extends BasePlaywrightAutoTest {
 
         postJson("/api/bookings/" + code + "/cancel", Map.of(), token);
     }
+
+    private int promoUsedCount(String promoCode, String token) {
+        JsonNode promos = readJson(getApi("/api/promotions", token)).path("data");
+        for (JsonNode p : promos) {
+            if (promoCode.equalsIgnoreCase(p.path("code").asText())) {
+                return p.path("usedCount").asInt(0);
+            }
+        }
+        throw new IllegalStateException("Khong tim thay ma giam gia " + promoCode);
+    }
+
+    @Test
+    void api_37_createBookingWithPromoCodeShouldApplyDiscountAndRejectInvalidPromo() {
+        String token = loginBearer("guest.demo", "123");
+        String adminToken = loginBearer("admin", "123");
+        String[] dates = uniqueFutureDates(2);
+        int usedBefore = promoUsedCount("ODAUDAY10", adminToken);
+
+        Map<String, Object> validBody = buildBookingPayload(1L, dates[0], dates[1]);
+        validBody.put("promoCode", "ODAUDAY10");
+        APIResponse validRes = postJson("/api/bookings", validBody, token);
+        String code = createdCode(validRes);
+        JsonNode data = readJson(validRes).path("data");
+        assertEquals(1300000.0, data.path("subtotal").asDouble(), 0.01);
+        assertEquals(1170000.0, data.path("total").asDouble(), 0.01);
+        assertEquals(usedBefore + 1, promoUsedCount("ODAUDAY10", adminToken));
+        postJson("/api/bookings/" + code + "/cancel", Map.of(), token);
+
+        String[] datesInvalid = uniqueFutureDates(2);
+        Map<String, Object> invalidBody = buildBookingPayload(1L, datesInvalid[0], datesInvalid[1]);
+        invalidBody.put("promoCode", "INVALID_PROMO_XYZ");
+        APIResponse invalidRes = postJson("/api/bookings", invalidBody, token);
+        assertEquals(400, invalidRes.status());
+    }
+
+    @Test
+    void api_38_businessGuardsShouldBlockPastDatesRoomBlocksAndLockedProperty() {
+        String guestToken = loginBearer("guest.demo", "123");
+        String hostToken = loginBearer("host.demo", "123");
+        String adminToken = loginBearer("admin", "123");
+
+        // 1. Không cho đặt ngày nhận phòng trong quá khứ
+        Map<String, Object> pastBody = buildBookingPayload(1L, "2020-01-10", "2020-01-12");
+        assertEquals(400, postJson("/api/bookings", pastBody, guestToken).status());
+
+        // 2. Tạo RoomBlock -> chặn đặt phòng trùng khoảng ngày; sau đó xóa RoomBlock
+        String[] blockDates = uniqueFutureDates(2);
+        Map<String, Object> blockReq = Map.of(
+                "roomId", 1L,
+                "roomName", "Phòng Garden",
+                "start", blockDates[0],
+                "end", blockDates[1],
+                "reason", "Bao tri test"
+        );
+        APIResponse blockRes = postJson("/api/room-blocks", blockReq, hostToken);
+        assertEquals(201, blockRes.status());
+        long blockId = readJson(blockRes).path("data").path("id").asLong();
+        assertEquals(400, postJson("/api/room-blocks", blockReq, hostToken).status());
+        assertEquals(400, postJson("/api/bookings", buildBookingPayload(1L, blockDates[0], blockDates[1]), guestToken).status());
+        assertEquals(200, deleteApi("/api/room-blocks/" + blockId, hostToken).status());
+
+        // 3. Tạo đơn -> chặn tạo RoomBlock trùng khoảng ngày; sau đó hủy đơn
+        String[] bookDates = uniqueFutureDates(2);
+        String code = createdCode(postJson("/api/bookings", buildBookingPayload(1L, bookDates[0], bookDates[1]), guestToken));
+        Map<String, Object> overlapBlock = Map.of(
+                "roomId", 1L,
+                "roomName", "Phòng Garden",
+                "start", bookDates[0],
+                "end", bookDates[1],
+                "reason", "Trung don"
+        );
+        assertEquals(400, postJson("/api/room-blocks", overlapBlock, hostToken).status());
+        postJson("/api/bookings/" + code + "/cancel", Map.of(), guestToken);
+
+        // 4. Khóa cơ sở lưu trú -> chặn đặt phòng; mở khóa lại ngay
+        assertEquals(200, patchJson("/api/properties/1/toggle-status", Map.of(), adminToken).status());
+        try {
+            String[] lockedDates = uniqueFutureDates(2);
+            assertEquals(400, postJson("/api/bookings", buildBookingPayload(1L, lockedDates[0], lockedDates[1]), guestToken).status());
+        } finally {
+            patchJson("/api/properties/1/toggle-status", Map.of(), adminToken);
+        }
+
+        // 5. Mã khuyến mãi chưa tới validFrom (CHAOHE2027) bị từ chối
+        assertEquals(400, postJson("/api/promotions/apply", Map.of("code", "CHAOHE2027", "orderAmount", 1500000.0)).status());
+    }
 }
