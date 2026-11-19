@@ -116,20 +116,34 @@ export default function BookingQuotePage() {
 
     const [property, setProperty] = useState<Property>(() => store.getProperty(propertyId) || store.getProperty(1)!);
     const [room, setRoom] = useState<Room>(() => store.getAllRooms().find(r => r.id === roomId) || store.getAllRooms()[0]);
+    const [notFoundError, setNotFoundError] = useState<string | null>(null);
 
     useEffect(() => {
-        stayApi.getProperty(propertyId).then(res => {
-            if (res.success && res.data) {
-                setProperty(res.data);
+        let active = true;
+        setNotFoundError(null);
+        Promise.all([stayApi.getProperty(propertyId), stayApi.getRooms(propertyId)]).then(([propRes, roomsRes]) => {
+            if (!active) return;
+            if (!propRes.success || !propRes.data) {
+                setNotFoundError(propRes.message || `Không tìm thấy cơ sở lưu trú có ID: ${propertyId}`);
+                return;
             }
-        });
-        stayApi.getRooms(propertyId).then(res => {
-            if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-                const matched = res.data.find((r: Room) => r.id === roomId) || res.data[0];
-                if (matched) setRoom(matched);
+            setProperty(propRes.data);
+            if (!roomsRes.success || !Array.isArray(roomsRes.data) || roomsRes.data.length === 0) {
+                setNotFoundError('Cơ sở lưu trú này hiện chưa có phòng cho thuê.');
+                return;
             }
+            const requestedRoomId = searchParams.get('roomId');
+            const matched = roomsRes.data.find((r: Room) => r.id === roomId);
+            if (requestedRoomId && !matched) {
+                setNotFoundError(`Không tìm thấy phòng có ID ${roomId} thuộc cơ sở lưu trú này.`);
+                return;
+            }
+            setRoom(matched || roomsRes.data[0]);
         });
-    }, [propertyId, roomId]);
+        return () => {
+            active = false;
+        };
+    }, [propertyId, roomId, searchParams]);
 
     const quote = store.calculateQuote(room.id, checkIn, checkOut, guests, room);
     const nights = quote.nights || Math.max(1, Math.round((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000) || 1);
@@ -260,6 +274,19 @@ export default function BookingQuotePage() {
                 isDeposit={paymentMethod === 'cod'}
                 amount={activePaymentAmount}
             />
+        );
+    }
+
+    if (notFoundError) {
+        return (
+            <div style={{ maxWidth: 760, margin: '3rem auto', padding: '0 1.5rem' }}>
+                <Alert type="error" title="Không thể đặt phòng">
+                    <p style={{ margin: '0.4rem 0 1rem' }}>{notFoundError}</p>
+                    <Button type="button" variant="primary" size="sm" onClick={() => navigate('/search')}>
+                        Tìm chỗ ở khác
+                    </Button>
+                </Alert>
+            </div>
         );
     }
 

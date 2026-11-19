@@ -221,6 +221,14 @@ public class FeGuestBookingWebAutoTest extends BasePlaywrightAutoTest {
         assertEquals(1170000.0, readJson(apiCheck).path("data").path("total").asDouble(), 0.01);
 
         postJson("/api/bookings/" + code + "/cancel", Map.of(), guestToken);
+
+        page.navigate(String.format("%s/booking-quote?propertyId=999999&roomId=999999&in=%s&out=%s&guests=2",
+                feUrl(), dates[0], dates[1]));
+        page.waitForFunction(
+                "() => document.body.innerText.includes('Không thể đặt phòng') && document.body.innerText.includes('Tìm chỗ ở khác')",
+                null,
+                new Page.WaitForFunctionOptions().setTimeout(10000)
+        );
     }
 }
 

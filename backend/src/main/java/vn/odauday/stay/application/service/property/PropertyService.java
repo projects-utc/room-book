@@ -10,6 +10,9 @@ import vn.odauday.stay.domain.property.model.PropertyEntity;
 import vn.odauday.stay.domain.property.persistent.PropertyRepository;
 import vn.odauday.stay.domain.review.model.ReviewEntity;
 import vn.odauday.stay.domain.review.persistent.ReviewRepository;
+import vn.odauday.stay.domain.room.model.RoomEntity;
+import vn.odauday.stay.domain.room.persistent.RoomBlockRepository;
+import vn.odauday.stay.domain.room.persistent.RoomRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,6 +30,8 @@ public class PropertyService {
     private final PropertyRepository propertyRepository;
     private final ReviewRepository reviewRepository;
     private final BookingRepository bookingRepository;
+    private final RoomRepository roomRepository;
+    private final RoomBlockRepository roomBlockRepository;
     private final AuditLogService auditLogService;
 
     private void enrichRating(PropertyEntity property) {
@@ -130,6 +135,18 @@ public class PropertyService {
     @Transactional
     public void deleteProperty(Long id) {
         propertyRepository.findById(id).ifPresent(p -> {
+            boolean hasActiveBooking = bookingRepository.findAll().stream()
+                    .anyMatch(b -> id.equals(b.getPropertyId())
+                            && b.getStatus() != null
+                            && List.of("PENDING", "CONFIRMED", "CHECKED_IN").contains(b.getStatus().toUpperCase()));
+            if (hasActiveBooking) {
+                throw new IllegalStateException("Không thể xóa cơ sở lưu trú đang có đơn đặt phòng hoạt động");
+            }
+            List<RoomEntity> childRooms = roomRepository.findByPropertyId(id);
+            for (RoomEntity r : childRooms) {
+                roomBlockRepository.deleteAll(roomBlockRepository.findByRoomId(r.getId()));
+            }
+            roomRepository.deleteAll(childRooms);
             propertyRepository.delete(p);
             auditLogService.logAudit("DELETE_PROPERTY", p.getName(), "Xóa cơ sở lưu trú: " + p.getName(), "admin");
         });
