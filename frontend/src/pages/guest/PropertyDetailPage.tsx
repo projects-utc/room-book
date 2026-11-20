@@ -607,8 +607,6 @@ export default function PropertyDetailPage() {
               </button>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: '0.82rem', color: 'var(--color-text-muted)', margin: '0.75rem 0 1.25rem' }}>
-                <LockFill style={{ fontSize: '0.78rem' }} />
-                <span>Bạn vẫn chưa bị trừ tiền ở bước này</span>
               </div>
 
               {/* Chi tiết giá dự tính */}

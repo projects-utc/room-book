@@ -329,18 +329,6 @@ export default function SearchResultsPage() {
         </div>
       )}
 
-      {/* Loading State */}
-      {isLoading && (
-        <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-          <div className="spinner-border text-danger" role="status" style={{ width: '2.5rem', height: '2.5rem' }}>
-            <span className="visually-hidden">Đang tải...</span>
-          </div>
-          <p style={{ marginTop: '1rem', color: 'var(--color-text-secondary)', fontSize: '0.95rem' }}>
-            Đang tải dữ liệu chỗ ở thực tế từ hệ thống...
-          </p>
-        </div>
-      )}
-
       {/* Results Header */}
       {!isLoading && !isDateError && (
         <div style={{ marginBottom: '1.5rem' }}>

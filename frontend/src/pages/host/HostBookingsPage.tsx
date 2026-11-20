@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { stayApi } from '../../api/stayApi';
-import { Breadcrumb, Button, Card, EmptyState, StatCard, formatDisplayDateVN } from '../../components';
+import { Breadcrumb, Button, Card, EmptyState, StatCard, formatDisplayDateVN, DateRangePicker } from '../../components';
 import { formatVND, BADGE_CLASS, BADGE_LABEL } from '../../constants';
 import {
-  ArrowLeftRight, ArrowRight, Calendar3, CalendarCheck,
+  ArrowLeftRight, ArrowRight, CalendarCheck,
   Check2All, CheckLg, ChevronLeft, ChevronRight, Eye, Search, X, XCircle,
   KeyFill, ArrowCounterclockwise,
 } from 'react-bootstrap-icons';
@@ -157,19 +157,14 @@ export default function HostBookingsPage() {
                 <X aria-hidden="true" />
               </button>}
             </div>
-            <div className="booking-field">
-              <label htmlFor="booking-from"><Calendar3 aria-hidden="true" /> Lưu trú từ ngày</label>
-              <input id="booking-from" type="date" className="booking-filter-control"
-                value={filters.from} max={filters.to || undefined} aria-invalid={invalidDateRange}
-                aria-describedby={invalidDateRange ? 'booking-date-help' : undefined}
-                onChange={event => updateFilters({ from: event.target.value })} />
-            </div>
-            <div className="booking-field">
-              <label htmlFor="booking-to"><Calendar3 aria-hidden="true" /> Đến ngày</label>
-              <input id="booking-to" type="date" className="booking-filter-control"
-                value={filters.to} min={filters.from || undefined} aria-invalid={invalidDateRange}
-                aria-describedby={invalidDateRange ? 'booking-date-help' : undefined}
-                onChange={event => updateFilters({ to: event.target.value })} />
+            <div className="booking-range-field">
+              <DateRangePicker
+                label="Khoảng thời gian lưu trú"
+                value={{ start: filters.from, end: filters.to }}
+                onChange={({ start, end }) => updateFilters({ from: start, to: end })}
+                minDate=""
+                quickSelect={false}
+              />
             </div>
             <button type="button" className="booking-reset" onClick={clearFilters}
               disabled={!hasActiveFilters}>

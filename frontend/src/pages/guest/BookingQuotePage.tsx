@@ -614,8 +614,8 @@ export default function BookingQuotePage() {
                                                 label="Ngày nhận và trả phòng"
                                                 value={{ start: checkIn, end: checkOut }}
                                                 onChange={range => {
-                                                    if (range.start) setCheckIn(range.start);
-                                                    if (range.end) setCheckOut(range.end);
+                                                    setCheckIn(range.start);
+                                                    setCheckOut(range.end);
                                                 }}
                                             />
                                             <div>

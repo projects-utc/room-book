@@ -33,7 +33,8 @@
 .host-bookings .booking-search input::placeholder { color: #858585; }
 .host-bookings .booking-search-clear { display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; color: var(--muted); background: var(--surface-alt); cursor: pointer; font-size: 1.15rem; }
 .host-bookings .booking-search-clear:hover { background: #ffe7ec; color: #b91943; }
-.host-bookings .booking-filter-grid { display: grid; grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)) auto; align-items: end; gap: 0.7rem; }
+.host-bookings .booking-filter-grid { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1.3fr) auto; align-items: end; gap: 0.7rem; }
+.host-bookings .booking-range-field { min-width: 0; }
 .host-bookings .booking-field { position: relative; min-width: 0; }
 .host-bookings .booking-field label { position: absolute; top: 0; left: 0.55rem; z-index: 1; display: flex; align-items: center; gap: 0.3rem; margin: 0; padding: 0 0.3rem; background: linear-gradient(to bottom, #fafafa 50%, #fff 50%); font-size: 0.7rem; font-weight: 600; line-height: 1; white-space: nowrap; transform: translateY(-50%); cursor: pointer; }
 .host-bookings .booking-field label svg { color: var(--muted); font-size: 0.78rem; }

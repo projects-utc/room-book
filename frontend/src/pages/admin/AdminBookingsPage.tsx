@@ -119,11 +119,20 @@ export default function AdminBookingsPage() {
     REJECTED: [],
   };
 
+  const STATUS_LABELS: Record<string, string> = {
+    PENDING: 'Chờ duyệt',
+    CONFIRMED: 'Đã duyệt',
+    CHECKED_IN: 'Đang lưu trú',
+    COMPLETED: 'Hoàn thành',
+    CANCELLED: 'Đã hủy',
+    REJECTED: 'Từ chối',
+  };
+
   const handleChangeStatus = async (code: string, newStatus: Booking['status']) => {
     const res = await stayApi.updateBookingStatus(code, newStatus);
     if (res.success) {
       store.updateBookingStatus(code, newStatus);
-      addToast(`Đã chuyển trạng thái đơn ${code} sang ${newStatus}`, 'info');
+      addToast(`Đã chuyển trạng thái đơn ${code} sang ${STATUS_LABELS[newStatus] || newStatus}`, 'info');
       refreshList();
     } else {
       addToast(res.message || 'Không thể đổi trạng thái đơn này', 'error');
@@ -235,13 +244,13 @@ export default function AdminBookingsPage() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableHeaderCell>MÃ ĐƠN</TableHeaderCell>
-                <TableHeaderCell>KHÁCH HÀNG</TableHeaderCell>
-                <TableHeaderCell>CHỖ Ở &amp; PHÒNG</TableHeaderCell>
-                <TableHeaderCell>KỲ LƯU TRÚ</TableHeaderCell>
-                <TableHeaderCell>TỔNG TIỀN</TableHeaderCell>
-                <TableHeaderCell>TRẠNG THÁI</TableHeaderCell>
-                <TableHeaderCell align="right">THAO TÁC CAN THIỆP</TableHeaderCell>
+                <TableHeaderCell style={{ minWidth: 140 }}>MÃ ĐƠN</TableHeaderCell>
+                <TableHeaderCell style={{ minWidth: 180 }}>KHÁCH HÀNG</TableHeaderCell>
+                <TableHeaderCell style={{ minWidth: 170 }}>CHỖ Ở &amp; PHÒNG</TableHeaderCell>
+                <TableHeaderCell style={{ minWidth: 160 }}>KỲ LƯU TRÚ</TableHeaderCell>
+                <TableHeaderCell style={{ minWidth: 140 }}>TỔNG TIỀN</TableHeaderCell>
+                <TableHeaderCell style={{ minWidth: 120 }}>TRẠNG THÁI</TableHeaderCell>
+                <TableHeaderCell align="right" style={{ minWidth: 260, whiteSpace: 'nowrap' }}>THAO TÁC CAN THIỆP</TableHeaderCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -284,49 +293,62 @@ export default function AdminBookingsPage() {
 
                   <TableCell>{statusBadge(b.status)}</TableCell>
 
-                  <TableCell align="right">
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.4rem', flexWrap: 'wrap' }}>
+                  <TableCell align="right" style={{ whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.45rem', whiteSpace: 'nowrap' }}>
                       <Button
                         variant="outline"
                         size="xs"
                         onClick={() => handleOpenDetail(b)}
-                        title="Xem chi tiết"
+                        title="Xem chi tiết đơn đặt phòng"
                       >
                         <EyeFill /> Chi tiết
                       </Button>
 
-                      {b.status !== 'CANCELLED' && b.status !== 'COMPLETED' && (
+                      {b.status !== 'CANCELLED' && b.status !== 'COMPLETED' && b.status !== 'REJECTED' && (
                         <Button
                           variant="outline"
                           size="xs"
                           onClick={() => handleOpenCancel(b)}
-                          style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger-border)' }}
-                          title="Hủy đơn can thiệp"
+                          style={{
+                            color: 'var(--color-danger)',
+                            borderColor: 'var(--color-danger-border)',
+                            background: 'rgba(239, 68, 68, 0.04)',
+                          }}
+                          title="Can thiệp hủy đơn này"
                         >
                           <XCircleFill /> Hủy đơn
                         </Button>
                       )}
 
-                      {/* Status Override Shortcut */}
-                      <select
-                        value={b.status}
-                        disabled={(NEXT_STATUSES[b.status] ?? []).length === 0}
-                        onChange={(e) => handleChangeStatus(b.code, e.target.value as any)}
-                        style={{
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
-                          borderRadius: 6,
-                          border: '1px solid var(--color-border-strong)',
-                          padding: '0.2rem 0.4rem',
-                          background: 'var(--color-bg-surface)',
-                          color: 'var(--color-text-secondary)',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {[b.status, ...(NEXT_STATUSES[b.status] ?? [])].map((s) => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
+                      {/* Status Override Shortcut: chỉ hiển thị khi có trạng thái tiếp theo hợp lệ */}
+                      {(NEXT_STATUSES[b.status] ?? []).length > 0 && (
+                        <select
+                          value={b.status}
+                          onChange={(e) => handleChangeStatus(b.code, e.target.value as any)}
+                          title="Chuyển trạng thái đơn"
+                          style={{
+                            height: 28,
+                            fontSize: '0.78rem',
+                            fontWeight: 600,
+                            borderRadius: 6,
+                            border: '1px solid var(--color-border-strong)',
+                            padding: '0 0.45rem',
+                            background: 'var(--color-bg-surface)',
+                            color: 'var(--color-text-secondary)',
+                            cursor: 'pointer',
+                            outline: 'none',
+                          }}
+                        >
+                          <option value={b.status} disabled>
+                            {STATUS_LABELS[b.status] || b.status}
+                          </option>
+                          {(NEXT_STATUSES[b.status] ?? []).map((s) => (
+                            <option key={s} value={s}>
+                              ➔ {STATUS_LABELS[s] || s}
+                            </option>
+                          ))}
+                        </select>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -393,7 +415,19 @@ export default function AdminBookingsPage() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.65rem' }}>
+              {selectedBooking.status !== 'CANCELLED' && selectedBooking.status !== 'COMPLETED' && selectedBooking.status !== 'REJECTED' && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowDetailModal(false);
+                    handleOpenCancel(selectedBooking);
+                  }}
+                  style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger-border)', background: 'rgba(239, 68, 68, 0.04)' }}
+                >
+                  <XCircleFill /> Hủy đơn
+                </Button>
+              )}
               <Button variant="secondary" onClick={() => setShowDetailModal(false)}>
                 Đóng
               </Button>

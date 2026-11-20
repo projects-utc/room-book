@@ -119,7 +119,7 @@ export default function SearchBar({
               value={{ start: checkIn, end: checkOut }}
               onChange={range => {
                 setCheckIn(range.start);
-                if (range.end) setCheckOut(range.end);
+                setCheckOut(range.end);
               }}
               align="center"
             />
@@ -246,7 +246,7 @@ export default function SearchBar({
             value={{ start: checkIn, end: checkOut }}
             onChange={range => {
               setCheckIn(range.start);
-              if (range.end) setCheckOut(range.end);
+              setCheckOut(range.end);
             }}
             align="center"
           />

@@ -1,5 +1,5 @@
 // UC-07: Host Room Block Page (Standardized Components)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import {
@@ -20,7 +20,7 @@ import {
   ShieldCheck,
 } from 'react-bootstrap-icons';
 import { RoomBlock } from '../../data';
-import { daysFromToday } from '../../dateUtils';
+import { stayApi } from '../../api/stayApi';
 
 export default function HostRoomBlockPage() {
   const [searchParams] = useSearchParams();
@@ -29,19 +29,38 @@ export default function HostRoomBlockPage() {
   const roomId = Number(searchParams.get('roomId')) || 2;
   const room = store.getAllRooms().find(r => r.id === roomId) || store.getAllRooms()[1];
 
-  const [blocks, setBlocks] = useState<RoomBlock[]>(() => store.getRoomBlocks());
-  const [start, setStart] = useState(daysFromToday(50));
-  const [end, setEnd] = useState(daysFromToday(52));
+  const [blocks, setBlocks] = useState<RoomBlock[]>(() => store.getRoomBlocks(roomId));
+  const [start, setStart] = useState('');
+  const [end, setEnd] = useState('');
   const [reason, setReason] = useState('Bảo trì điều hoà trung tâm & sơn mới ban công');
   const [conflictError, setConflictError] = useState('');
 
   const refreshBlocks = () => {
-    setBlocks(store.getRoomBlocks());
+    setBlocks(store.getRoomBlocks(roomId));
+    stayApi.getRoomBlocks(roomId).then(res => {
+      if (res.success && Array.isArray(res.data)) {
+        setBlocks(res.data);
+      }
+    }).catch(() => {});
   };
+
+  useEffect(() => {
+    refreshBlocks();
+  }, [roomId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setConflictError('');
+
+    if (!start || !end) {
+      addToast('Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.', 'warn');
+      return;
+    }
+
+    if (new Date(end) <= new Date(start)) {
+      addToast('Ngày kết thúc phải sau ngày bắt đầu ít nhất 1 ngày.', 'warn');
+      return;
+    }
 
     const res = store.addRoomBlock({
       roomId: room.id,
@@ -56,6 +75,8 @@ export default function HostRoomBlockPage() {
       addToast(res.message || 'Lỗi xung đột lịch', 'error');
     } else {
       addToast('Đã thiết lập khoảng chặn phòng thành công!', 'success');
+      setStart('');
+      setEnd('');
       refreshBlocks();
     }
   };
@@ -63,6 +84,7 @@ export default function HostRoomBlockPage() {
   const handleDeleteBlock = (id: number) => {
     if (window.confirm('Bạn có chắc muốn hủy lịch chặn này?')) {
       store.deleteRoomBlock(id);
+      stayApi.deleteRoomBlock(id).catch(() => {});
       addToast('Đã gỡ bỏ lịch chặn phòng.', 'info');
       refreshBlocks();
     }
@@ -107,7 +129,7 @@ export default function HostRoomBlockPage() {
                   value={{ start, end }}
                   onChange={range => {
                     setStart(range.start);
-                    if (range.end) setEnd(range.end);
+                    setEnd(range.end);
                   }}
                   helperText="Nhấp vào để chọn ngày bắt đầu và kết thúc trên lịch trực quan"
                 />

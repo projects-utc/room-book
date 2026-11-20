@@ -16,6 +16,7 @@ import {
   SelectField,
   Modal,
   EmptyState,
+  DatePicker,
 } from '../../components';
 import {
   TicketPerforatedFill,
@@ -366,12 +367,12 @@ export default function AdminPromotionsPage() {
                 placeholder="100"
               />
 
-              <InputField
+              <DatePicker
                 label="Hạn sử dụng đến ngày"
-                type="date"
                 required
                 value={validTo}
-                onChange={(e) => setValidTo(e.target.value)}
+                onChange={(val) => setValidTo(val)}
+                minDate={daysFromToday(0)}
               />
             </div>
 

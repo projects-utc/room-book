@@ -148,7 +148,7 @@ export default function AdminDashboardPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem', fontWeight: 600 }}>
-                <span style={{ color: 'var(--color-text-primary)' }}>Hoàn tất kỳ lưu trú (COMPLETED)</span>
+                <span style={{ color: 'var(--color-text-primary)' }}>Hoàn tất kỳ lưu trú</span>
                 <span style={{ color: 'var(--color-success)' }}>{completedBookings.length} đơn ({bookings.length ? Math.round((completedBookings.length / bookings.length) * 100) : 0}%)</span>
               </div>
               <div style={{ height: 8, background: 'var(--color-bg-muted)', borderRadius: 9999, overflow: 'hidden' }}>
@@ -158,7 +158,7 @@ export default function AdminDashboardPage() {
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem', fontWeight: 600 }}>
-                <span style={{ color: 'var(--color-text-primary)' }}>Đã xác nhận &amp; Đang ở (CONFIRMED / CHECKED_IN)</span>
+                <span style={{ color: 'var(--color-text-primary)' }}>Đã xác nhận &amp; Đang ở</span>
                 <span style={{ color: 'var(--color-info)' }}>{confirmedBookings.length} đơn</span>
               </div>
               <div style={{ height: 8, background: 'var(--color-bg-muted)', borderRadius: 9999, overflow: 'hidden' }}>
@@ -168,7 +168,7 @@ export default function AdminDashboardPage() {
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem', fontWeight: 600 }}>
-                <span style={{ color: 'var(--color-text-primary)' }}>Chờ chủ nhà duyệt (PENDING)</span>
+                <span style={{ color: 'var(--color-text-primary)' }}>Chờ chủ nhà duyệt</span>
                 <span style={{ color: 'var(--color-warning)' }}>{pendingBookings.length} đơn</span>
               </div>
               <div style={{ height: 8, background: 'var(--color-bg-muted)', borderRadius: 9999, overflow: 'hidden' }}>
@@ -178,7 +178,7 @@ export default function AdminDashboardPage() {
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem', fontWeight: 600 }}>
-                <span style={{ color: 'var(--color-text-primary)' }}>Đã hủy (CANCELLED)</span>
+                <span style={{ color: 'var(--color-text-primary)' }}>Đã hủy</span>
                 <span style={{ color: 'var(--color-text-muted)' }}>{cancelledBookings.length} đơn</span>
               </div>
               <div style={{ height: 8, background: 'var(--color-bg-muted)', borderRadius: 9999, overflow: 'hidden' }}>
@@ -347,77 +347,6 @@ export default function AdminDashboardPage() {
             ))}
           </TableBody>
         </Table>
-      </Card>
-
-      {/* Recent System Audit Feed */}
-      <Card
-        title={
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-            <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>
-              Nhật ký hoạt động &amp; can thiệp hệ thống
-            </span>
-            <Link to="/admin/audit-logs" style={{ fontSize: '0.82rem', color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}>
-              Xem toàn bộ log →
-            </Link>
-          </div>
-        }
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {auditLogs.slice(0, 4).map((log) => (
-            <div
-              key={log.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0.75rem 1rem',
-                borderRadius: 10,
-                background: 'var(--color-bg-app)',
-                border: '1px solid var(--color-border-subtle)',
-                gap: '1rem',
-                flexWrap: 'wrap',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <span
-                  style={{
-                    padding: '0.25rem 0.55rem',
-                    borderRadius: 6,
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    background:
-                      log.action === 'LOCK'
-                        ? 'var(--color-danger-bg)'
-                        : log.action === 'CHANGE_ROLE'
-                        ? 'var(--color-info-bg)'
-                        : log.action === 'CREATE_PROMO'
-                        ? 'var(--color-primary-border)'
-                        : 'var(--color-success-bg)',
-                    color:
-                      log.action === 'LOCK'
-                        ? 'var(--color-danger)'
-                        : log.action === 'CHANGE_ROLE'
-                        ? 'var(--color-secondary)'
-                        : log.action === 'CREATE_PROMO'
-                        ? 'var(--color-danger)'
-                        : 'var(--color-success)',
-                  }}
-                >
-                  {log.action}
-                </span>
-                <div>
-                  <span style={{ fontWeight: 700, color: 'var(--color-text-primary)', fontSize: '0.88rem' }}>{log.target}</span>: {log.details}
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-                <span>Bởi: <strong>{log.performedBy}</strong></span>
-                <span>·</span>
-                <span>{log.timestamp}</span>
-              </div>
-            </div>
-          ))}
-        </div>
       </Card>
     </div>
   );

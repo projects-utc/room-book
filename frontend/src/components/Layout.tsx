@@ -26,6 +26,12 @@ import {
     HeartFill,
     HouseDoor,
     ClockHistory,
+    Facebook,
+    Instagram,
+    Tiktok,
+    Youtube,
+    ShieldLockFill,
+    Check2Circle,
 } from 'react-bootstrap-icons';
 
 // ── Header (ODauDay Stay Brand + Airbnb Experience) ─────────────────────────
@@ -89,12 +95,6 @@ export function Header() {
         } else {
             navigate('/client');
         }
-    };
-
-    const handleResetData = () => {
-        resetStore();
-        setMenuOpen(false);
-        addToast('Đã khôi phục dữ liệu mẫu ban đầu', 'success');
     };
 
     return (
@@ -695,23 +695,141 @@ export function Header() {
 // ── Footer (ODauDay Stay + Airbnb Clean 4-Column Layout) ────────────────────
 export function Footer() {
     return (
-        <footer className="site-footer" style={{ borderTop: '1px solid var(--color-border-subtle)', background: 'var(--color-bg-app)', padding: '1.5rem 2.5rem', marginTop: 'auto' }}>
-            <div style={{ maxWidth: 1760, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', fontSize: '0.88rem', color: 'var(--color-text-secondary)' }}>
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span>© 2026 ODauDay Stay</span>
-                    <span>·</span>
-                    <Link to="/search" style={{ textDecoration: 'none', color: 'inherit' }}>Tìm chỗ ở</Link>
-                    <span>·</span>
-                    <Link to="/register" style={{ textDecoration: 'none', color: 'inherit' }}>Đăng ký tài khoản</Link>
-                    <span>·</span>
-                    <Link to="/host/properties" style={{ textDecoration: 'none', color: 'inherit' }}>Dành cho Chủ nhà</Link>
+        <footer className="site-footer" style={{ borderTop: '1px solid var(--color-border-subtle)', background: 'var(--color-bg-app)', padding: '3rem 2rem 1.5rem', marginTop: 'auto' }}>
+            <div className="footer-container" style={{ maxWidth: 1760, margin: '0 auto' }}>
+                {/* 4 Columns Grid */}
+                <div
+                    className="footer-columns"
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                        gap: '2.5rem',
+                        paddingBottom: '2.5rem',
+                        borderBottom: '1px solid var(--color-border-subtle)',
+                    }}
+                >
+                    {/* Column 1: Brand & Intro */}
+                    <div>
+                        <Link
+                            to="/"
+                            className="brand"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', textDecoration: 'none', marginBottom: '0.85rem' }}
+                        >
+                            <HouseDoorFill style={{ fontSize: '1.6rem', color: '#FF385C' }} />
+                            <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#FF385C', letterSpacing: '-0.03em' }}>
+                                ODauDay <span style={{ fontWeight: 600, color: '#222222' }}>Stay</span>
+                            </span>
+                        </Link>
+                        <p style={{ fontSize: '0.86rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: '0 0 1rem' }}>
+                            Hệ thống trung gian đặt phòng trực tuyến (OTA) kết nối khách thuê homestay và chủ nhà trên toàn quốc. Trải nghiệm lưu trú an tâm, tiện nghi và bảo mật hàng đầu.
+                        </p>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'var(--color-primary-soft)', color: 'var(--color-primary)', padding: '4px 10px', borderRadius: 9999, fontSize: '0.75rem', fontWeight: 600, marginBottom: '1.25rem' }}>
+                            <Check2Circle /> Đồ án PTTHĐT (OOAD) · Kiến trúc BCE
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.85rem', fontSize: '1.2rem', color: 'var(--color-text-muted)' }}>
+                            <a href="#facebook" aria-label="Facebook" style={{ color: 'inherit', transition: 'color 0.15s' }} onMouseEnter={e => e.currentTarget.style.color = '#1877F2'} onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-muted)'}><Facebook /></a>
+                            <a href="#instagram" aria-label="Instagram" style={{ color: 'inherit', transition: 'color 0.15s' }} onMouseEnter={e => e.currentTarget.style.color = '#E4405F'} onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-muted)'}><Instagram /></a>
+                            <a href="#tiktok" aria-label="TikTok" style={{ color: 'inherit', transition: 'color 0.15s' }} onMouseEnter={e => e.currentTarget.style.color = '#000000'} onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-muted)'}><Tiktok /></a>
+                            <a href="#youtube" aria-label="YouTube" style={{ color: 'inherit', transition: 'color 0.15s' }} onMouseEnter={e => e.currentTarget.style.color = '#FF0000'} onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-muted)'}><Youtube /></a>
+                        </div>
+                    </div>
+
+                    {/* Column 2: Guest Services */}
+                    <div>
+                        <h4 className="footer-col-title" style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 1rem' }}>Dành cho Khách thuê</h4>
+                        <ul className="footer-link-list" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                            <li><Link to="/search" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Khám phá tất cả chỗ ở</Link></li>
+                            <li><Link to="/my-bookings" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Quản lý đơn đặt phòng của tôi</Link></li>
+                            <li><Link to="/login" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Đăng nhập tài khoản khách</Link></li>
+                            <li><Link to="/register" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Đăng ký thành viên mới</Link></li>
+                            <li><span style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', cursor: 'pointer' }}>Bảo vệ quyền lợi ODauDay Cover</span></li>
+                        </ul>
+                    </div>
+
+                    {/* Column 3: Host Hub */}
+                    <div>
+                        <h4 className="footer-col-title" style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 1rem' }}>Dành cho Chủ nhà</h4>
+                        <ul className="footer-link-list" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                            <li><Link to="/host/properties" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Kênh Chủ nhà (Host Hub)</Link></li>
+                            <li><Link to="/host/properties" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Quản lý cơ sở lưu trú</Link></li>
+                            <li><Link to="/host/roomblock?roomId=1" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Quản lý lịch khóa phòng bảo trì</Link></li>
+                            <li><Link to="/host/bookings" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Xử lý và duyệt đơn lưu trú</Link></li>
+                            <li><Link to="/host/revenue" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Báo cáo doanh thu &amp; tăng trưởng</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Column 4: Academic Project & Admin */}
+                    <div>
+                        <h4 className="footer-col-title" style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 1rem' }}>Thông tin Đề tài &amp; Quản trị</h4>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: '0 0 0.85rem' }}>
+                            Đề tài Bài tập lớn môn <strong>Phân tích &amp; Thiết kế Hướng đối tượng (OOAD)</strong>.<br />
+                            Trường Đại học Giao thông Vận tải (UTC).<br />
+                            Kiến trúc phân tầng: React 19 + Spring Boot 3 + MySQL.
+                        </p>
+                        <div style={{ marginTop: '0.85rem' }}>
+                            <Link
+                                to="/admin/bookings"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.45rem',
+                                    padding: '0.45rem 0.85rem',
+                                    borderRadius: 8,
+                                    border: '1px solid var(--color-border-subtle)',
+                                    background: 'var(--color-bg-surface)',
+                                    color: 'var(--color-text-primary)',
+                                    fontSize: '0.82rem',
+                                    fontWeight: 600,
+                                    textDecoration: 'none',
+                                    transition: 'all 0.15s ease',
+                                }}
+                                onMouseEnter={e => {
+                                    e.currentTarget.style.borderColor = 'var(--color-primary)';
+                                    e.currentTarget.style.color = 'var(--color-primary)';
+                                }}
+                                onMouseLeave={e => {
+                                    e.currentTarget.style.borderColor = 'var(--color-border-subtle)';
+                                    e.currentTarget.style.color = 'var(--color-text-primary)';
+                                }}
+                            >
+                                <ShieldLockFill style={{ color: 'var(--color-primary)' }} /> Cổng Quản trị viên (Admin)
+                            </Link>
+                        </div>
+                    </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', fontWeight: 600 }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <Globe /> Tiếng Việt (VN)
-                    </span>
-                    <span>₫ VND</span>
+                {/* Bottom Bar */}
+                <div
+                    className="footer-bottom"
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '1rem',
+                        paddingTop: '1.5rem',
+                        fontSize: '0.86rem',
+                        color: 'var(--color-text-secondary)',
+                    }}
+                >
+                    <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <span>© 2026 ODauDay Stay Platform</span>
+                        <span>·</span>
+                        <a href="#privacy" style={{ textDecoration: 'none', color: 'inherit' }}>Quyền riêng tư</a>
+                        <span>·</span>
+                        <a href="#terms" style={{ textDecoration: 'none', color: 'inherit' }}>Điều khoản</a>
+                        <span>·</span>
+                        <a href="#sitemap" style={{ textDecoration: 'none', color: 'inherit' }}>Sơ đồ trang web</a>
+                        <span>·</span>
+                        <span style={{ color: 'var(--color-text-muted)' }}>Mã nguồn BTL OOAD 2026</span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}>
+                            <Globe /> Tiếng Việt (VN)
+                        </span>
+                        <span>₫ VND</span>
+                    </div>
                 </div>
             </div>
         </footer>
