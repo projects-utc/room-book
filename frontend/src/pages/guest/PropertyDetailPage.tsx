@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
-import { Breadcrumb, DateRangePicker } from '../../components';
+import { Breadcrumb, DateRangePicker, LoadingSpinner } from '../../components';
 import { Property, Room, Review, Booking } from '../../data';
 import { formatVND } from '../../constants';
 import {
@@ -44,6 +44,10 @@ export default function PropertyDetailPage() {
       if (res.success && Array.isArray(res.data) && res.data.length > 0) {
         setRooms(res.data);
         setSelectedRoomId(prev => {
+          const urlRoomId = Number(searchParams.get('roomId'));
+          if (urlRoomId && res.data.some((r: Room) => r.id === urlRoomId)) {
+            return urlRoomId;
+          }
           const exists = res.data.some((r: Room) => r.id === prev);
           return exists ? prev : res.data[0].id;
         });
@@ -137,7 +141,19 @@ export default function PropertyDetailPage() {
   const [checkIn, setCheckIn] = useState(searchParams.get('in') || '');
   const [checkOut, setCheckOut] = useState(searchParams.get('out') || '');
   const [guests, setGuests] = useState(searchParams.get('guests') || '');
-  const [selectedRoomId, setSelectedRoomId] = useState<number>(rooms[0]?.id || 1);
+  const urlRoomId = Number(searchParams.get('roomId'));
+  const [selectedRoomId, setSelectedRoomId] = useState<number>(urlRoomId || rooms[0]?.id || 1);
+
+  // Xử lý thông báo nhắc chọn ngày nếu khách vừa đăng nhập quay lại
+  useEffect(() => {
+    if (searchParams.get('requireDates') === '1') {
+      addToast('Đăng nhập thành công! Vui lòng chọn ngày nhận và trả phòng.', 'info');
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('requireDates');
+      const newQuery = newParams.toString();
+      navigate({ search: newQuery ? `?${newQuery}` : '' }, { replace: true });
+    }
+  }, [searchParams, navigate, addToast]);
 
   const selectedRoom = rooms.find(r => r.id === selectedRoomId) || rooms[0];
 
@@ -199,47 +215,65 @@ export default function PropertyDetailPage() {
   };
 
   const handleBookNow = (roomId?: number) => {
-    if (rooms.length === 0) {
-      addToast('Chỗ nghỉ này hiện chưa mở bán hạng phòng nào.', 'warn');
+    const rId = roomId || selectedRoomId || rooms[0]?.id;
+    const hasDates = Boolean(checkIn && checkOut);
+
+    // Chặn 1: Bắt buộc đăng nhập / đăng ký tài khoản trước
+    if (!currentUser) {
+      addToast('Vui lòng đăng nhập để tiếp tục', 'warn');
+      if (hasDates) {
+        // Đã chọn đủ ngày -> sau khi đăng nhập chuyển tiếp sang trang thanh toán / đặt chỗ
+        const params = new URLSearchParams({
+          propertyId: String(property?.id || propertyId),
+          ...(rId ? { roomId: String(rId) } : {}),
+          in: checkIn,
+          out: checkOut,
+          guests: guests || '1',
+        });
+        navigate('/login', {
+          state: {
+            from: `/booking-quote?${params.toString()}`,
+          },
+        });
+      } else {
+        // Chưa chọn ngày -> sau khi đăng nhập quay lại đúng trang chi tiết phòng này để chọn ngày
+        const params = new URLSearchParams({
+          ...(rId ? { roomId: String(rId) } : {}),
+          ...(guests ? { guests: String(guests) } : {}),
+          requireDates: '1',
+        });
+        const backUrl = `/property/${property?.id || propertyId}?${params.toString()}`;
+        navigate('/login', {
+          state: {
+            from: backUrl,
+          },
+        });
+      }
       return;
     }
 
-    const rId = roomId || selectedRoomId || rooms[0]?.id;
+    if (rooms.length === 0) {
+      addToast('Chỗ nghỉ này hiện tạm hết phòng khả dụng.', 'warn');
+      return;
+    }
+
     const activeRoom = rooms.find(r => r.id === rId) || store.getAllRooms().find(r => r.id === rId);
     if (!activeRoom) {
       addToast('Không tìm thấy thông tin phòng hợp lệ.', 'error');
       return;
     }
 
-    const guestCount = guests ? parseInt(guests, 10) : 1;
-
-    // Chặn 1: Kiểm tra sức chứa
-    if (guestCount > activeRoom.capacity) {
-      addToast(`Phòng này tối đa ${activeRoom.capacity} khách. Vui lòng chọn lại số khách.`, 'error');
-      return;
-    }
-
-    // Chặn 2: Bắt buộc đăng nhập trước khi thực hiện đặt phòng
-    if (!currentUser) {
-      addToast('Vui lòng đăng nhập hoặc đăng ký tài khoản để tiếp tục đặt phòng.', 'warn');
-      const params = new URLSearchParams({
-        propertyId: String(property?.id || propertyId),
-        roomId: String(activeRoom.id),
-        ...(checkIn ? { in: checkIn } : {}),
-        ...(checkOut ? { out: checkOut } : {}),
-        guests: guests || '1',
-      });
-      navigate('/login', {
-        state: {
-          from: `/booking-quote?${params.toString()}`,
-        },
-      });
-      return;
-    }
-
-    // Chặn 3: Kiểm tra ngày nhận và trả phòng
+    // Chặn 2: Kiểm tra ngày nhận và trả phòng
     if (!checkIn || !checkOut) {
       addToast('Vui lòng chọn ngày nhận và trả phòng.', 'warn');
+      return;
+    }
+
+    const guestCount = guests ? parseInt(guests, 10) : 1;
+
+    // Chặn 3: Kiểm tra sức chứa
+    if (guestCount > activeRoom.capacity) {
+      addToast(`Phòng này tối đa ${activeRoom.capacity} khách. Vui lòng chọn lại số khách.`, 'error');
       return;
     }
 
@@ -286,12 +320,7 @@ export default function PropertyDetailPage() {
   };
 
   if (!property) {
-    return (
-      <div className="detail-container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>
-        <h2 style={{ color: 'var(--color-text-primary)', fontSize: '1.5rem', marginBottom: '1rem' }}>Đang tải thông tin chỗ nghỉ...</h2>
-        <p style={{ color: 'var(--color-text-secondary)' }}>Vui lòng đợi giây lát trong khi hệ thống kết nối với máy chủ.</p>
-      </div>
-    );
+    return <LoadingSpinner minHeight="60vh" message="Đang tải thông tin chỗ nghỉ..." />;
   }
 
   return (
@@ -421,7 +450,7 @@ export default function PropertyDetailPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {rooms.length === 0 ? (
                 <p style={{ color: 'var(--ink-secondary)', fontStyle: 'italic', margin: 0, padding: '1rem', background: 'var(--surface-alt)', borderRadius: 'var(--radius-md)' }}>
-                  Chỗ nghỉ này hiện chưa mở bán hạng phòng nào. Vui lòng quay lại sau!
+                  Chỗ nghỉ này hiện tạm hết phòng khả dụng. Vui lòng quay lại sau!
                 </p>
               ) : (
                 rooms.map(roomItem => (
@@ -603,14 +632,11 @@ export default function PropertyDetailPage() {
                 }}
               >
                 <CalendarCheck style={{ fontSize: '1.1rem' }} />
-                <span>{rooms.length === 0 ? 'Chưa mở bán phòng' : 'Đặt phòng'}</span>
+                <span>{rooms.length === 0 ? 'Tạm hết phòng' : 'Đặt phòng'}</span>
               </button>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: '0.82rem', color: 'var(--color-text-muted)', margin: '0.75rem 0 1.25rem' }}>
-              </div>
-
               {/* Chi tiết giá dự tính */}
-              <h3 style={{ fontSize: '1.02rem', fontWeight: 750, margin: '0 0 0.8rem', color: 'var(--color-text-primary)' }}>Chi tiết giá dự tính</h3>
+              <h3 style={{ fontSize: '1.02rem', fontWeight: 750, margin: '1.25rem 0 0.8rem', color: 'var(--color-text-primary)' }}>Chi tiết giá dự tính</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.88rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-muted)' }}>
                   <span>Giá phòng · {nights} đêm</span>

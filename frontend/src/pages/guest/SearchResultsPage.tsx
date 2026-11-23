@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { PropertyCard, Alert } from '../../components/UI';
+import { LoadingSpinner } from '../../components/LoadingSpinner';
 import SearchBar from '../../components/SearchBar';
 import {
   Search,
@@ -327,6 +328,11 @@ export default function SearchResultsPage() {
             </div>
           </Alert>
         </div>
+      )}
+
+      {/* Loading Spinner */}
+      {isLoading && (
+        <LoadingSpinner minHeight="45vh" message="Đang tìm kiếm chỗ ở phù hợp..." />
       )}
 
       {/* Results Header */}

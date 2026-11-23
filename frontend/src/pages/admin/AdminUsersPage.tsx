@@ -1,4 +1,4 @@
-// UC-10: Admin User Management & RBAC Page (Standardized Components)
+// Admin User Management & RBAC Page
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../contexts/StoreContext';
 import { stayApi } from '../../api/stayApi';

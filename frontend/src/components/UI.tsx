@@ -10,14 +10,6 @@ export function formatAirbnbVND(amount: number): string {
   return new Intl.NumberFormat('vi-VN').format(amount) + ' ₫';
 }
 
-// ── UCTag & StateBanner (Silenced) ─────────────────────────────────────────
-export function UCTag(_props: { children?: ReactNode }) {
-  return null;
-}
-export function StateBanner(_props: any) {
-  return null;
-}
-
 // ── Breadcrumb ──────────────────────────────────────────────────────────
 export interface BreadcrumbItem {
   label: string;

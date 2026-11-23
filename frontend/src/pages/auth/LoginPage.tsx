@@ -18,10 +18,10 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [username, setUsername] = useState('guest.demo');
-  const [password, setPassword] = useState('123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedDemo, setSelectedDemo] = useState<'guest' | 'host' | 'admin'>('guest');
+  const [selectedDemo, setSelectedDemo] = useState<'guest' | 'host' | 'admin' | ''>('');
   const [loading, setLoading] = useState(false);
 
   const fillCredentials = (type: 'guest' | 'host' | 'admin', u: string, p: string) => {
@@ -291,7 +291,7 @@ export default function LoginPage() {
           {/* Security Assurance Badge */}
           <div className="auth-trust-badge">
             <ShieldCheck style={{ fontSize: '1.05rem', color: 'var(--color-success)' }} />
-            <span>Xác thực an toàn bằng JWT &amp; mã hóa BCrypt</span>
+            <span>Cam kết bảo mật &amp; an toàn thông tin 100%</span>
           </div>
         </div>
       </div>

@@ -28,8 +28,17 @@ export default function PaymentWaitingPage({
                     textAlign: 'center',
                 }}
             >
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-                    {isRedirect ? '📱' : '⏳'}
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <div
+                        style={{
+                            width: 44,
+                            height: 44,
+                            border: '4px solid var(--color-border-subtle)',
+                            borderTopColor: 'var(--color-primary)',
+                            borderRadius: '50%',
+                        }}
+                        className="animate-spin"
+                    />
                 </div>
                 <h3 style={{ margin: '0 0 0.65rem', fontSize: '1.3rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
                     {isRedirect

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { PropertyCard } from '../../components/UI';
+import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { Heart, HeartFill, Compass, Trash, ChevronRight } from 'react-bootstrap-icons';
 import { Property, Review } from '../../data';
 import { stayApi } from '../../api/stayApi';
@@ -93,13 +94,6 @@ export default function WishlistPage() {
           }
         }
 
-        // Nếu người dùng chưa từng lưu phòng nào, cung cấp 3 phòng mẫu nổi bật để kiểm tra UI Grid ban đầu
-        if (!storedIdsRaw && mappedProps.length > 0) {
-          const demoIds = mappedProps.slice(0, 3).map(p => p.id);
-          savedIds = demoIds;
-          localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(demoIds));
-        }
-
         const filtered = mappedProps.filter(p => savedIds.includes(p.id));
         setWishlistProperties(filtered);
       })
@@ -157,14 +151,7 @@ export default function WishlistPage() {
 
       {/* Loading Skeleton / Spinner */}
       {isLoading && (
-        <div style={{ textAlign: 'center', padding: '5rem 1rem' }}>
-          <div className="spinner-border text-danger" role="status" style={{ width: '2.5rem', height: '2.5rem' }}>
-            <span className="visually-hidden">Đang tải...</span>
-          </div>
-          <p style={{ marginTop: '1rem', color: 'var(--color-text-secondary, #475569)', fontSize: '0.95rem' }}>
-            Đang tải danh sách chỗ ở yêu thích của bạn...
-          </p>
-        </div>
+        <LoadingSpinner minHeight="45vh" message="Đang tải danh sách chỗ ở yêu thích của bạn..." />
       )}
 
       {/* ─────────────────────────────────────────────────────────────────

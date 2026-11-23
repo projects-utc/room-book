@@ -1,55 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import { StoreProvider, useStore } from './contexts/StoreContext';
 import { Header, Footer, ToastContainer } from './components/Layout';
+import { LoadingSpinner } from './components/LoadingSpinner';
 import { AppRoutes } from './routers';
 
 function AppContent() {
   const { isBackendReady } = useStore();
   const location = useLocation();
   const isAdminPath = location.pathname.startsWith('/admin');
-  const [backendWaitExpired, setBackendWaitExpired] = useState(false);
 
-  useEffect(() => {
-    if (isBackendReady) {
-      setBackendWaitExpired(false);
-      return;
-    }
-
-    const timer = window.setTimeout(() => setBackendWaitExpired(true), 6000);
-    return () => window.clearTimeout(timer);
-  }, [isBackendReady]);
-
-  // Nếu backend chưa sẵn sàng trong 6 giây đầu, hiển thị hiệu ứng tải;
-  // Sau đó cho phép tải giao diện với dữ liệu cục bộ để tránh treo trắng trang (hỗ trợ Render cold-start)
-  if (!isBackendReady && !backendWaitExpired) {
-    return (
-      <div
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '1rem',
-          background: 'var(--color-bg-app)',
-        }}
-      >
-        <div
-          style={{
-            width: 44,
-            height: 44,
-            border: '4px solid var(--color-border-subtle)',
-            borderTopColor: 'var(--color-primary)',
-            borderRadius: '50%',
-          }}
-          className="animate-spin"
-        />
-        <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
-          Đang kết nối hệ thống ODauDay Stay...
-        </span>
-      </div>
-    );
+  // Chặn hoàn toàn: Nếu backend chưa sẵn sàng / chưa chạy thì không render giao diện, giữ loading spinner
+  if (!isBackendReady) {
+    return <LoadingSpinner fullPage />;
   }
 
   // Phân hệ quản trị

@@ -1,4 +1,4 @@
-// UC-07: Host Room Block Page (Standardized Components)
+// Host Room Block Page
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';

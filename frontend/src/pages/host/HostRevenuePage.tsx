@@ -1,4 +1,4 @@
-// UC-09: Host Revenue & Reports Page (Standardized Components)
+// Host Revenue & Reports Page
 import React, { useEffect, useState } from 'react';
 import { useStore } from '../../contexts/StoreContext';
 import { stayApi, RevenueSummary } from '../../api/stayApi';

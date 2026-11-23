@@ -19,6 +19,7 @@ import {
   ArrowRight,
   ArrowRepeat,
   XCircle,
+  BagCheck,
 } from 'react-bootstrap-icons';
 
 export default function MyBookingsPage() {
@@ -54,7 +55,7 @@ export default function MyBookingsPage() {
 
   useEffect(() => setCurrentPage(1), [activeTab]);
 
-  const handleTabChange = (tab: 'COMPLETED' | 'CANCELLED' | 'ALL') => {
+  const handleTabChange = (tab: 'UPCOMING' | 'COMPLETED' | 'CANCELLED' | 'ALL') => {
     setActiveTab(tab);
     setSearchParams(prev => {
       const next = new URLSearchParams(prev);
@@ -264,8 +265,10 @@ export default function MyBookingsPage() {
     }
   };
 
+  const upcomingCount = myBookings.filter(b => ['PENDING', 'CONFIRMED', 'CHECKED_IN'].includes(b.status)).length;
   const completedCount = myBookings.filter(b => b.status === 'COMPLETED').length;
   const cancelledCount = myBookings.filter(b => ['CANCELLED', 'REJECTED'].includes(b.status)).length;
+  const allCount = myBookings.length;
 
   return (
     <div style={{ maxWidth: 1760, margin: '2rem auto 5rem', padding: '0 clamp(1rem, 2.5vw, 2.5rem)' }}>
@@ -333,7 +336,31 @@ export default function MyBookingsPage() {
       </div>
 
       {/* ── Summary Stat Pills Bar ── */}
-      {activeTab !== 'UPCOMING' && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+        <div
+          onClick={() => handleTabChange('UPCOMING')}
+          style={{
+            background: activeTab === 'UPCOMING' ? 'var(--color-primary-soft)' : 'var(--color-bg-surface)',
+            border: activeTab === 'UPCOMING' ? '2px solid var(--color-primary)' : '1px solid var(--color-border-subtle)',
+            borderRadius: 16,
+            padding: '1.15rem 1.25rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            transition: 'all 0.2s ease',
+            boxShadow: activeTab === 'UPCOMING' ? '0 4px 16px rgba(255, 56, 92, 0.12)' : '0 1px 3px rgba(0,0,0,0.02)'
+          }}
+        >
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--color-primary-soft)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
+            <BagCheck />
+          </div>
+          <div>
+            <strong style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', display: 'block' }}>Đơn sắp tới &amp; Chờ duyệt</strong>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Sắp tới ({upcomingCount})</span>
+          </div>
+        </div>
+
         <div
           onClick={() => handleTabChange('COMPLETED')}
           style={{
@@ -402,10 +429,10 @@ export default function MyBookingsPage() {
           </div>
           <div>
             <strong style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', display: 'block' }}>Tất cả đơn đặt</strong>
-            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Toàn bộ ({myBookings.length})</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 600 }}>Toàn bộ ({allCount})</span>
           </div>
         </div>
-      </div>}
+      </div>
 
       {/* ── Trips Cards List ── */}
       {filteredBookings.length === 0 ? (

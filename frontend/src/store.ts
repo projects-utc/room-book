@@ -144,7 +144,7 @@ export const ODDStore = {
   setCurrentUser,
   formatVND,
 
-  // UC-01: Login / BR-02
+  // Auth & User State Management
   login(username: string, password?: string): { success: boolean; code?: string; message?: string; user?: User } {
     const data = loadData();
     const inputName = (username || '').trim().toLowerCase();
@@ -199,7 +199,7 @@ export const ODDStore = {
     setCurrentUser(null);
   },
 
-  // UC-02: Search / BR-03 / TC-03
+  // Search & Filtering
   search(criteria: { checkIn?: string; checkOut?: string; kw?: string; type?: string; maxPrice?: number | string }) {
     const { checkIn, checkOut, kw = '', type = 'Tất cả', maxPrice } = criteria;
     if (checkIn && checkOut && new Date(checkOut) <= new Date(checkIn)) {
@@ -239,7 +239,7 @@ export const ODDStore = {
     return data.rooms.filter(r => r.propertyId === parseInt(String(propertyId), 10));
   },
 
-  // UC-03: Quote / BR-04 / BR-05 / BR-06
+  // Pricing & Quote Calculation
   calculateQuote(roomId: number | string, checkInStr?: string, checkOutStr?: string, guestsCount?: number | string, customRoom?: Room): QuoteResult {
     const data = loadData();
     const parsedRoomId = parseInt(String(roomId), 10);
@@ -419,7 +419,7 @@ export const ODDStore = {
     saveData(data);
   },
 
-  // UC-04: My Bookings
+  // Bookings Management
   getMyBookings(username: string): Booking[] {
     const data = loadData();
     return data.bookings
@@ -471,7 +471,7 @@ export const ODDStore = {
     return { success: true };
   },
 
-  // UC-05: Reviews
+  // Reviews & Ratings
   submitReview(reviewPayload: {
     bookingCode: string;
     propertyId: number;
@@ -526,7 +526,7 @@ export const ODDStore = {
     return data.reviews.filter(r => r.propertyId === parseInt(String(propertyId), 10));
   },
 
-  // UC-06–07: Host property / room management
+  // Host Properties & Rooms Management
   getHostProperties(ownerUsername: string): Property[] {
     const data = loadData();
     return data.properties.filter(p => p.owner === ownerUsername);
@@ -658,7 +658,7 @@ export const ODDStore = {
     return data.roomBlocks;
   },
 
-  // UC-08: Host booking management
+  // Host Bookings Operations
   getAllBookings(): Booking[] {
     const data = loadData();
     return [...data.bookings].sort((a, b) => {
@@ -692,7 +692,7 @@ export const ODDStore = {
     }).catch(() => { });
     return { success: true };
   },
-  // UC-09: Revenue
+  // Revenue Calculations
   getRevenueData(ownerUsername: string) {
     const data = loadData();
     const ownerProps = data.properties.filter(p => p.owner === ownerUsername).map(p => p.id);
@@ -709,7 +709,7 @@ export const ODDStore = {
     };
   },
 
-  // UC-10: Admin user management
+  // Admin User Operations
   getAllUsers(): User[] {
     const data = loadData();
     return data.users;

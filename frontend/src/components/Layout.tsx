@@ -36,7 +36,7 @@ import {
 
 // ── Header (ODauDay Stay Brand + Airbnb Experience) ─────────────────────────
 export function Header() {
-    const { currentUser, logout, switchRole, resetStore, addToast } = useStore();
+    const { currentUser, logout, addToast } = useStore();
     const location = useLocation();
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
@@ -82,19 +82,6 @@ export function Header() {
         setShowLogoutModal(false);
         addToast('Đã đăng xuất tài khoản', 'info');
         navigate('/');
-    };
-
-    const handleRoleSwitch = async (role: string) => {
-        await switchRole(role);
-        setMenuOpen(false);
-        addToast(`Đã chuyển sang vai trò: ${role.toUpperCase()}`, 'success');
-        if (role === 'admin') {
-            navigate('/admin');
-        } else if (role === 'host') {
-            navigate('/host/properties');
-        } else {
-            navigate('/client');
-        }
     };
 
     return (
@@ -474,34 +461,6 @@ export function Header() {
                                     )}
 
                                     <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
-
-                                    {/* Dev / Tester Quick Role Switcher */}
-                                    <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)' }}>Chuyển vai trò thử nghiệm</div>
-                                    <div style={{ display: 'flex', gap: '0.25rem', padding: '0.25rem 1rem 0.5rem', flexWrap: 'wrap' }}>
-                                        <button
-                                            type="button"
-                                            className="btn btn-xs btn-outline"
-                                            onClick={() => handleRoleSwitch('guest')}
-                                        >
-                                            Khách
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="btn btn-xs btn-outline"
-                                            onClick={() => handleRoleSwitch('host')}
-                                        >
-                                            Chủ nhà
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="btn btn-xs btn-outline"
-                                            onClick={() => handleRoleSwitch('admin')}
-                                        >
-                                            Admin
-                                        </button>
-                                    </div>
-
-                                    <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
                                     <button
                                         type="button"
                                         className="dropdown-item"
@@ -555,30 +514,6 @@ export function Header() {
                                     >
                                         Cho thuê chỗ ở qua ODauDay
                                     </Link>
-                                    <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
-                                    <div style={{ display: 'flex', gap: '0.25rem', padding: '0.25rem 1rem 0.5rem', flexWrap: 'wrap' }}>
-                                        <button
-                                            type="button"
-                                            className="btn btn-xs btn-outline"
-                                            onClick={() => handleRoleSwitch('guest')}
-                                        >
-                                            Khách
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="btn btn-xs btn-outline"
-                                            onClick={() => handleRoleSwitch('host')}
-                                        >
-                                            Chủ nhà
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="btn btn-xs btn-outline"
-                                            onClick={() => handleRoleSwitch('admin')}
-                                        >
-                                            Admin
-                                        </button>
-                                    </div>
                                 </>
                             )}
                         </div>

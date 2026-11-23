@@ -1,9 +1,10 @@
-// UC-08: Host Booking Detail Page (TypeScript)
+// Host Booking Detail Page
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb } from '../../components/UI';
 import { EmptyState } from '../../components/EmptyState';
+import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { formatVND, BADGE_CLASS, BADGE_LABEL } from '../../constants';
 import {
   CalendarCheck,
@@ -106,9 +107,7 @@ export default function HostBookingDetailPage() {
   };
 
   if (isLoading || (booking && booking.code !== bookingCode)) {
-    return <div role="status" style={{ maxWidth: 1000, margin: '1.5rem auto', padding: '0 1rem' }}>
-      <EmptyState compact title="Đang tải thông tin đơn đặt phòng…" />
-    </div>;
+    return <LoadingSpinner minHeight="50vh" message="Đang tải thông tin đơn đặt phòng..." />;
   }
 
   if (notFound || loadError || !booking) {

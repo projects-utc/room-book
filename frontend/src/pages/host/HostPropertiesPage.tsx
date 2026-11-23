@@ -1,4 +1,4 @@
-// UC-06: Host Properties Management Page (Standardized Components)
+// Host Properties Management Page
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { stayApi } from '../../api/stayApi';
-import { Breadcrumb, Button, Card, EmptyState, StatCard, formatDisplayDateVN, DateRangePicker } from '../../components';
+import { Breadcrumb, Button, Card, EmptyState, StatCard, formatDisplayDateVN, DateRangePicker, LoadingSpinner } from '../../components';
 import { formatVND, BADGE_CLASS, BADGE_LABEL } from '../../constants';
 import {
   ArrowLeftRight, ArrowRight, CalendarCheck,
@@ -197,10 +197,7 @@ export default function HostBookingsPage() {
         </div>
 
         {isLoading ? (
-          <div className="booking-empty" role="status">
-            <EmptyState compact icon={<ArrowCounterclockwise />}
-              title="Đang tải danh sách đơn đặt phòng…" />
-          </div>
+          <LoadingSpinner minHeight="35vh" message="Đang tải danh sách đơn đặt phòng..." />
         ) : loadError ? (
           <div className="booking-empty" role="alert">
             <EmptyState compact title="Không tải được danh sách đơn"

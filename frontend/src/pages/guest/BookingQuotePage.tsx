@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
-import { InputField, Button, Card, Alert, DateRangePicker } from '../../components';
+import { InputField, Button, Card, Alert, DateRangePicker, LoadingSpinner } from '../../components';
 import { formatVND } from '../../constants';
 import {
     ChevronLeft,
@@ -21,7 +21,6 @@ import {
 import { stayApi } from '../../api/stayApi';
 import { Booking, Property, Room } from '../../data';
 import PaymentWaitingPage from './PaymentWaitingPage';
-import { daysFromToday } from '../../dateUtils';
 
 interface BankApiItem {
     id: number;
@@ -57,8 +56,20 @@ export default function BookingQuotePage() {
     const propertyId = Number(searchParams.get('propertyId')) || 1;
     const roomId = Number(searchParams.get('roomId')) || 1;
 
-    const [checkIn, setCheckIn] = useState(searchParams.get('in') || daysFromToday(21));
-    const [checkOut, setCheckOut] = useState(searchParams.get('out') || daysFromToday(22));
+    const inParam = searchParams.get('in');
+    const outParam = searchParams.get('out');
+
+    useEffect(() => {
+        if (!inParam || !outParam) {
+            addToast('Vui lòng chọn ngày nhận và trả phòng trước khi tạo yêu cầu đặt phòng.', 'warn');
+            const targetPropId = propertyId || 1;
+            const targetRoomParam = roomId ? `?roomId=${roomId}` : '';
+            navigate(`/property/${targetPropId}${targetRoomParam}`, { replace: true });
+        }
+    }, [inParam, outParam, propertyId, roomId, navigate, addToast]);
+
+    const [checkIn, setCheckIn] = useState(inParam || '');
+    const [checkOut, setCheckOut] = useState(outParam || '');
     const [guests, setGuests] = useState(searchParams.get('guests') || '1');
     const [editingStay, setEditingStay] = useState(false);
 
@@ -275,6 +286,10 @@ export default function BookingQuotePage() {
                 amount={activePaymentAmount}
             />
         );
+    }
+
+    if (!inParam || !outParam) {
+        return <LoadingSpinner minHeight="50vh" message="Đang chuyển hướng về trang chỗ nghỉ để chọn ngày nhận và trả phòng..." />;
     }
 
     if (notFoundError) {
