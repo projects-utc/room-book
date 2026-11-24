@@ -42,9 +42,9 @@ export function ProtectedRoute({
     const defaultRedirect =
       redirectTo ||
       (currentUser?.role === 'HOST'
-        ? '/host/properties'
+        ? '/host/bookings'
         : currentUser?.role === 'ADMIN'
-        ? '/admin'
+        ? '/admin/users'
         : '/client');
     return <Navigate to={defaultRedirect} replace />;
   }

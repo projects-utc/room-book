@@ -28,18 +28,18 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   const navItems = [
     {
-      group: 'BÁO CÁO & TỔNG QUAN',
-      items: [
-        { path: '/admin', label: 'Tổng quan hệ thống', icon: <Speedometer2 /> },
-      ],
-    },
-    {
-      group: 'QUẢN LÝ NGHIỆP VỤ',
+      group: 'QUẢN LÝ HỆ THỐNG & NGHIỆP VỤ',
       items: [
         { path: '/admin/users', label: 'Người dùng & Phân quyền', icon: <PeopleFill /> },
         { path: '/admin/properties', label: 'Chỗ ở & Homestay', icon: <Building /> },
         { path: '/admin/bookings', label: 'Đơn đặt phòng toàn sàn', icon: <CalendarCheck /> },
         { path: '/admin/promotions', label: 'Mã giảm giá & Voucher', icon: <TicketPerforatedFill /> },
+      ],
+    },
+    {
+      group: 'BÁO CÁO & TỔNG QUAN',
+      items: [
+        { path: '/admin/dashboard', label: 'Tổng quan hệ thống', icon: <Speedometer2 /> },
       ],
     },
     {
@@ -62,12 +62,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   if (currentUser.role !== 'ADMIN') {
-    return <Navigate to={currentUser.role === 'HOST' ? '/host/properties' : '/client'} replace />;
+    return <Navigate to={currentUser.role === 'HOST' ? '/host/bookings' : '/client'} replace />;
   }
 
   const isActive = (path: string) => {
-    if (path === '/admin') {
-      return location.pathname === '/admin' || location.pathname === '/admin/dashboard';
+    if (path === '/admin/dashboard') {
+      return location.pathname === '/admin/dashboard';
     }
     return location.pathname.startsWith(path);
   };
@@ -102,7 +102,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       >
         {/* Brand Header */}
         <div style={{ padding: '1.5rem 1.4rem 1.25rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <Link to="/admin" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
+          <Link to="/admin/users" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
             <div
               style={{
                 width: 38,

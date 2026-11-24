@@ -19,14 +19,14 @@ export function AdminRoutes() {
     >
       <AdminLayout>
         <Routes>
-          <Route index element={<AdminDashboardPage />} />
-          <Route path="dashboard" element={<AdminDashboardPage />} />
+          <Route index element={<Navigate to="/admin/users" replace />} />
           <Route path="users" element={<AdminUsersPage />} />
+          <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="properties" element={<AdminPropertiesPage />} />
           <Route path="bookings" element={<AdminBookingsPage />} />
           <Route path="promotions" element={<AdminPromotionsPage />} />
           <Route path="audit-logs" element={<AdminAuditLogsPage />} />
-          <Route path="*" element={<Navigate to="/admin" replace />} />
+          <Route path="*" element={<Navigate to="/admin/users" replace />} />
         </Routes>
       </AdminLayout>
     </ProtectedRoute>

@@ -57,12 +57,20 @@ export default function LoginPage() {
           fromUrl.startsWith('/client/register')
         );
 
-        if (fromUrl && !isAuthPage) {
-          navigate(fromUrl, { replace: true });
-        } else if (res.user?.role === 'HOST') {
-          navigate('/host/properties', { replace: true });
+        if (res.user?.role === 'HOST') {
+          if (fromUrl && fromUrl.startsWith('/host')) {
+            navigate(fromUrl, { replace: true });
+          } else {
+            navigate('/host/bookings', { replace: true });
+          }
         } else if (res.user?.role === 'ADMIN') {
-          navigate('/admin', { replace: true });
+          if (fromUrl && fromUrl.startsWith('/admin')) {
+            navigate(fromUrl, { replace: true });
+          } else {
+            navigate('/admin/users', { replace: true });
+          }
+        } else if (fromUrl && !isAuthPage && !fromUrl.startsWith('/host') && !fromUrl.startsWith('/admin')) {
+          navigate(fromUrl, { replace: true });
         } else {
           navigate('/client', { replace: true });
         }

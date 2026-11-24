@@ -240,7 +240,7 @@ export function Header() {
                 <div className="header-actions" ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', position: 'relative' }}>
                     {currentUser?.role === ROLES.ADMIN ? (
                         <Link
-                            to="/admin"
+                            to="/admin/users"
                             className="admin-badge-link"
                             style={{
                                 display: 'inline-flex',
@@ -262,7 +262,7 @@ export function Header() {
                         </Link>
                     ) : currentUser?.role === ROLES.HOST ? (
                         <Link
-                            to="/host/properties"
+                            to="/host/bookings"
                             className="host-link"
                             style={{
                                 fontWeight: 600,
@@ -464,48 +464,68 @@ export function Header() {
                                         <HouseDoor style={{ fontSize: '1.05rem', color: 'var(--color-primary)' }} /> Trang chủ
                                     </Link>
 
-                                    <Link
-                                        to="/my-bookings?tab=UPCOMING"
-                                        className="dropdown-item"
-                                        onClick={() => setMenuOpen(false)}
-                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
-                                    >
-                                        <BagCheck style={{ color: 'var(--color-primary)' }} /> Đơn đặt phòng sắp tới
-                                    </Link>
-
-                                    <Link
-                                        to="/my-bookings?tab=COMPLETED"
-                                        className="dropdown-item"
-                                        onClick={() => setMenuOpen(false)}
-                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
-                                    >
-                                        <ClockHistory style={{ color: 'var(--color-info)' }} /> Lịch sử đặt phòng
-                                    </Link>
-
-                                    <Link
-                                        to="/wishlist"
-                                        className="dropdown-item"
-                                        onClick={() => setMenuOpen(false)}
-                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
-                                    >
-                                        <HeartFill style={{ color: 'var(--color-primary)' }} /> Danh sách yêu thích
-                                    </Link>
-
-                                    {currentUser.role === ROLES.HOST && (
+                                    {currentUser.role === ROLES.HOST ? (
                                         <>
-                                            <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
-                                            <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)' }}>Khu vực Chủ nhà</div>
-                                            <Link to="/host/properties" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
+                                            <Link
+                                                to="/host/bookings"
+                                                className="dropdown-item bold"
+                                                onClick={() => setMenuOpen(false)}
+                                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-primary)', fontWeight: 600 }}
+                                            >
+                                                <CalendarCheck style={{ color: 'var(--color-primary)' }} /> Quản lý đơn đặt phòng
+                                            </Link>
+                                            <Link
+                                                to="/host/properties"
+                                                className="dropdown-item"
+                                                onClick={() => setMenuOpen(false)}
+                                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
+                                            >
                                                 <Building /> Chỗ ở của tôi
                                             </Link>
-                                            <Link to="/host/rooms" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
+                                            <Link
+                                                to="/host/rooms"
+                                                className="dropdown-item"
+                                                onClick={() => setMenuOpen(false)}
+                                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
+                                            >
                                                 <DoorOpen /> Quản lý phòng & Lịch trống
                                             </Link>
-                                            <Link to="/host/bookings" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
-                                                <CalendarCheck /> Quản lý đơn
-                                            </Link>
-                                            <Link to="/host/revenue" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
+                                            <Link
+                                                to="/host/revenue"
+                                                className="dropdown-item"
+                                                onClick={() => setMenuOpen(false)}
+                                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
+                                            >
                                                 <GraphUpArrow /> Doanh thu
+                                            </Link>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Link
+                                                to="/my-bookings?tab=UPCOMING"
+                                                className="dropdown-item"
+                                                onClick={() => setMenuOpen(false)}
+                                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
+                                            >
+                                                <BagCheck style={{ color: 'var(--color-primary)' }} /> Đơn đặt phòng sắp tới
+                                            </Link>
+
+                                            <Link
+                                                to="/my-bookings?tab=COMPLETED"
+                                                className="dropdown-item"
+                                                onClick={() => setMenuOpen(false)}
+                                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
+                                            >
+                                                <ClockHistory style={{ color: 'var(--color-info)' }} /> Lịch sử đặt phòng
+                                            </Link>
+
+                                            <Link
+                                                to="/wishlist"
+                                                className="dropdown-item"
+                                                onClick={() => setMenuOpen(false)}
+                                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}
+                                            >
+                                                <HeartFill style={{ color: 'var(--color-primary)' }} /> Danh sách yêu thích
                                             </Link>
                                         </>
                                     )}
@@ -514,10 +534,7 @@ export function Header() {
                                         <>
                                             <div className="dropdown-divider" style={{ height: 1, background: 'var(--color-border-subtle)', margin: '4px 0' }} />
                                             <div className="dropdown-section-title" style={{ padding: '4px 16px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)' }}>Quản trị viên</div>
-                                            <Link to="/admin" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-primary)', fontWeight: 700 }}>
-                                                <Speedometer2 /> Bảng điều khiển Quản trị
-                                            </Link>
-                                            <Link to="/admin/users" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
+                                            <Link to="/admin/users" className="dropdown-item bold" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-primary)', fontWeight: 700 }}>
                                                 <PeopleFill /> Người dùng & Phân quyền
                                             </Link>
                                             <Link to="/admin/properties" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
@@ -525,6 +542,9 @@ export function Header() {
                                             </Link>
                                             <Link to="/admin/bookings" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
                                                 <CalendarCheck /> Quản lý đơn đặt phòng
+                                            </Link>
+                                            <Link to="/admin/dashboard" className="dropdown-item" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', textDecoration: 'none', color: 'var(--color-text-primary)' }}>
+                                                <Speedometer2 /> Bảng điều khiển Quản trị
                                             </Link>
                                         </>
                                     )}
@@ -754,7 +774,7 @@ export function Footer() {
                     <div>
                         <h4 className="footer-col-title" style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 1rem' }}>Dành cho Chủ nhà</h4>
                         <ul className="footer-link-list" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                            <li><Link to="/host/properties" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Kênh Chủ nhà</Link></li>
+                            <li><Link to="/host/bookings" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Kênh Chủ nhà</Link></li>
                             <li><Link to="/host/properties" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Quản lý cơ sở lưu trú</Link></li>
                             <li><Link to="/host/roomblock?roomId=1" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Quản lý lịch khóa phòng bảo trì</Link></li>
                             <li><Link to="/host/bookings" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Xử lý và duyệt đơn lưu trú</Link></li>
@@ -773,7 +793,7 @@ export function Footer() {
                         {isAdmin && (
                             <div style={{ marginTop: '0.85rem' }}>
                                 <Link
-                                    to="/admin/bookings"
+                                    to="/admin/users"
                                     style={{
                                         display: 'inline-flex',
                                         alignItems: 'center',

@@ -58,6 +58,18 @@ export default function MyBookingsPage() {
 
   useEffect(() => setCurrentPage(1), [activeTab]);
 
+  useEffect(() => {
+    if (currentUser?.role === 'HOST') {
+      navigate('/host/bookings', { replace: true });
+    } else if (currentUser?.role === 'ADMIN') {
+      navigate('/admin/users', { replace: true });
+    }
+  }, [currentUser, navigate]);
+
+  if (currentUser?.role === 'HOST' || currentUser?.role === 'ADMIN') {
+    return null;
+  }
+
   const handleTabChange = (tab: 'UPCOMING' | 'COMPLETED' | 'CANCELLED' | 'ALL') => {
     setActiveTab(tab);
     setSearchParams(prev => {

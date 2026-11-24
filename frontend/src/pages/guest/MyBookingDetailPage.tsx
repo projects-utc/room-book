@@ -24,8 +24,20 @@ import { BookingStatus } from '../../constants';
 
 export default function MyBookingDetailPage() {
   const { code } = useParams<{ code: string }>();
-  const { store, addToast } = useStore();
+  const { store, currentUser, addToast } = useStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentUser?.role === 'HOST' && code) {
+      navigate(`/host/bookings/${code}`, { replace: true });
+    } else if (currentUser?.role === 'ADMIN' && code) {
+      navigate('/admin/bookings', { replace: true });
+    }
+  }, [currentUser, code, navigate]);
+
+  if (currentUser?.role === 'HOST' || currentUser?.role === 'ADMIN') {
+    return null;
+  }
 
   const bookingCode = code || '';
   const [booking, setBooking] = useState<Booking | null>(() => bookingCode ? store.getBooking(bookingCode) : null);
