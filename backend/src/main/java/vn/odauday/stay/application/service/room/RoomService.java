@@ -38,7 +38,17 @@ public class RoomService {
 
     @Transactional
     public void deleteRoom(Long id) {
-        roomRepository.deleteById(id);
+        roomRepository.findById(id).ifPresent(r -> {
+            boolean hasActiveBooking = bookingRepository.findAll().stream()
+                    .anyMatch(b -> id.equals(b.getRoomId())
+                            && b.getStatus() != null
+                            && List.of("PENDING", "CONFIRMED", "CHECKED_IN").contains(b.getStatus().toUpperCase()));
+            if (hasActiveBooking) {
+                throw new IllegalStateException("Không thể xóa phòng đang có đơn đặt phòng hoạt động");
+            }
+            roomBlockRepository.deleteAll(roomBlockRepository.findByRoomId(id));
+            roomRepository.delete(r);
+        });
     }
 
     @Transactional(readOnly = true)

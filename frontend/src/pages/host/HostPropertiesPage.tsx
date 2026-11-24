@@ -69,7 +69,11 @@ export default function HostPropertiesPage() {
 
   const handleDelete = (id: number, pName: string) => {
     if (window.confirm(`Bạn có chắc muốn xóa cơ sở "${pName}"?`)) {
-      store.deleteProperty(id);
+      const res = store.deleteProperty(id);
+      if (!res.success) {
+        addToast(res.message || 'Không thể xóa cơ sở lưu trú.', 'error');
+        return;
+      }
       addToast('Đã xóa cơ sở lưu trú.', 'info');
       refreshList();
     }

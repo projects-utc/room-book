@@ -157,6 +157,23 @@ export default function PropertyDetailPage() {
 
   const selectedRoom = rooms.find(r => r.id === selectedRoomId) || rooms[0];
 
+  // Lấy tên thật của Chủ nhà (thay vì username đăng nhập)
+  const hostDisplayName = useMemo(() => {
+    if (!property?.owner) return 'Chủ nhà';
+    const allUsers = store.getAllUsers();
+    const matchedUser = allUsers.find(
+      u => (u.username || '').toLowerCase() === property.owner.toLowerCase()
+    );
+    if (matchedUser?.fullName) {
+      const match = matchedUser.fullName.match(/\(([^)]+)\)/);
+      if (match && match[1]) {
+        return match[1].replace(/Tài khoản bị khóa/gi, '').trim() || match[1];
+      }
+      return matchedUser.fullName.replace(/^Chủ\s*nhà\s*(Demo)?\s*:?/i, '').trim() || matchedUser.fullName;
+    }
+    if (property.owner === 'host.demo') return 'Nguyễn Văn An';
+    return property.owner;
+  }, [property?.owner, store]);
   const calculateNights = () => {
     if (!checkIn || !checkOut) return 2;
     const d1 = new Date(checkIn);
@@ -400,11 +417,8 @@ export default function PropertyDetailPage() {
         <div className="detail-main">
           <div className="host-section">
             <div className="host-info">
-              <h3>Toàn bộ {property.type} · Chủ nhà {property.owner}</h3>
+              <h3>Toàn bộ {property.type} · Chủ nhà {hostDisplayName}</h3>
               <p>2 phòng ngủ · 2 giường · 2 phòng tắm riêng · Sức chứa tối đa {selectedRoom?.capacity || 2} khách</p>
-            </div>
-            <div style={{ width: 54, height: 54, borderRadius: 'var(--radius-full)', background: 'var(--airbnb-gradient)', color: 'var(--color-bg-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1.25rem' }}>
-              {property.owner.substring(0, 2).toUpperCase()}
             </div>
           </div>
 

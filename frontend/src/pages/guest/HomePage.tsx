@@ -1,13 +1,67 @@
 // ODauDay Stay — Airbnb Vietnam Exact Homepage Layout & Micro-Animations (TypeScript)
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { PropertyCard } from '../../components/UI';
 import SearchBar from '../../components/SearchBar';
-import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
+import { ChevronLeft, ChevronRight, GeoAlt, Tag, Check, Copy, XCircle, Gift } from 'react-bootstrap-icons';
 import { Property } from '../../data';
 import { stayApi } from '../../api/stayApi';
 import { useQuery } from '../../hooks/useQuery';
+
+// 10 Điểm đến du lịch hàng đầu Việt Nam
+const TOP_DESTINATIONS = [
+  {
+    city: 'Hà Nội',
+    subtitle: 'Thủ đô cổ kính & Hồ Tây',
+    image: 'https://images.unsplash.com/photo-1509030450996-93529321f2bb?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    city: 'TP. Hồ Chí Minh',
+    subtitle: 'Đô thị phồn hoa & Landmark',
+    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    city: 'Đà Nẵng',
+    subtitle: 'Cầu Rồng & Biển Mỹ Khê',
+    image: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    city: 'Sa Pa',
+    subtitle: 'Thung lũng săn mây',
+    image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    city: 'Đà Lạt',
+    subtitle: 'Đồi thông ngàn hoa',
+    image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    city: 'Phú Quốc',
+    subtitle: 'Đảo ngọc hoàng hôn',
+    image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    city: 'Vũng Tàu',
+    subtitle: 'Biển xanh lộng gió',
+    image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    city: 'Ninh Bình',
+    subtitle: 'Danh thắng Tràng An',
+    image: 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    city: 'Hội An',
+    subtitle: 'Phố cổ đèn lồng',
+    image: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    city: 'Nha Trang',
+    subtitle: 'Vịnh biển xanh ngắt',
+    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80',
+  },
+];
 
 export default function HomePage() {
   const { store } = useStore();
@@ -17,6 +71,38 @@ export default function HomePage() {
   const checkIn = searchParams.get('in') || '';
   const checkOut = searchParams.get('out') || '';
   const guests = searchParams.get('guests') || '';
+
+  // Điểm đến được chọn lọc
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+
+  // Trạng thái sao chép voucher
+  const [copiedPromo, setCopiedPromo] = useState<string | null>(null);
+  const handleCopyPromo = (code: string) => {
+    try {
+      navigator.clipboard?.writeText(code);
+      setCopiedPromo(code);
+      setTimeout(() => setCopiedPromo(null), 2000);
+    } catch {
+      // fallback
+    }
+  };
+
+  useEffect(() => {
+    const sec = searchParams.get('section');
+    if (sec === 'trending') {
+      setTimeout(() => {
+        document.getElementById('hot-trending-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 150);
+    } else if (sec === 'explore') {
+      setTimeout(() => {
+        document.getElementById('explore-destinations-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 150);
+    } else if (sec === 'stays') {
+      setTimeout(() => {
+        document.getElementById('stays-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 150);
+    }
+  }, [searchParams]);
 
   // Hàm fetch danh sách phòng và đánh giá từ Backend
   const fetchPropertiesWithReviews = useCallback(async (): Promise<Property[]> => {
@@ -103,8 +189,44 @@ export default function HomePage() {
     return filtered.length > 0 ? filtered : properties.slice(0, 5);
   }, [properties]);
 
-  // Khu vực 2: Danh sách phòng ở mục "Khám phá chỗ ở" - Giữ đầy đủ tất cả phòng (thẻ phòng xu hướng vẫn có ở đây)
-  const exploreProperties = properties;
+  // Tính số lượng chỗ ở cho từng điểm đến
+  const destinationsWithCount = useMemo(() => {
+    return TOP_DESTINATIONS.map(d => {
+      const count = properties.filter(p => {
+        const c = (p.city || '').toLowerCase();
+        const a = (p.area || '').toLowerCase();
+        const addr = (p.address || '').toLowerCase();
+        const target = d.city.toLowerCase();
+        return c.includes(target) || a.includes(target) || addr.includes(target);
+      }).length;
+      return { ...d, count };
+    });
+  }, [properties]);
+
+  // Xử lý chọn/bỏ chọn điểm đến
+  const handleSelectCity = (city: string) => {
+    if (selectedCity === city) {
+      setSelectedCity(null);
+    } else {
+      setSelectedCity(city);
+      setCurrentPage(1);
+      setTimeout(() => {
+        document.getElementById('stays-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
+  };
+
+  // Khu vực 3: Danh sách phòng ở mục "Bộ sưu tập chỗ ở" - Lọc theo điểm đến nếu được chọn
+  const filteredProperties = useMemo(() => {
+    if (!selectedCity) return properties;
+    const target = selectedCity.toLowerCase();
+    return properties.filter(p => {
+      const c = (p.city || '').toLowerCase();
+      const a = (p.area || '').toLowerCase();
+      const addr = (p.address || '').toLowerCase();
+      return c.includes(target) || a.includes(target) || addr.includes(target);
+    });
+  }, [properties, selectedCity]);
 
   // Ref và hàm cuộn ngang cho Phòng Hot ("nếu có nhiều thì cho lướt sang bên")
   const hotScrollRef = useRef<HTMLDivElement>(null);
@@ -123,23 +245,23 @@ export default function HomePage() {
     }
   };
 
-  // Phân trang cho "Khám phá chỗ ở": 2 hàng (10 phòng mỗi trang với 5 cột)
+  // Phân trang cho "Bộ sưu tập chỗ ở": 2 hàng (10 phòng mỗi trang với 5 cột)
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const totalPages = Math.max(1, Math.ceil(exploreProperties.length / itemsPerPage));
+  const totalPages = Math.max(1, Math.ceil(filteredProperties.length / itemsPerPage));
 
   const paginatedExploreProperties = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
-    return exploreProperties.slice(start, start + itemsPerPage);
-  }, [exploreProperties, currentPage, itemsPerPage]);
+    return filteredProperties.slice(start, start + itemsPerPage);
+  }, [filteredProperties, currentPage, itemsPerPage]);
 
-  const exploreSectionRef = useRef<HTMLElement>(null);
+  const staysSectionRef = useRef<HTMLElement>(null);
 
   const handlePrevPage = () => {
     setCurrentPage(prev => {
       const next = Math.max(prev - 1, 1);
-      if (next !== prev && exploreSectionRef.current) {
-        exploreSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (next !== prev && staysSectionRef.current) {
+        staysSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
       return next;
     });
@@ -148,8 +270,8 @@ export default function HomePage() {
   const handleNextPage = () => {
     setCurrentPage(prev => {
       const next = Math.min(prev + 1, totalPages);
-      if (next !== prev && exploreSectionRef.current) {
-        exploreSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (next !== prev && staysSectionRef.current) {
+        staysSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
       return next;
     });
@@ -158,7 +280,7 @@ export default function HomePage() {
   return (
     <div style={{ maxWidth: 1760, margin: '0 auto', padding: '0 2.5rem 6rem' }}>
       {/* Big Hero Search Bar (Shared SearchBar Component) */}
-      <div style={{ margin: '0.5rem auto 3rem', maxWidth: 880 }}>
+      <div style={{ margin: '0.5rem auto 2rem', maxWidth: 880 }}>
         <SearchBar
           variant="hero"
           initialKw={kw}
@@ -171,7 +293,7 @@ export default function HomePage() {
       {/* ─────────────────────────────────────────────────────────────────
           KHU VỰC 1: 🔥 Xu hướng hiện nay (Phòng Hot) - Lướt ngang nếu nhiều phòng, thẻ chuẩn kích thước
           ───────────────────────────────────────────────────────────────── */}
-      <section style={{ marginBottom: '1.5rem' }}>
+      <section id="hot-trending-section" style={{ marginBottom: '1.5rem', scrollMarginTop: '5rem' }}>
         {/* Section Header */}
         <div
           style={{
@@ -300,10 +422,167 @@ export default function HomePage() {
       />
 
       {/* ─────────────────────────────────────────────────────────────────
-          KHU VỰC 2: Khám phá chỗ ở - 2 Hàng hiển thị hết nội dung + Chuyển trang & Xem thêm
+          KHU VỰC 2: 🧭 Khám phá điểm đến nổi bật (Top Điểm đến Việt Nam)
           ───────────────────────────────────────────────────────────────── */}
-      <section ref={exploreSectionRef}>
-        {/* Section Header có bộ điều khiển chuyển trang và Xem thêm */}
+      <section id="explore-destinations-section" style={{ marginBottom: '2.5rem', scrollMarginTop: '5rem' }}>
+        <div id="explore-section" style={{ position: 'relative', top: '-5rem' }} />
+        {/* Section Header */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1.25rem',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
+          }}
+        >
+          <div>
+            <h2
+              className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2 m-0"
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: 700,
+                color: 'var(--color-text-primary, #0F172A)',
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <span>🧭 Khám phá điểm đến nổi bật</span>
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  padding: '2px 8px',
+                  borderRadius: '9999px',
+                  background: '#EFF6FF',
+                  color: '#2563EB',
+                  border: '1px solid #BFDBFE',
+                }}
+              >
+                Việt Nam
+              </span>
+            </h2>
+            <p
+              style={{
+                fontSize: '0.875rem',
+                color: 'var(--color-text-secondary, #475569)',
+                margin: '0.35rem 0 0',
+              }}
+            >
+              Các thành phố và thiên đường du lịch hàng đầu được du khách yêu thích nhất
+            </p>
+          </div>
+
+          {selectedCity && (
+            <button
+              type="button"
+              onClick={() => setSelectedCity(null)}
+              style={{
+                background: 'none',
+                border: '1px solid var(--color-border-strong, #CBD5E1)',
+                padding: '0.35rem 0.75rem',
+                borderRadius: '9999px',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                color: 'var(--color-text-secondary, #475569)',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+              }}
+            >
+              <XCircle /> Bỏ chọn điểm đến
+            </button>
+          )}
+        </div>
+
+        {/* Lưới 10 điểm đến hàng đầu */}
+        <div className="destination-grid">
+          {destinationsWithCount.map(dest => {
+            const isSelected = selectedCity === dest.city;
+            return (
+              <div
+                key={dest.city}
+                className={`destination-card ${isSelected ? 'active' : ''}`}
+                onClick={() => handleSelectCity(dest.city)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => e.key === 'Enter' && handleSelectCity(dest.city)}
+              >
+                <img src={dest.image} alt={dest.city} loading="lazy" />
+                <div className="destination-card-overlay">
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <span
+                      style={{
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        padding: '2px 7px',
+                        borderRadius: '9999px',
+                        background: 'rgba(255, 255, 255, 0.88)',
+                        color: isSelected ? 'var(--color-primary, #E11D48)' : '#0F172A',
+                        backdropFilter: 'blur(4px)',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                      }}
+                    >
+                      {dest.count > 0 ? `${dest.count} chỗ ở` : 'Đang cập nhật'}
+                    </span>
+                  </div>
+
+                  <div>
+                    <div
+                      style={{
+                        fontSize: '1.02rem',
+                        fontWeight: 700,
+                        color: '#FFFFFF',
+                        lineHeight: 1.25,
+                        textShadow: '0 1px 3px rgba(0,0,0,0.6)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.3rem',
+                      }}
+                    >
+                      {dest.city}
+                      {isSelected && <Check style={{ color: '#F43F5E', fontSize: '1.1rem' }} />}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '0.74rem',
+                        color: 'rgba(255, 255, 255, 0.85)',
+                        marginTop: '2px',
+                        textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {dest.subtitle}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────────
+          ĐƯỜNG KẺ NGANG (DIVIDER) TINH TẾ
+          ───────────────────────────────────────────────────────────────── */}
+      <div
+        style={{
+          margin: '2.5rem 0 2rem',
+          borderTop: '1px solid var(--color-border-subtle, #E2E8F0)',
+        }}
+      />
+
+      {/* ─────────────────────────────────────────────────────────────────
+          KHU VỰC 3: 🏠 Bộ sưu tập chỗ ở toàn quốc (Khám phá chỗ ở với phân trang)
+          ───────────────────────────────────────────────────────────────── */}
+      <section id="stays-section" ref={staysSectionRef} style={{ scrollMarginTop: '5rem' }}>
+        {/* Section Header */}
         <div
           style={{
             display: 'flex',
@@ -322,9 +601,12 @@ export default function HomePage() {
                 fontWeight: 700,
                 color: 'var(--color-text-primary, #0F172A)',
                 margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
               }}
             >
-              Khám phá chỗ ở
+              <span>🏠 Bộ sưu tập chỗ ở toàn quốc</span>
             </h2>
             <p
               style={{
@@ -333,31 +615,56 @@ export default function HomePage() {
                 margin: '0.35rem 0 0',
               }}
             >
-              Bộ sưu tập chỗ nghỉ đa dạng trên khắp các điểm đến nổi tiếng Việt Nam
+              {selectedCity
+                ? `Hiển thị các chỗ nghỉ tại ${selectedCity}`
+                : `Hơn ${properties.length} chỗ nghỉ cao cấp đa dạng từ homestay, căn hộ dịch vụ đến villa biển`}
             </p>
           </div>
 
-          {/* Nút Xem thêm đưa xuống Khám phá chỗ ở (đã bỏ nút chuyển trang ở đây vì cuối trang đã có) */}
-          <Link
-            to="/rooms"
-            style={{
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              color: 'var(--color-primary, #FF385C)',
-              textDecoration: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              padding: '0.4rem 0.85rem',
-              borderRadius: '9999px',
-              transition: 'background-color 0.15s ease',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-primary-soft, #FFF1F2)')}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-          >
-            <span>Xem thêm</span>
-            <ChevronRight style={{ fontSize: '0.8rem' }} />
-          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {selectedCity && (
+              <button
+                type="button"
+                onClick={() => setSelectedCity(null)}
+                style={{
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  color: 'var(--color-primary, #E11D48)',
+                  background: 'var(--color-primary-soft, #FFF1F2)',
+                  border: '1px solid #FECDD3',
+                  borderRadius: '9999px',
+                  padding: '0.35rem 0.85rem',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                }}
+              >
+                <XCircle style={{ fontSize: '0.9rem' }} /> Bỏ lọc ({selectedCity})
+              </button>
+            )}
+
+            <Link
+              to="/rooms"
+              style={{
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                color: 'var(--color-primary, #FF385C)',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                padding: '0.4rem 0.85rem',
+                borderRadius: '9999px',
+                transition: 'background-color 0.15s ease',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-primary-soft, #FFF1F2)')}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+            >
+              <span>Xem thêm</span>
+              <ChevronRight style={{ fontSize: '0.8rem' }} />
+            </Link>
+          </div>
         </div>
 
         {/* Grid hiển thị chính xác 2 hàng (10 đơn), tỷ lệ hiển thị đầy đủ mọi nội dung không bị cắt */}
@@ -374,6 +681,41 @@ export default function HomePage() {
             />
           ))}
         </div>
+
+        {paginatedExploreProperties.length === 0 && (
+          <div
+            style={{
+              padding: '3rem 1rem',
+              textAlign: 'center',
+              color: 'var(--color-text-secondary, #64748B)',
+              background: '#F8FAFC',
+              borderRadius: '16px',
+              border: '1px dashed var(--color-border-strong, #CBD5E1)',
+              margin: '1.5rem 0',
+            }}
+          >
+            <p style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>
+              Chưa có chỗ nghỉ nào tại {selectedCity}
+            </p>
+            <button
+              type="button"
+              onClick={() => setSelectedCity(null)}
+              style={{
+                marginTop: '0.75rem',
+                background: 'var(--color-primary, #E11D48)',
+                color: '#FFFFFF',
+                border: 'none',
+                padding: '0.45rem 1rem',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '0.88rem',
+              }}
+            >
+              Xem tất cả chỗ nghỉ
+            </button>
+          </div>
+        )}
 
         {/* Thanh số trang chuyển trang bên dưới */}
         {totalPages > 1 && (
@@ -406,7 +748,7 @@ export default function HomePage() {
                 boxShadow: 'var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05))',
               }}
             >
-              <ChevronLeft style={{ fontSize: '0.8rem' }} /> Trước
+              <ChevronLeft style={{ fontSize: '0.8rem' }} />
             </button>
 
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
@@ -415,8 +757,8 @@ export default function HomePage() {
                 type="button"
                 onClick={() => {
                   setCurrentPage(page);
-                  if (exploreSectionRef.current) {
-                    exploreSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  if (staysSectionRef.current) {
+                    staysSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }
                 }}
                 style={{
@@ -458,7 +800,7 @@ export default function HomePage() {
                 boxShadow: 'var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05))',
               }}
             >
-              Sau <ChevronRight style={{ fontSize: '0.8rem' }} />
+            <ChevronRight style={{ fontSize: '0.8rem' }} />
             </button>
           </div>
         )}

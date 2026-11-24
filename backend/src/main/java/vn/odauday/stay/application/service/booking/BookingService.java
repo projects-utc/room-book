@@ -150,6 +150,20 @@ public class BookingService {
         }
         double total = Math.max(0.0, subtotal + serviceFee - discountAmount);
 
+        String rawType = request.getPaymentType();
+        String paymentType = hasText(rawType) ? rawType.trim().toUpperCase() : "FULL_100";
+        if ("CASH".equalsIgnoreCase(request.getPaymentMethod()) || "DEPOSIT_30".equalsIgnoreCase(paymentType)) {
+            paymentType = "DEPOSIT_30";
+        }
+
+        double paidAmount;
+        if (request.getPaidAmount() != null && request.getPaidAmount() > 0) {
+            paidAmount = Math.min(total, request.getPaidAmount());
+        } else {
+            paidAmount = "DEPOSIT_30".equalsIgnoreCase(paymentType) ? Math.round(total * 0.3) : total;
+        }
+        double remainingAmount = Math.max(0.0, total - paidAmount);
+
         BookingEntity booking = BookingEntity.builder()
                 .code(generateUniqueCode())
                 .guestUsername(guestUsername)
@@ -168,6 +182,9 @@ public class BookingService {
                 .subtotal(subtotal)
                 .serviceFee(serviceFee)
                 .total(total)
+                .paymentType(paymentType)
+                .paidAmount(paidAmount)
+                .remainingAmount(remainingAmount)
                 .status(BookingStatus.PENDING.name())
                 .paymentMethod(trimOrNull(request.getPaymentMethod()))
                 .createdAt(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))

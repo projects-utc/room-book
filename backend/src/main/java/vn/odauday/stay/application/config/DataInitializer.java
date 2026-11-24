@@ -129,7 +129,10 @@ public class DataInitializer implements CommandLineRunner {
             PropertyEntity.builder().owner("host.demo").name("ODauDay Stay Hạ Long Bay View").type("Căn hộ dịch vụ").address("Tòa Green Bay Premium, Hoàng Quốc Việt, Bãi Cháy, Quảng Ninh").city("Quảng Ninh").area("Hạ Long").rating(null).reviewsCount(0).priceMin(950000.0).desc("Căn hộ cao cấp tầng 22 phóng tầm mắt bao trọn vịnh Hạ Long kỳ vĩ, đi bộ ra bãi tắm Bãi Cháy.").image("https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80").badge("View vịnh Hạ Long").amenitiesRaw("View vịnh 180 độ|Bể bơi bốn mùa|Bếp hiện đại|Cạnh chợ đêm hải sản").status("ACTIVE").isHot(false).views7d(490L).build(),
             PropertyEntity.builder().owner("host.demo").name("ODauDay Stay Vũng Tàu Ocean").type("Căn hộ view biển").address("Số 02 Lê Lợi, Phường 1, TP. Vũng Tàu, Bà Rịa - Vũng Tàu").city("Bà Rịa - Vũng Tàu").area("Vũng Tàu").rating(null).reviewsCount(0).priceMin(820000.0).desc("Căn hộ ban công lộng gió Bãi Trước, nội thất hiện đại tông màu xanh biển sảng khoái và yên tĩnh.").image("https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80").badge("Gần Bãi Trước").amenitiesRaw("Đi bộ 2 phút ra biển|Bếp nướng hải sản|Chỗ đỗ xe ô tô|Smart TV 65 inch").status("ACTIVE").isHot(false).views7d(320L).build(),
             PropertyEntity.builder().owner("host.demo").name("ODauDay Stay Huế Cố Đô").type("Homestay nhà vườn").address("Số 11 thôn Lại Thế, Xã Phú Thượng, Huyện Phú Vang, Thừa Thiên Huế").city("Thừa Thiên Huế").area("Huế").rating(null).reviewsCount(0).priceMin(520000.0).desc("Nhà rường truyền thống xứ Huế giữa vườn thanh trà râm mát, đắm chìm trong vẻ đẹp thơ mộng sông Hương.").image("https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80").badge("Văn hóa Cố Đô").amenitiesRaw("Thưởng trà cung đình|Vườn hoa trái xanh mát|Bếp nấu truyền thống|Thuê áo dài chụp ảnh").status("ACTIVE").isHot(false).views7d(190L).build(),
-            PropertyEntity.builder().owner("host.demo").name("ODauDay Stay Quy Nhơn Sea").type("Bungalow biển").address("Bãi Xép, Phường Ghềnh Ráng, TP. Quy Nhơn, Bình Định").city("Bình Định").area("Quy Nhơn").rating(null).reviewsCount(0).priceMin(890000.0).desc("Bungalow vách đá nhìn xuống làng chài bình yên Bãi Xép, ngắm bình minh đại dương rực rỡ từ giường ngủ.").image("https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=80").badge("View làng chài Bãi Xép").amenitiesRaw("Ngắm bình minh biển|Hải sản tươi sống làng chài|Lặn ngắm san hô|Võng thư giãn").status("ACTIVE").isHot(false).views7d(260L).build()
+            PropertyEntity.builder().owner("host.demo").name("ODauDay Stay Quy Nhơn Sea").type("Bungalow biển").address("Bãi Xép, Phường Ghềnh Ráng, TP. Quy Nhơn, Bình Định").city("Bình Định").area("Quy Nhơn").rating(null).reviewsCount(0).priceMin(890000.0).desc("Bungalow vách đá nhìn xuống làng chài bình yên Bãi Xép, ngắm bình minh đại dương rực rỡ từ giường ngủ.").image("https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=80").badge("View làng chài Bãi Xép").amenitiesRaw("Ngắm bình minh biển|Hải sản tươi sống làng chài|Lặn ngắm san hô|Võng thư giãn").status("ACTIVE").isHot(false).views7d(260L).build(),
+            PropertyEntity.builder().owner("host.demo").name("ODauDay Stay Đà Nẵng Beachfront").type("Villa biển cao cấp").address("Võ Nguyên Giáp, Phường Mỹ An, Ngũ Hành Sơn, Đà Nẵng").city("Đà Nẵng").area("Biển Mỹ Khê").rating(4.9).reviewsCount(15).priceMin(1850000.0).desc("Villa sang trọng chỉ cách bãi biển Mỹ Khê vài bước chân, có hồ bơi riêng và sân thượng ngắm trọn bình minh biển Đông.").image("https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=1200&q=80").badge("Sát biển Mỹ Khê").amenitiesRaw("Hồ bơi vô cực|View biển 360|Bữa sáng phục vụ tận phòng|BBQ hải sản ngoài trời|Xe đưa đón sân bay").status("ACTIVE").isHot(true).views7d(1650L).build(),
+            PropertyEntity.builder().owner("host.demo").name("ODauDay Stay Sài Gòn Skyview").type("Căn hộ cao cấp").address("Tòa Landmark Plus, Vinhomes Central Park, Bình Thạnh, TP. Hồ Chí Minh").city("TP. Hồ Chí Minh").area("Quận 1 / Bình Thạnh").rating(4.8).reviewsCount(22).priceMin(1200000.0).desc("Căn hộ tầng cao tầm nhìn panorama sông Sài Gòn và tòa Landmark 81, nội thất hiện đại sang trọng, đi bộ sang công viên bờ sông.").image("https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80").badge("View sông Sài Gòn").amenitiesRaw("View Landmark 81|Hồ bơi tràn viền|Phòng Gym cao cấp|Smartlock tự nhận phòng|Bếp hiện đại").status("ACTIVE").isHot(true).views7d(2100L).build(),
+            PropertyEntity.builder().owner("host.demo").name("ODauDay Stay Nha Trang Bay").type("Penthouse view vịnh").address("Số 04 Trần Phú, Phường Xương Huân, TP. Nha Trang, Khánh Hòa").city("Khánh Hòa").area("Nha Trang").rating(4.7).reviewsCount(18).priceMin(1350000.0).desc("Penthouse tầng 30 ngắm nhìn toàn cảnh vịnh Nha Trang xanh ngắt và cáp treo Vinpearl, đầy đủ tiện nghi nghỉ dưỡng cho gia đình.").image("https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80").badge("View vịnh Nha Trang").amenitiesRaw("Ban công ngắm biển|Bể bơi tầng thượng|Bếp nấu hải sản|Smart TV 65 inch|Chỗ đỗ xe miễn phí").status("ACTIVE").isHot(true).views7d(1120L).build()
         );
 
         propertyRepository.saveAll(props);
@@ -137,28 +140,88 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void seedRooms() {
-        if (roomRepository.count() > 0) return;
+        if (roomRepository.count() >= 20) return;
 
         List<RoomEntity> rooms = List.of(
+            // Prop 1: ODauDay Stay Hồ Tây
             RoomEntity.builder().propertyId(1L).propertyName("ODauDay Stay Hồ Tây").name("Phòng Garden").capacity(2).price(650000.0).weekendPrice(750000.0).desc("1 giường đôi Queen · View vườn xanh mát · Bếp nấu mini · Điều hòa 2 chiều").status("ACTIVE").build(),
             RoomEntity.builder().propertyId(1L).propertyName("ODauDay Stay Hồ Tây").name("Phòng Family").capacity(4).price(1100000.0).weekendPrice(1300000.0).desc("2 giường King · Ban công lớn nhìn ra hồ · Phòng tắm kính tiện nghi").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(1L).propertyName("ODauDay Stay Hồ Tây").name("Phòng Panorama Hồ Tây").capacity(2).price(850000.0).weekendPrice(950000.0).desc("1 giường đôi King · Cửa kính lớn view hồ Tây · Bếp nhỏ tiện nghi").status("ACTIVE").build(),
+
+            // Prop 2: ODauDay Stay Ba Vì
             RoomEntity.builder().propertyId(2L).propertyName("ODauDay Stay Ba Vì").name("Villa Rừng Thông").capacity(8).price(2500000.0).weekendPrice(3200000.0).desc("3 phòng ngủ riêng biệt · Bếp nướng BBQ · Hồ bơi riêng ngoài trời").status("ACTIVE").build(),
-            RoomEntity.builder().propertyId(3L).propertyName("ODauDay Stay Cầu Giấy").name("Studio Deluxe").capacity(2).price(900000.0).weekendPrice(950000.0).desc("1 giường Queen · View thành phố tầng cao · Bàn làm việc cao cấp").status("ACTIVE").build()
+            RoomEntity.builder().propertyId(2L).propertyName("ODauDay Stay Ba Vì").name("Bungalow Đồi Thông").capacity(2).price(720000.0).weekendPrice(850000.0).desc("1 giường King · View đồi thông thoáng đãng · Sân hiên BBQ ngoài trời").status("ACTIVE").build(),
+
+            // Prop 3: ODauDay Stay Cầu Giấy
+            RoomEntity.builder().propertyId(3L).propertyName("ODauDay Stay Cầu Giấy").name("Studio Deluxe").capacity(2).price(900000.0).weekendPrice(950000.0).desc("1 giường Queen · View thành phố tầng cao · Bàn làm việc cao cấp").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(3L).propertyName("ODauDay Stay Cầu Giấy").name("Executive Suite").capacity(4).price(1350000.0).weekendPrice(1500000.0).desc("2 giường Queen · Tầng cao view panorama · Máy giặt sấy riêng").status("ACTIVE").build(),
+
+            // Prop 4: ODauDay Stay Sapa Eco
+            RoomEntity.builder().propertyId(4L).propertyName("ODauDay Stay Sapa Eco").name("Bungalow Thung Lũng").capacity(2).price(1250000.0).weekendPrice(1450000.0).desc("1 giường King gỗ pơmu · Ban công ngắm thung lũng Mường Hoa · Lò sưởi củi").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(4L).propertyName("ODauDay Stay Sapa Eco").name("Phòng Family Mây Ngàn").capacity(4).price(1850000.0).weekendPrice(2150000.0).desc("2 giường King · Tầng áp mái view săn mây 360 độ · Bồn tắm sục thảo dược").status("ACTIVE").build(),
+
+            // Prop 5: ODauDay Stay Đà Lạt Mộng Mơ
+            RoomEntity.builder().propertyId(5L).propertyName("ODauDay Stay Đà Lạt Mộng Mơ").name("Nhà Gỗ Đồi Thông").capacity(2).price(580000.0).weekendPrice(680000.0).desc("1 giường đôi Queen · View rừng thông lãng mạn · Sân nướng BBQ riêng").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(5L).propertyName("ODauDay Stay Đà Lạt Mộng Mơ").name("Phòng Gác Mái Hoàng Hôn").capacity(4).price(890000.0).weekendPrice(1050000.0).desc("2 giường đôi · Cửa kính áp mái ngắm thung lũng đèn đêm · Bếp sưởi").status("ACTIVE").build(),
+
+            // Prop 6: ODauDay Stay Phố Cổ Heritage
+            RoomEntity.builder().propertyId(6L).propertyName("ODauDay Stay Phố Cổ Heritage").name("Căn Hộ Indochine Ban Công").capacity(2).price(850000.0).weekendPrice(980000.0).desc("1 giường King · Ban công cổ kính nhìn xuống phố cổ · Máy pha cà phê Espresso").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(6L).propertyName("ODauDay Stay Phố Cổ Heritage").name("Suite Phố Cổ 2 Phòng Ngủ").capacity(4).price(1450000.0).weekendPrice(1650000.0).desc("2 phòng ngủ khép kín · Bếp đầy đủ tiện nghi · Cách Hồ Gươm 3 phút đi bộ").status("ACTIVE").build(),
+
+            // Prop 7: ODauDay Stay Tam Đảo Mây Ngàn
+            RoomEntity.builder().propertyId(7L).propertyName("ODauDay Stay Tam Đảo Mây Ngàn").name("Villa Đồi Mây").capacity(6).price(1950000.0).weekendPrice(2450000.0).desc("3 phòng ngủ · Sân thượng BBQ ngắm biển mây · Bể bơi vô cực nước ấm").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(7L).propertyName("ODauDay Stay Tam Đảo Mây Ngàn").name("Phòng Deluxe Hướng Bể Bơi").capacity(2).price(1100000.0).weekendPrice(1300000.0).desc("1 giường King · Cửa kính lùa bước thẳng ra bể bơi · Bồn tắm view núi").status("ACTIVE").build(),
+
+            // Prop 8: ODauDay Stay Ninh Bình Mountain
+            RoomEntity.builder().propertyId(8L).propertyName("ODauDay Stay Ninh Bình Mountain").name("Bungalow Ven Hồ Sen").capacity(2).price(680000.0).weekendPrice(790000.0).desc("1 giường đôi King mái lá tự nhiên · View hồ sen và núi đá Tràng An · Kayak miễn phí").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(8L).propertyName("ODauDay Stay Ninh Bình Mountain").name("Phòng Family Tràng An").capacity(4).price(1150000.0).weekendPrice(1350000.0).desc("2 giường Queen · Ban công câu cá riêng · Bữa sáng đặc sản Ninh Bình").status("ACTIVE").build(),
+
+            // Prop 9: ODauDay Stay Hội An Riverside
+            RoomEntity.builder().propertyId(9L).propertyName("ODauDay Stay Hội An Riverside").name("Phòng Vườn Sông Hoài").capacity(2).price(750000.0).weekendPrice(880000.0).desc("1 giường King · View vườn nhiệt đới ven sông · Xe đạp dạo phố cổ miễn phí").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(9L).propertyName("ODauDay Stay Hội An Riverside").name("Villa Cổ Hoàng Gia").capacity(4).price(1550000.0).weekendPrice(1750000.0).desc("2 giường King · Hồ bơi riêng trong sân vườn cổ · Trà chiều đặc sản Hội An").status("ACTIVE").build(),
+
+            // Prop 10: ODauDay Stay Phú Quốc Sunset
+            RoomEntity.builder().propertyId(10L).propertyName("ODauDay Stay Phú Quốc Sunset").name("Bungalow Bãi Trường").capacity(2).price(1450000.0).weekendPrice(1650000.0).desc("1 giường King sát bờ cát · Ngắm trọn hoàng hôn biển đảo · Đưa đón sân bay").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(10L).propertyName("ODauDay Stay Phú Quốc Sunset").name("Beachfront Sunset Villa").capacity(4).price(2450000.0).weekendPrice(2850000.0).desc("2 phòng ngủ · Hồ bơi vô cực hướng biển · Quầy bar cocktail riêng").status("ACTIVE").build(),
+
+            // Prop 11: ODauDay Stay Hạ Long Bay View
+            RoomEntity.builder().propertyId(11L).propertyName("ODauDay Stay Hạ Long Bay View").name("Căn Hộ Premium View Vịnh").capacity(3).price(950000.0).weekendPrice(1100000.0).desc("1 giường King + 1 sofa bed · Tầng 22 view trọn vẹn vịnh kỳ quan · Bể bơi bốn mùa").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(11L).propertyName("ODauDay Stay Hạ Long Bay View").name("Sky Suite Panorama").capacity(4).price(1550000.0).weekendPrice(1800000.0).desc("2 phòng ngủ view vịnh 180 độ · Ban công ngắm bình minh · Bếp hiện đại").status("ACTIVE").build(),
+
+            // Prop 12: ODauDay Stay Vũng Tàu Ocean
+            RoomEntity.builder().propertyId(12L).propertyName("ODauDay Stay Vũng Tàu Ocean").name("Studio View Biển").capacity(2).price(820000.0).weekendPrice(950000.0).desc("1 giường đôi King · Ban công view biển Bãi Trước · Bếp hiện đại · Điều hòa 2 chiều").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(12L).propertyName("ODauDay Stay Vũng Tàu Ocean").name("Căn Hộ Family Bãi Trước").capacity(4).price(1350000.0).weekendPrice(1550000.0).desc("2 phòng ngủ ban công biển · Bếp nấu hải sản tươi sống · Đi bộ 2 phút ra bãi tắm").status("ACTIVE").build(),
+
+            // Prop 13: ODauDay Stay Huế Cố Đô
+            RoomEntity.builder().propertyId(13L).propertyName("ODauDay Stay Huế Cố Đô").name("Nhà Rường Vườn Thanh Trà").capacity(2).price(520000.0).weekendPrice(600000.0).desc("1 giường King nhà rường truyền thống · Thưởng trà cung đình · Vườn hoa quả râm mát").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(13L).propertyName("ODauDay Stay Huế Cố Đô").name("Phòng Gia Đình Cố Đô").capacity(4).price(850000.0).weekendPrice(980000.0).desc("2 giường Queen · View vườn xanh mát · Bếp gia đình riêng biệt").status("ACTIVE").build(),
+
+            // Prop 14: ODauDay Stay Quy Nhơn Sea
+            RoomEntity.builder().propertyId(14L).propertyName("ODauDay Stay Quy Nhơn Sea").name("Bungalow Vách Đá Bãi Xép").capacity(2).price(890000.0).weekendPrice(990000.0).desc("1 giường King · View đại dương và làng chài Bãi Xép · Thưởng thức hải sản tươi").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(14L).propertyName("ODauDay Stay Quy Nhơn Sea").name("Ocean Villa Bãi Xép").capacity(4).price(1600000.0).weekendPrice(1850000.0).desc("2 giường King sát biển · Sân hiên ngắm bình minh đại dương · Bếp BBQ").status("ACTIVE").build(),
+
+            // Prop 15: ODauDay Stay Đà Nẵng Beachfront
+            RoomEntity.builder().propertyId(15L).propertyName("ODauDay Stay Đà Nẵng Beachfront").name("Villa Ocean Deluxe").capacity(4).price(1850000.0).weekendPrice(2100000.0).desc("2 giường King · Hồ bơi riêng · Ban công view biển Mỹ Khê · Bếp hiện đại").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(15L).propertyName("ODauDay Stay Đà Nẵng Beachfront").name("Phòng Premier Mỹ Khê").capacity(2).price(1250000.0).weekendPrice(1400000.0).desc("1 giường King · Cửa kính panorama ngắm biển Mỹ Khê · Bồn tắm hướng biển").status("ACTIVE").build(),
+
+            // Prop 16: ODauDay Stay Sài Gòn Skyview
+            RoomEntity.builder().propertyId(16L).propertyName("ODauDay Stay Sài Gòn Skyview").name("Sky Suite 2BR").capacity(4).price(1200000.0).weekendPrice(1350000.0).desc("2 phòng ngủ · View Landmark 81 & sông Sài Gòn · Máy giặt sấy · Smartlock").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(16L).propertyName("ODauDay Stay Sài Gòn Skyview").name("Studio Landmark Panorama").capacity(2).price(850000.0).weekendPrice(950000.0).desc("1 giường Queen · Tầng cao ngắm hoàng hôn sông Sài Gòn · Thang máy thẻ từ").status("ACTIVE").build(),
+
+            // Prop 17: ODauDay Stay Nha Trang Bay
+            RoomEntity.builder().propertyId(17L).propertyName("ODauDay Stay Nha Trang Bay").name("Penthouse Bay View").capacity(4).price(1350000.0).weekendPrice(1550000.0).desc("2 giường King · Ban công ngắm vịnh Nha Trang · Bếp nấu hải sản · Điều hòa 2 chiều").status("ACTIVE").build(),
+            RoomEntity.builder().propertyId(17L).propertyName("ODauDay Stay Nha Trang Bay").name("Deluxe Hướng Biển Trần Phú").capacity(2).price(950000.0).weekendPrice(1100000.0).desc("1 giường King · Đi bộ 1 phút qua đường là bãi biển · Ban công lộng gió biển").status("ACTIVE").build()
         );
 
-        roomRepository.saveAll(rooms);
-        log.info("Seeded {} rooms into Oracle DB.", rooms.size());
+        for (RoomEntity r : rooms) {
+            if (!roomRepository.existsByPropertyIdAndName(r.getPropertyId(), r.getName())) {
+                roomRepository.save(r);
+            }
+        }
+        log.info("Seeded total {} rooms into DB.", roomRepository.count());
     }
 
     private void seedRoomBlocks() {
-        if (roomBlockRepository.count() > 0) return;
-
-        List<RoomBlockEntity> blocks = List.of(
-            RoomBlockEntity.builder().roomId(2L).roomName("Phòng Family").start(day(40)).end(day(42)).reason("Bảo trì hệ thống điều hòa và sơn mới ban công").build()
-        );
-
-        roomBlockRepository.saveAll(blocks);
-        log.info("Seeded {} room blocks into Oracle DB.", blocks.size());
     }
 
     private void seedBookings() {

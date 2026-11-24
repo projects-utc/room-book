@@ -40,23 +40,36 @@ export function Header() {
     const location = useLocation();
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
-    const [isScrolled, setIsScrolled] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
     const isHome = location.pathname === '/';
     const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
-    const isSearchPage = location.pathname === '/search';
-    const isBookingPage = location.pathname.includes('/my-bookings');
+    const [activeNavTab, setActiveNavTab] = useState<'stays' | 'trending' | 'explore'>('stays');
 
-    // Track scroll position to collapse/expand search bar
+    // Tự động nhận diện khu vực đang cuộn để highlight tab tương ứng trên Header
     useEffect(() => {
+        if (!isHome) return;
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
+            const scrollPos = window.scrollY + 260;
+            const staysEl = document.getElementById('stays-section');
+            const destEl = document.getElementById('explore-destinations-section');
+            const trendingEl = document.getElementById('hot-trending-section');
+
+            if (staysEl && scrollPos >= staysEl.offsetTop) {
+                setActiveNavTab('stays');
+            } else if (destEl && scrollPos >= destEl.offsetTop) {
+                setActiveNavTab('explore');
+            } else if (trendingEl && scrollPos >= trendingEl.offsetTop) {
+                setActiveNavTab('trending');
+            } else {
+                setActiveNavTab('stays');
+            }
         };
+
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [isHome]);
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -85,7 +98,7 @@ export function Header() {
     };
 
     return (
-        <header className="site-header" style={{ padding: isHome && !isScrolled ? '0.85rem 2.5rem 1rem' : '0.85rem 2.5rem' }}>
+        <header className="site-header" style={{ padding: '0.85rem 2.5rem' }}>
             <div className="header-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: 1760, margin: '0 auto' }}>
                 {/* Logo: ODauDay Stay with HouseDoorFill icon (Điều hướng quay về Trang chủ / Danh sách phòng) */}
                 <Link
@@ -115,55 +128,111 @@ export function Header() {
           </span>
                 </Link>
 
-                {!isAuthPage && !((isSearchPage || isHome) && !isScrolled) && (
+                {!isAuthPage && (
                     <div className="header-center-nav">
-                        <div
-                            className="search-pill-container"
-                            onClick={() => navigate('/search')}
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={e => e.key === 'Enter' && navigate('/search')}
-                            aria-label="Tìm kiếm chỗ ở"
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                border: '1px solid var(--color-border-strong)',
-                                borderRadius: '9999px',
-                                boxShadow: 'var(--shadow-search)',
-                                padding: '0.45rem 0.65rem 0.45rem 1.25rem',
-                                cursor: 'pointer',
-                                background: 'var(--color-bg-surface)',
-                            }}
-                        >
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-text-primary)', fontWeight: 600, fontSize: '0.88rem' }}>
-                                <HouseDoor style={{ fontSize: '1rem', color: 'var(--color-primary)' }} />
-                                <span>Điểm đến bất kỳ</span>
-                            </span>
-                            <span className="search-pill-divider" style={{ width: 1, height: 20, background: 'var(--color-border-subtle)', margin: '0 0.85rem' }} />
-                            <span style={{ color: 'var(--color-text-primary)', fontSize: '0.88rem', fontWeight: 600 }}>Chọn ngày</span>
-                            <span className="search-pill-divider" style={{ width: 1, height: 20, background: 'var(--color-border-subtle)', margin: '0 0.85rem' }} />
-                            <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.88rem' }}>Số khách</span>
+                        <nav aria-label="Điều hướng chính" style={{ display: 'flex', alignItems: 'center', gap: '1.75rem' }}>
                             <button
                                 type="button"
-                                style={{
-                                    background: 'var(--color-primary)',
-                                    color: 'var(--color-text-inverse)',
-                                    border: 'none',
-                                    borderRadius: '50%',
-                                    width: 34,
-                                    height: 34,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    marginLeft: '0.75rem',
-                                    cursor: 'pointer',
-                                    flexShrink: 0,
+                                onClick={() => {
+                                    if (isHome) {
+                                        setActiveNavTab('stays');
+                                        document.getElementById('stays-section')?.scrollIntoView({ behavior: 'smooth' });
+                                    } else {
+                                        navigate('/?section=stays');
+                                    }
                                 }}
-                                aria-label="Tìm kiếm"
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    padding: '0.45rem 0.2rem',
+                                    fontSize: '0.94rem',
+                                    fontWeight: isHome && activeNavTab === 'stays' ? 700 : 600,
+                                    color: isHome && activeNavTab === 'stays' ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                                    borderBottom: isHome && activeNavTab === 'stays' ? '2.5px solid var(--color-primary)' : '2.5px solid transparent',
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.4rem',
+                                    transition: 'all 0.15s ease',
+                                }}
+                                onMouseEnter={e => {
+                                    if (!(isHome && activeNavTab === 'stays')) e.currentTarget.style.color = 'var(--color-text-primary)';
+                                }}
+                                onMouseLeave={e => {
+                                    if (!(isHome && activeNavTab === 'stays')) e.currentTarget.style.color = 'var(--color-text-secondary)';
+                                }}
                             >
-                                <Search style={{ fontSize: '0.85rem' }} />
+                                <HouseDoor style={{ fontSize: '1rem' }} /> Chỗ ở
                             </button>
-                        </div>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (isHome) {
+                                        setActiveNavTab('trending');
+                                        document.getElementById('hot-trending-section')?.scrollIntoView({ behavior: 'smooth' });
+                                    } else {
+                                        navigate('/?section=trending');
+                                    }
+                                }}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    padding: '0.45rem 0.2rem',
+                                    fontSize: '0.94rem',
+                                    fontWeight: isHome && activeNavTab === 'trending' ? 700 : 600,
+                                    color: isHome && activeNavTab === 'trending' ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                                    borderBottom: isHome && activeNavTab === 'trending' ? '2.5px solid var(--color-primary)' : '2.5px solid transparent',
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.4rem',
+                                    transition: 'all 0.15s ease',
+                                }}
+                                onMouseEnter={e => {
+                                    if (!(isHome && activeNavTab === 'trending')) e.currentTarget.style.color = 'var(--color-text-primary)';
+                                }}
+                                onMouseLeave={e => {
+                                    if (!(isHome && activeNavTab === 'trending')) e.currentTarget.style.color = 'var(--color-text-secondary)';
+                                }}
+                            >
+                                <span>🔥</span> Xu hướng Hot
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (isHome) {
+                                        setActiveNavTab('explore');
+                                        document.getElementById('explore-destinations-section')?.scrollIntoView({ behavior: 'smooth' });
+                                    } else {
+                                        navigate('/?section=explore');
+                                    }
+                                }}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    padding: '0.45rem 0.2rem',
+                                    fontSize: '0.94rem',
+                                    fontWeight: isHome && activeNavTab === 'explore' ? 700 : 600,
+                                    color: isHome && activeNavTab === 'explore' ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                                    borderBottom: isHome && activeNavTab === 'explore' ? '2.5px solid var(--color-primary)' : '2.5px solid transparent',
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.4rem',
+                                    transition: 'all 0.15s ease',
+                                }}
+                                onMouseEnter={e => {
+                                    if (!(isHome && activeNavTab === 'explore')) e.currentTarget.style.color = 'var(--color-text-primary)';
+                                }}
+                                onMouseLeave={e => {
+                                    if (!(isHome && activeNavTab === 'explore')) e.currentTarget.style.color = 'var(--color-text-secondary)';
+                                }}
+                            >
+                                <span>🧭</span> Khám phá
+                            </button>
+                        </nav>
                     </div>
                 )}
 
@@ -629,6 +698,9 @@ export function Header() {
 
 // ── Footer (ODauDay Stay + Airbnb Clean 4-Column Layout) ────────────────────
 export function Footer() {
+    const { currentUser } = useStore();
+    const isAdmin = currentUser?.role === ROLES.ADMIN;
+
     return (
         <footer className="site-footer" style={{ borderTop: '1px solid var(--color-border-subtle)', background: 'var(--color-bg-app)', padding: '3rem 2rem 1.5rem', marginTop: 'auto' }}>
             <div className="footer-container" style={{ maxWidth: 1760, margin: '0 auto' }}>
@@ -658,9 +730,6 @@ export function Footer() {
                         <p style={{ fontSize: '0.86rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: '0 0 1rem' }}>
                             Hệ thống trung gian đặt phòng trực tuyến (OTA) kết nối khách thuê homestay và chủ nhà trên toàn quốc. Trải nghiệm lưu trú an tâm, tiện nghi và bảo mật hàng đầu.
                         </p>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'var(--color-primary-soft)', color: 'var(--color-primary)', padding: '4px 10px', borderRadius: 9999, fontSize: '0.75rem', fontWeight: 600, marginBottom: '1.25rem' }}>
-                            <Check2Circle /> Đồ án PTTHĐT (OOAD) · Kiến trúc BCE
-                        </div>
                         <div style={{ display: 'flex', gap: '0.85rem', fontSize: '1.2rem', color: 'var(--color-text-muted)' }}>
                             <a href="#facebook" aria-label="Facebook" style={{ color: 'inherit', transition: 'color 0.15s' }} onMouseEnter={e => e.currentTarget.style.color = '#1877F2'} onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-muted)'}><Facebook /></a>
                             <a href="#instagram" aria-label="Instagram" style={{ color: 'inherit', transition: 'color 0.15s' }} onMouseEnter={e => e.currentTarget.style.color = '#E4405F'} onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-muted)'}><Instagram /></a>
@@ -685,7 +754,7 @@ export function Footer() {
                     <div>
                         <h4 className="footer-col-title" style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 1rem' }}>Dành cho Chủ nhà</h4>
                         <ul className="footer-link-list" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                            <li><Link to="/host/properties" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Kênh Chủ nhà (Host Hub)</Link></li>
+                            <li><Link to="/host/properties" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Kênh Chủ nhà</Link></li>
                             <li><Link to="/host/properties" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Quản lý cơ sở lưu trú</Link></li>
                             <li><Link to="/host/roomblock?roomId=1" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Quản lý lịch khóa phòng bảo trì</Link></li>
                             <li><Link to="/host/bookings" style={{ textDecoration: 'none', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Xử lý và duyệt đơn lưu trú</Link></li>
@@ -701,35 +770,37 @@ export function Footer() {
                             Trường Đại học Giao thông Vận tải (UTC).<br />
                             Kiến trúc phân tầng: React 19 + Spring Boot 3 + MySQL.
                         </p>
-                        <div style={{ marginTop: '0.85rem' }}>
-                            <Link
-                                to="/admin/bookings"
-                                style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '0.45rem',
-                                    padding: '0.45rem 0.85rem',
-                                    borderRadius: 8,
-                                    border: '1px solid var(--color-border-subtle)',
-                                    background: 'var(--color-bg-surface)',
-                                    color: 'var(--color-text-primary)',
-                                    fontSize: '0.82rem',
-                                    fontWeight: 600,
-                                    textDecoration: 'none',
-                                    transition: 'all 0.15s ease',
-                                }}
-                                onMouseEnter={e => {
-                                    e.currentTarget.style.borderColor = 'var(--color-primary)';
-                                    e.currentTarget.style.color = 'var(--color-primary)';
-                                }}
-                                onMouseLeave={e => {
-                                    e.currentTarget.style.borderColor = 'var(--color-border-subtle)';
-                                    e.currentTarget.style.color = 'var(--color-text-primary)';
-                                }}
-                            >
-                                <ShieldLockFill style={{ color: 'var(--color-primary)' }} /> Cổng Quản trị viên (Admin)
-                            </Link>
-                        </div>
+                        {isAdmin && (
+                            <div style={{ marginTop: '0.85rem' }}>
+                                <Link
+                                    to="/admin/bookings"
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '0.45rem',
+                                        padding: '0.45rem 0.85rem',
+                                        borderRadius: 8,
+                                        border: '1px solid var(--color-border-subtle)',
+                                        background: 'var(--color-bg-surface)',
+                                        color: 'var(--color-text-primary)',
+                                        fontSize: '0.82rem',
+                                        fontWeight: 600,
+                                        textDecoration: 'none',
+                                        transition: 'all 0.15s ease',
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.borderColor = 'var(--color-primary)';
+                                        e.currentTarget.style.color = 'var(--color-primary)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.borderColor = 'var(--color-border-subtle)';
+                                        e.currentTarget.style.color = 'var(--color-text-primary)';
+                                    }}
+                                >
+                                    <ShieldLockFill style={{ color: 'var(--color-primary)' }} /> Cổng Quản trị viên (Admin)
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
 

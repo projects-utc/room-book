@@ -14,6 +14,7 @@ import java.util.Optional;
 @Repository
 public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
     List<RoomEntity> findByPropertyId(Long propertyId);
+    boolean existsByPropertyIdAndName(Long propertyId, String name);
 
     /**
      * SELECT ... FOR UPDATE trên dòng phòng. Giao dịch đặt phòng thứ hai cho cùng phòng sẽ phải chờ

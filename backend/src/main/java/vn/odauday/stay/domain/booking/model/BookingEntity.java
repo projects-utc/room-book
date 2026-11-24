@@ -26,7 +26,6 @@ public class BookingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
 
     @Column(name = "booking_code", unique = true, nullable = false, length = 50)
@@ -80,9 +79,21 @@ public class BookingEntity {
     private String status = "PENDING";
 
     @Column(name = "payment_method", length = 50)
-    @JsonProperty("payment_method")
     @JsonAlias({"payment_method", "paymentMethod"})
     private String paymentMethod;
+
+    @Column(name = "payment_type", length = 50)
+    @JsonAlias({"payment_type", "paymentType"})
+    @Builder.Default
+    private String paymentType = "FULL_100";
+
+    @Column(name = "paid_amount")
+    @JsonAlias({"paid_amount", "paidAmount"})
+    private Double paidAmount;
+
+    @Column(name = "remaining_amount")
+    @JsonAlias({"remaining_amount", "remainingAmount"})
+    private Double remainingAmount;
 
     @Column(name = "created_at_str", length = 30)
     private String createdAt;

@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { stayApi } from '../../api/stayApi';
 import { Breadcrumb, Button, Card, EmptyState, StatCard, formatDisplayDateVN, DateRangePicker, LoadingSpinner } from '../../components';
-import { formatVND, BADGE_CLASS, BADGE_LABEL } from '../../constants';
+import { formatVND, BADGE_CLASS, BADGE_LABEL, getBookingPaymentInfo } from '../../constants';
 import {
   ArrowLeftRight, ArrowRight, CalendarCheck,
   Check2All, CheckLg, ChevronLeft, ChevronRight, Eye, Search, X, XCircle,
@@ -247,10 +247,46 @@ export default function HostBookingsPage() {
                         <span>{formatDisplayDateVN(booking.checkIn)}</span><ArrowRight aria-label="đến" />
                         <span>{formatDisplayDateVN(booking.checkOut)}</span>
                       </div><span className="booking-cell-subtitle">{booking.nights} đêm · {booking.guests} khách</span></td>
-                      <td className="booking-total">{formatVND(booking.total)}</td>
-                      <td><span className={`badge ${BADGE_CLASS[booking.status] || 'badge-pending'}`}>
-                        {BADGE_LABEL[booking.status] || booking.status}
-                      </span></td>
+                      <td className="booking-total">
+                        {(() => {
+                          const payInfo = getBookingPaymentInfo(booking);
+                          return (
+                            <div>
+                              <div>{formatVND(payInfo.total)}</div>
+                              {payInfo.isDeposit30 ? (
+                                <div style={{ fontSize: '0.74rem', color: '#EA580C', fontWeight: 700, marginTop: 2 }}>
+                                  Cần thu: {formatVND(payInfo.remainingAmount)}
+                                </div>
+                              ) : (
+                                <div style={{ fontSize: '0.72rem', color: '#059669', fontWeight: 600, marginTop: 2 }}>
+                                  ✓ Đã thanh toán đủ
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </td>
+                      <td>
+                        {(() => {
+                          const payInfo = getBookingPaymentInfo(booking);
+                          return (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
+                              <span className={`badge ${BADGE_CLASS[booking.status] || 'badge-pending'}`}>
+                                {BADGE_LABEL[booking.status] || booking.status}
+                              </span>
+                              {payInfo.isDeposit30 ? (
+                                <span style={{ fontSize: '0.7rem', color: '#C2410C', background: '#FFF7ED', border: '1px solid #FFEDD5', padding: '2px 6px', borderRadius: 6, fontWeight: 700 }}>
+                                  Đã cọc 30%
+                                </span>
+                              ) : (
+                                <span style={{ fontSize: '0.7rem', color: '#047857', background: '#ECFDF5', border: '1px solid #D1FAE5', padding: '2px 6px', borderRadius: 6, fontWeight: 700 }}>
+                                  Đã trả 100%
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </td>
                       <td><div className="booking-actions">
                         {booking.status === 'PENDING' && <>
                           <Button variant="primary" size="xs" icon={<CheckLg />}

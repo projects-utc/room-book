@@ -83,6 +83,12 @@ export interface Booking {
   is_reviewed?: boolean;
   paymentMethod?: string;
   payment_method?: string;
+  paymentType?: 'DEPOSIT_30' | 'FULL_100';
+  payment_type?: 'DEPOSIT_30' | 'FULL_100';
+  paidAmount?: number;
+  paid_amount?: number;
+  remainingAmount?: number;
+  remaining_amount?: number;
 }
 
 export interface Review {
@@ -154,22 +160,86 @@ export const INITIAL_DATA: InitialDataState = {
     { id: 12, owner: 'host.demo', name: 'ODauDay Stay Vũng Tàu Ocean', type: 'Căn hộ view biển', address: 'Số 02 Lê Lợi, Phường 1, TP. Vũng Tàu, Bà Rịa - Vũng Tàu', city: 'Bà Rịa - Vũng Tàu', area: 'Vũng Tàu', rating: null, reviewsCount: 0, reviewCount: 0, isGuestFavorite: false, isTrending: false, isHot: false, bookingCount: 11, priceMin: 820000, desc: 'Căn hộ ban công lộng gió Bãi Trước, nội thất hiện đại tông màu xanh biển sảng khoái và yên tĩnh.', image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80', badge: 'Gần Bãi Trước', amenities: ['Đi bộ 2 phút ra biển', 'Bếp nướng hải sản', 'Chỗ đỗ xe ô tô', 'Smart TV 65 inch'], status: 'ACTIVE' },
     { id: 13, owner: 'host.demo', name: 'ODauDay Stay Huế Cố Đô', type: 'Homestay nhà vườn', address: 'Số 11 thôn Lại Thế, Xã Phú Thượng, Huyện Phú Vang, Thừa Thiên Huế', city: 'Thừa Thiên Huế', area: 'Huế', rating: null, reviewsCount: 0, reviewCount: 0, isGuestFavorite: false, isTrending: false, isHot: false, bookingCount: 13, priceMin: 520000, desc: 'Nhà rường truyền thống xứ Huế giữa vườn thanh trà râm mát, đắm chìm trong vẻ đẹp thơ mộng sông Hương.', image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80', badge: 'Văn hóa Cố Đô', amenities: ['Thưởng trà cung đình', 'Vườn hoa trái xanh mát', 'Bếp nấu truyền thống', 'Thuê áo dài chụp ảnh'], status: 'ACTIVE' },
     { id: 14, owner: 'host.demo', name: 'ODauDay Stay Quy Nhơn Sea', type: 'Bungalow biển', address: 'Bãi Xép, Phường Ghềnh Ráng, TP. Quy Nhơn, Bình Định', city: 'Bình Định', area: 'Quy Nhơn', rating: null, reviewsCount: 0, reviewCount: 0, isGuestFavorite: false, isTrending: false, isHot: false, bookingCount: 9, priceMin: 890000, desc: 'Bungalow vách đá nhìn xuống làng chài bình yên Bãi Xép, ngắm bình minh đại dương rực rỡ từ giường ngủ.', image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=80', badge: 'View làng chài Bãi Xép', amenities: ['Ngắm bình minh biển', 'Hải sản tươi sống làng chài', 'Lặn ngắm san hô', 'Võng thư giãn'], status: 'ACTIVE' },
+    { id: 15, owner: 'host.demo', name: 'ODauDay Stay Đà Nẵng Beachfront', type: 'Villa biển cao cấp', address: 'Võ Nguyên Giáp, Phường Mỹ An, Ngũ Hành Sơn, Đà Nẵng', city: 'Đà Nẵng', area: 'Biển Mỹ Khê', rating: 4.9, reviewsCount: 15, reviewCount: 15, isGuestFavorite: true, isTrending: true, isHot: true, bookingCount: 52, priceMin: 1850000, desc: 'Villa sang trọng chỉ cách bãi biển Mỹ Khê vài bước chân, có hồ bơi riêng và sân thượng ngắm trọn bình minh biển Đông.', image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=1200&q=80', badge: 'Sát biển Mỹ Khê', amenities: ['Hồ bơi vô cực', 'View biển 360', 'Bữa sáng phục vụ tận phòng', 'BBQ hải sản ngoài trời', 'Xe đưa đón sân bay'], status: 'ACTIVE' },
+    { id: 16, owner: 'host.demo', name: 'ODauDay Stay Sài Gòn Skyview', type: 'Căn hộ cao cấp', address: 'Tòa Landmark Plus, Vinhomes Central Park, Bình Thạnh, TP. Hồ Chí Minh', city: 'TP. Hồ Chí Minh', area: 'Quận 1 / Bình Thạnh', rating: 4.8, reviewsCount: 22, reviewCount: 22, isGuestFavorite: true, isTrending: true, isHot: true, bookingCount: 64, priceMin: 1200000, desc: 'Căn hộ tầng cao tầm nhìn panorama sông Sài Gòn và tòa Landmark 81, nội thất hiện đại sang trọng, đi bộ sang công viên bờ sông.', image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80', badge: 'View sông Sài Gòn', amenities: ['View Landmark 81', 'Hồ bơi tràn viền', 'Phòng Gym cao cấp', 'Smartlock tự nhận phòng', 'Bếp hiện đại'], status: 'ACTIVE' },
+    { id: 17, owner: 'host.demo', name: 'ODauDay Stay Nha Trang Bay', type: 'Penthouse view vịnh', address: 'Số 04 Trần Phú, Phường Xương Huân, TP. Nha Trang, Khánh Hòa', city: 'Khánh Hòa', area: 'Nha Trang', rating: 4.7, reviewsCount: 18, reviewCount: 18, isGuestFavorite: false, isTrending: false, isHot: true, bookingCount: 36, priceMin: 1350000, desc: 'Penthouse tầng 30 ngắm nhìn toàn cảnh vịnh Nha Trang xanh ngắt và cáp treo Vinpearl, đầy đủ tiện nghi nghỉ dưỡng cho gia đình.', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80', badge: 'View vịnh Nha Trang', amenities: ['Ban công ngắm biển', 'Bể bơi tầng thượng', 'Bếp nấu hải sản', 'Smart TV 65 inch', 'Chỗ đỗ xe miễn phí'], status: 'ACTIVE' },
   ],
   rooms: [
+    // Prop 1: ODauDay Stay Hồ Tây
     { id: 1, propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', name: 'Phòng Garden', capacity: 2, price: 650000, weekendPrice: 750000, desc: '1 giường đôi Queen · View vườn xanh mát · Bếp nấu mini · Điều hòa 2 chiều', status: 'ACTIVE' },
     { id: 2, propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', name: 'Phòng Family', capacity: 4, price: 1100000, weekendPrice: 1300000, desc: '2 giường King · Ban công lớn nhìn ra hồ · Phòng tắm kính tiện nghi', status: 'ACTIVE' },
+    { id: 41, propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', name: 'Phòng Panorama Hồ Tây', capacity: 2, price: 850000, weekendPrice: 950000, desc: '1 giường đôi King · Cửa kính lớn view hồ Tây · Bếp nhỏ tiện nghi', status: 'ACTIVE' },
+
+    // Prop 2: ODauDay Stay Ba Vì
     { id: 3, propertyId: 2, propertyName: 'ODauDay Stay Ba Vì', name: 'Villa Rừng Thông', capacity: 8, price: 2500000, weekendPrice: 3200000, desc: '3 phòng ngủ riêng biệt · Bếp nướng BBQ · Hồ bơi riêng ngoài trời', status: 'ACTIVE' },
+    { id: 42, propertyId: 2, propertyName: 'ODauDay Stay Ba Vì', name: 'Bungalow Đồi Thông', capacity: 2, price: 720000, weekendPrice: 850000, desc: '1 giường King · View đồi thông thoáng đãng · Sân hiên BBQ ngoài trời', status: 'ACTIVE' },
+
+    // Prop 3: ODauDay Stay Cầu Giấy
     { id: 4, propertyId: 3, propertyName: 'ODauDay Stay Cầu Giấy', name: 'Studio Deluxe', capacity: 2, price: 900000, weekendPrice: 950000, desc: '1 giường Queen · View thành phố tầng cao · Bàn làm việc cao cấp', status: 'ACTIVE' },
+    { id: 43, propertyId: 3, propertyName: 'ODauDay Stay Cầu Giấy', name: 'Executive Suite', capacity: 4, price: 1350000, weekendPrice: 1500000, desc: '2 giường Queen · Tầng cao view panorama · Máy giặt sấy riêng', status: 'ACTIVE' },
+
+    // Prop 4: ODauDay Stay Sapa Eco
+    { id: 44, propertyId: 4, propertyName: 'ODauDay Stay Sapa Eco', name: 'Bungalow Thung Lũng', capacity: 2, price: 1250000, weekendPrice: 1450000, desc: '1 giường King gỗ pơmu · Ban công ngắm thung lũng Mường Hoa · Lò sưởi củi', status: 'ACTIVE' },
+    { id: 45, propertyId: 4, propertyName: 'ODauDay Stay Sapa Eco', name: 'Phòng Family Mây Ngàn', capacity: 4, price: 1850000, weekendPrice: 2150000, desc: '2 giường King · Tầng áp mái view săn mây 360 độ · Bồn tắm sục thảo dược', status: 'ACTIVE' },
+
+    // Prop 5: ODauDay Stay Đà Lạt Mộng Mơ
+    { id: 46, propertyId: 5, propertyName: 'ODauDay Stay Đà Lạt Mộng Mơ', name: 'Nhà Gỗ Đồi Thông', capacity: 2, price: 580000, weekendPrice: 680000, desc: '1 giường đôi Queen · View rừng thông lãng mạn · Sân nướng BBQ riêng', status: 'ACTIVE' },
+    { id: 47, propertyId: 5, propertyName: 'ODauDay Stay Đà Lạt Mộng Mơ', name: 'Phòng Gác Mái Hoàng Hôn', capacity: 4, price: 890000, weekendPrice: 1050000, desc: '2 giường đôi · Cửa kính áp mái ngắm thung lũng đèn đêm · Bếp sưởi', status: 'ACTIVE' },
+
+    // Prop 6: ODauDay Stay Phố Cổ Heritage
+    { id: 48, propertyId: 6, propertyName: 'ODauDay Stay Phố Cổ Heritage', name: 'Căn Hộ Indochine Ban Công', capacity: 2, price: 850000, weekendPrice: 980000, desc: '1 giường King · Ban công cổ kính nhìn xuống phố cổ · Máy pha cà phê Espresso', status: 'ACTIVE' },
+    { id: 49, propertyId: 6, propertyName: 'ODauDay Stay Phố Cổ Heritage', name: 'Suite Phố Cổ 2 Phòng Ngủ', capacity: 4, price: 1450000, weekendPrice: 1650000, desc: '2 phòng ngủ khép kín · Bếp đầy đủ tiện nghi · Cách Hồ Gươm 3 phút đi bộ', status: 'ACTIVE' },
+
+    // Prop 7: ODauDay Stay Tam Đảo Mây Ngàn
+    { id: 50, propertyId: 7, propertyName: 'ODauDay Stay Tam Đảo Mây Ngàn', name: 'Villa Đồi Mây', capacity: 6, price: 1950000, weekendPrice: 2450000, desc: '3 phòng ngủ · Sân thượng BBQ ngắm biển mây · Bể bơi vô cực nước ấm', status: 'ACTIVE' },
+    { id: 51, propertyId: 7, propertyName: 'ODauDay Stay Tam Đảo Mây Ngàn', name: 'Phòng Deluxe Hướng Bể Bơi', capacity: 2, price: 1100000, weekendPrice: 1300000, desc: '1 giường King · Cửa kính lùa bước thẳng ra bể bơi · Bồn tắm view núi', status: 'ACTIVE' },
+
+    // Prop 8: ODauDay Stay Ninh Bình Mountain
+    { id: 52, propertyId: 8, propertyName: 'ODauDay Stay Ninh Bình Mountain', name: 'Bungalow Ven Hồ Sen', capacity: 2, price: 680000, weekendPrice: 790000, desc: '1 giường đôi King mái lá tự nhiên · View hồ sen và núi đá Tràng An · Kayak miễn phí', status: 'ACTIVE' },
+    { id: 53, propertyId: 8, propertyName: 'ODauDay Stay Ninh Bình Mountain', name: 'Phòng Family Tràng An', capacity: 4, price: 1150000, weekendPrice: 1350000, desc: '2 giường Queen · Ban công câu cá riêng · Bữa sáng đặc sản Ninh Bình', status: 'ACTIVE' },
+
+    // Prop 9: ODauDay Stay Hội An Riverside
+    { id: 54, propertyId: 9, propertyName: 'ODauDay Stay Hội An Riverside', name: 'Phòng Vườn Sông Hoài', capacity: 2, price: 750000, weekendPrice: 880000, desc: '1 giường King · View vườn nhiệt đới ven sông · Xe đạp dạo phố cổ miễn phí', status: 'ACTIVE' },
+    { id: 55, propertyId: 9, propertyName: 'ODauDay Stay Hội An Riverside', name: 'Villa Cổ Hoàng Gia', capacity: 4, price: 1550000, weekendPrice: 1750000, desc: '2 giường King · Hồ bơi riêng trong sân vườn cổ · Trà chiều đặc sản Hội An', status: 'ACTIVE' },
+
+    // Prop 10: ODauDay Stay Phú Quốc Sunset
+    { id: 56, propertyId: 10, propertyName: 'ODauDay Stay Phú Quốc Sunset', name: 'Bungalow Bãi Trường', capacity: 2, price: 1450000, weekendPrice: 1650000, desc: '1 giường King sát bờ cát · Ngắm trọn hoàng hôn biển đảo · Đưa đón sân bay', status: 'ACTIVE' },
+    { id: 57, propertyId: 10, propertyName: 'ODauDay Stay Phú Quốc Sunset', name: 'Beachfront Sunset Villa', capacity: 4, price: 2450000, weekendPrice: 2850000, desc: '2 phòng ngủ · Hồ bơi vô cực hướng biển · Quầy bar cocktail riêng', status: 'ACTIVE' },
+
+    // Prop 11: ODauDay Stay Hạ Long Bay View
+    { id: 58, propertyId: 11, propertyName: 'ODauDay Stay Hạ Long Bay View', name: 'Căn Hộ Premium View Vịnh', capacity: 3, price: 950000, weekendPrice: 1100000, desc: '1 giường King + 1 sofa bed · Tầng 22 view trọn vẹn vịnh kỳ quan · Bể bơi bốn mùa', status: 'ACTIVE' },
+    { id: 59, propertyId: 11, propertyName: 'ODauDay Stay Hạ Long Bay View', name: 'Sky Suite Panorama', capacity: 4, price: 1550000, weekendPrice: 1800000, desc: '2 phòng ngủ view vịnh 180 độ · Ban công ngắm bình minh · Bếp hiện đại', status: 'ACTIVE' },
+
+    // Prop 12: ODauDay Stay Vũng Tàu Ocean
     { id: 5, propertyId: 12, propertyName: 'ODauDay Stay Vũng Tàu Ocean', name: 'Studio View Biển', capacity: 2, price: 820000, weekendPrice: 950000, desc: '1 giường đôi King · Ban công view biển Bãi Trước · Bếp hiện đại · Điều hòa 2 chiều', status: 'ACTIVE' },
+    { id: 60, propertyId: 12, propertyName: 'ODauDay Stay Vũng Tàu Ocean', name: 'Căn Hộ Family Bãi Trước', capacity: 4, price: 1350000, weekendPrice: 1550000, desc: '2 phòng ngủ ban công biển · Bếp nấu hải sản tươi sống · Đi bộ 2 phút ra bãi tắm', status: 'ACTIVE' },
+
+    // Prop 13: ODauDay Stay Huế Cố Đô
+    { id: 61, propertyId: 13, propertyName: 'ODauDay Stay Huế Cố Đô', name: 'Nhà Rường Vườn Thanh Trà', capacity: 2, price: 520000, weekendPrice: 600000, desc: '1 giường King nhà rường truyền thống · Thưởng trà cung đình · Vườn hoa quả râm mát', status: 'ACTIVE' },
+    { id: 62, propertyId: 13, propertyName: 'ODauDay Stay Huế Cố Đô', name: 'Phòng Gia Đình Cố Đô', capacity: 4, price: 850000, weekendPrice: 980000, desc: '2 giường Queen · View vườn xanh mát · Bếp gia đình riêng biệt', status: 'ACTIVE' },
+
+    // Prop 14: ODauDay Stay Quy Nhơn Sea
+    { id: 63, propertyId: 14, propertyName: 'ODauDay Stay Quy Nhơn Sea', name: 'Bungalow Vách Đá Bãi Xép', capacity: 2, price: 890000, weekendPrice: 990000, desc: '1 giường King · View đại dương và làng chài Bãi Xép · Thưởng thức hải sản tươi', status: 'ACTIVE' },
+    { id: 64, propertyId: 14, propertyName: 'ODauDay Stay Quy Nhơn Sea', name: 'Ocean Villa Bãi Xép', capacity: 4, price: 1600000, weekendPrice: 1850000, desc: '2 giường King sát biển · Sân hiên ngắm bình minh đại dương · Bếp BBQ', status: 'ACTIVE' },
+
+    // Prop 15: ODauDay Stay Đà Nẵng Beachfront
+    { id: 6, propertyId: 15, propertyName: 'ODauDay Stay Đà Nẵng Beachfront', name: 'Villa Ocean Deluxe', capacity: 4, price: 1850000, weekendPrice: 2100000, desc: '2 giường King · Hồ bơi riêng · Ban công view biển Mỹ Khê · Bếp hiện đại', status: 'ACTIVE' },
+    { id: 65, propertyId: 15, propertyName: 'ODauDay Stay Đà Nẵng Beachfront', name: 'Phòng Premier Mỹ Khê', capacity: 2, price: 1250000, weekendPrice: 1400000, desc: '1 giường King · Cửa kính panorama ngắm biển Mỹ Khê · Bồn tắm hướng biển', status: 'ACTIVE' },
+
+    // Prop 16: ODauDay Stay Sài Gòn Skyview
+    { id: 7, propertyId: 16, propertyName: 'ODauDay Stay Sài Gòn Skyview', name: 'Sky Suite 2BR', capacity: 4, price: 1200000, weekendPrice: 1350000, desc: '2 phòng ngủ · View Landmark 81 & sông Sài Gòn · Máy giặt sấy · Smartlock', status: 'ACTIVE' },
+    { id: 66, propertyId: 16, propertyName: 'ODauDay Stay Sài Gòn Skyview', name: 'Studio Landmark Panorama', capacity: 2, price: 850000, weekendPrice: 950000, desc: '1 giường Queen · Tầng cao ngắm hoàng hôn sông Sài Gòn · Thang máy thẻ từ', status: 'ACTIVE' },
+
+    // Prop 17: ODauDay Stay Nha Trang Bay
+    { id: 8, propertyId: 17, propertyName: 'ODauDay Stay Nha Trang Bay', name: 'Penthouse Bay View', capacity: 4, price: 1350000, weekendPrice: 1550000, desc: '2 giường King · Ban công ngắm vịnh Nha Trang · Bếp nấu hải sản · Điều hòa 2 chiều', status: 'ACTIVE' },
+    { id: 67, propertyId: 17, propertyName: 'ODauDay Stay Nha Trang Bay', name: 'Deluxe Hướng Biển Trần Phú', capacity: 2, price: 950000, weekendPrice: 1100000, desc: '1 giường King · Đi bộ 1 phút qua đường là bãi biển · Ban công lộng gió biển', status: 'ACTIVE' },
   ],
-  roomBlocks: [
-    { id: 1, roomId: 2, roomName: 'Phòng Family', start: daysFromToday(40), end: daysFromToday(42), reason: 'Bảo trì hệ thống điều hòa và sơn mới ban công' },
-  ],
+  roomBlocks: [],
   bookings: [
-    { code: 'ODD-DEMO-0001', guestUsername: 'guest.demo', guestName: 'Khách thuê Demo (Lê Hoàng Nam)', guestPhone: '0900000003', guestEmail: 'nam.le@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 1, roomName: 'Phòng Garden', checkIn: daysFromToday(-20), checkOut: daysFromToday(-18), nights: 2, guests: 2, pricePerNight: 650000, subtotal: 1300000, serviceFee: 0, total: 1300000, status: 'COMPLETED', createdAt: daysFromToday(-25), isReviewed: true },
-    { code: 'ODD-DEMO-0002', guestUsername: 'guest.demo', guestName: 'Khách thuê Demo (Lê Hoàng Nam)', guestPhone: '0900000003', guestEmail: 'nam.le@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 1, roomName: 'Phòng Garden', checkIn: daysFromToday(14), checkOut: daysFromToday(16), nights: 2, guests: 2, pricePerNight: 650000, subtotal: 1300000, serviceFee: 0, total: 1300000, status: 'PENDING', createdAt: daysFromToday(-3), isReviewed: false },
-    { code: 'ODD-DEMO-0003', guestUsername: 'guest.demo', guestName: 'Khách thuê Demo (Lê Hoàng Nam)', guestPhone: '0900000003', guestEmail: 'nam.le@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 1, roomName: 'Phòng Garden', checkIn: daysFromToday(-1), checkOut: daysFromToday(2), nights: 3, guests: 2, pricePerNight: 650000, subtotal: 1950000, serviceFee: 0, total: 1950000, status: 'CHECKED_IN', createdAt: daysFromToday(-10), isReviewed: false },
-    { code: 'ODD-DEMO-0004', guestUsername: 'linh.tran', guestName: 'Trần Thùy Linh', guestPhone: '0912345678', guestEmail: 'linh.tran@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 2, roomName: 'Phòng Family', checkIn: daysFromToday(7), checkOut: daysFromToday(9), nights: 2, guests: 4, pricePerNight: 1100000, subtotal: 2200000, serviceFee: 0, total: 2200000, status: 'CONFIRMED', createdAt: daysFromToday(-2), isReviewed: false },
+    { code: 'ODD-DEMO-0001', guestUsername: 'guest.demo', guestName: 'Khách thuê Demo (Lê Hoàng Nam)', guestPhone: '0900000003', guestEmail: 'nam.le@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 1, roomName: 'Phòng Garden', checkIn: daysFromToday(-20), checkOut: daysFromToday(-18), nights: 2, guests: 2, pricePerNight: 650000, subtotal: 1300000, serviceFee: 0, total: 1300000, paidAmount: 1300000, remainingAmount: 0, paymentType: 'FULL_100', paymentMethod: 'BANK_TRANSFER', status: 'COMPLETED', createdAt: daysFromToday(-25), isReviewed: true },
+    { code: 'ODD-DEMO-0002', guestUsername: 'guest.demo', guestName: 'Khách thuê Demo (Lê Hoàng Nam)', guestPhone: '0900000003', guestEmail: 'nam.le@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 1, roomName: 'Phòng Garden', checkIn: daysFromToday(14), checkOut: daysFromToday(16), nights: 2, guests: 2, pricePerNight: 650000, subtotal: 1300000, serviceFee: 0, total: 1300000, paidAmount: 390000, remainingAmount: 910000, paymentType: 'DEPOSIT_30', paymentMethod: 'CASH', status: 'PENDING', createdAt: daysFromToday(-3), isReviewed: false },
+    { code: 'ODD-DEMO-0003', guestUsername: 'guest.demo', guestName: 'Khách thuê Demo (Lê Hoàng Nam)', guestPhone: '0900000003', guestEmail: 'nam.le@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 1, roomName: 'Phòng Garden', checkIn: daysFromToday(-1), checkOut: daysFromToday(2), nights: 3, guests: 2, pricePerNight: 650000, subtotal: 1950000, serviceFee: 0, total: 1950000, paidAmount: 1950000, remainingAmount: 0, paymentType: 'FULL_100', paymentMethod: 'BANK_TRANSFER', status: 'CHECKED_IN', createdAt: daysFromToday(-10), isReviewed: false },
+    { code: 'ODD-DEMO-0004', guestUsername: 'linh.tran', guestName: 'Trần Thùy Linh', guestPhone: '0912345678', guestEmail: 'linh.tran@gmail.com', propertyId: 1, propertyName: 'ODauDay Stay Hồ Tây', roomId: 2, roomName: 'Phòng Family', checkIn: daysFromToday(7), checkOut: daysFromToday(9), nights: 2, guests: 4, pricePerNight: 1100000, subtotal: 2200000, serviceFee: 0, total: 2200000, paidAmount: 660000, remainingAmount: 1540000, paymentType: 'DEPOSIT_30', paymentMethod: 'CASH', status: 'CONFIRMED', createdAt: daysFromToday(-2), isReviewed: false },
   ],
   reviews: [
     {

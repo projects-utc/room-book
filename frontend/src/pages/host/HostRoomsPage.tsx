@@ -65,7 +65,11 @@ export default function HostRoomsPage() {
 
   const handleDelete = (id: number, rName: string) => {
     if (window.confirm(`Bạn có chắc muốn xóa phòng "${rName}"?`)) {
-      store.deleteRoom(id);
+      const res = store.deleteRoom(id);
+      if (!res.success) {
+        addToast(res.message || 'Không thể xóa hạng phòng.', 'error');
+        return;
+      }
       addToast('Đã xóa hạng phòng.', 'info');
       refreshList();
     }

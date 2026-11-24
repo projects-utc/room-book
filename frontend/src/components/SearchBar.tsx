@@ -117,6 +117,7 @@ export default function SearchBar({
               variant="search-hero"
               label="Thời gian"
               value={{ start: checkIn, end: checkOut }}
+              minDate={new Date().toISOString().split('T')[0]}
               onChange={range => {
                 setCheckIn(range.start);
                 setCheckOut(range.end);
@@ -244,6 +245,7 @@ export default function SearchBar({
           <DateRangePicker
             variant="search-compact"
             value={{ start: checkIn, end: checkOut }}
+            minDate={new Date().toISOString().split('T')[0]}
             onChange={range => {
               setCheckIn(range.start);
               setCheckOut(range.end);

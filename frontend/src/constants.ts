@@ -51,3 +51,56 @@ export const formatVND = (amount: number | string): string => {
   const n = typeof amount === 'number' ? amount : Number(amount) || 0;
   return new Intl.NumberFormat('vi-VN').format(n) + 'đ';
 };
+
+export interface BookingPaymentInfo {
+  isDeposit30: boolean;
+  total: number;
+  paidAmount: number;
+  remainingAmount: number;
+  paymentMethod: string;
+  paymentType: 'DEPOSIT_30' | 'FULL_100';
+}
+
+export function getBookingPaymentInfo(b: any): BookingPaymentInfo {
+  if (!b) {
+    return {
+      isDeposit30: false,
+      total: 0,
+      paidAmount: 0,
+      remainingAmount: 0,
+      paymentMethod: 'BANK_TRANSFER',
+      paymentType: 'FULL_100',
+    };
+  }
+
+  const total = Number(b.total) || 0;
+  const rawMethod = (b.paymentMethod || b.payment_method || '').toUpperCase();
+  const rawType = (b.paymentType || b.payment_type || '').toUpperCase();
+
+  const rawPaid = b.paidAmount ?? b.paid_amount;
+  const hasExplicitPaid = rawPaid !== undefined && rawPaid !== null && !Number.isNaN(Number(rawPaid));
+  const numPaid = hasExplicitPaid ? Number(rawPaid) : undefined;
+
+  const isDeposit30 =
+    rawType === 'DEPOSIT_30' ||
+    rawMethod === 'CASH' ||
+    rawMethod === 'COD' ||
+    (rawMethod === '' && rawType !== 'FULL_100') ||
+    (numPaid !== undefined && numPaid < total);
+
+  const paymentType: 'DEPOSIT_30' | 'FULL_100' = isDeposit30 ? 'DEPOSIT_30' : 'FULL_100';
+  const paidAmount = numPaid !== undefined ? numPaid : (isDeposit30 ? Math.round(total * 0.3) : total);
+
+  const rawRemaining = b.remainingAmount ?? b.remaining_amount;
+  const hasExplicitRemaining = rawRemaining !== undefined && rawRemaining !== null && !Number.isNaN(Number(rawRemaining));
+  const remainingAmount = hasExplicitRemaining ? Number(rawRemaining) : Math.max(0, total - paidAmount);
+
+  return {
+    isDeposit30,
+    total,
+    paidAmount,
+    remainingAmount,
+    paymentMethod: rawMethod || (isDeposit30 ? 'CASH' : 'BANK_TRANSFER'),
+    paymentType,
+  };
+}

@@ -170,6 +170,34 @@ export default function BookingQuotePage() {
         setAppliedPromo(null);
     }, [checkIn, checkOut, room.id]);
 
+    const isDateDisabled = (dateStr: string) => {
+        if (!room) return false;
+        const dStr = dateStr.substring(0, 10);
+        const allBookings = store.getAllBookings();
+        const activeBookings = allBookings.filter(b => {
+            const status = (b.status || '').toUpperCase();
+            if (['CANCELLED', 'REJECTED'].includes(status)) return false;
+            return b.roomId && Number(b.roomId) === Number(room.id);
+        });
+
+        for (const b of activeBookings) {
+            if (!b.checkIn || !b.checkOut) continue;
+            const bIn = b.checkIn.substring(0, 10);
+            const bOut = b.checkOut.substring(0, 10);
+            if (dStr >= bIn && dStr < bOut) return true;
+        }
+
+        const blocks = store.getRoomBlocks(room.id);
+        for (const bl of blocks) {
+            if (!bl.start || !bl.end) continue;
+            const bStart = bl.start.substring(0, 10);
+            const bEnd = bl.end.substring(0, 10);
+            if (dStr >= bStart && dStr <= bEnd) return true;
+        }
+
+        return false;
+    };
+
     const selectedBankObj = banksList.find(b => b.code === selectedBankCode);
     const holdMin = String(Math.floor(holdSeconds / 60)).padStart(2, '0');
     const holdSec = String(holdSeconds % 60).padStart(2, '0');
@@ -238,6 +266,12 @@ export default function BookingQuotePage() {
                     subtotal,
                     serviceFee: 0,
                     total: totalAmount,
+                    paidAmount: activePaymentAmount,
+                    paid_amount: activePaymentAmount,
+                    remainingAmount: remainingAtHotel,
+                    remaining_amount: remainingAtHotel,
+                    paymentType: paymentMethod === 'cod' ? 'DEPOSIT_30' : 'FULL_100',
+                    payment_type: paymentMethod === 'cod' ? 'DEPOSIT_30' : 'FULL_100',
                     paymentMethod: dbMethod,
                     payment_method: dbMethod,
                     promoCode: appliedPromo?.code,
@@ -373,17 +407,33 @@ export default function BookingQuotePage() {
                                 style={{
                                     display: 'inline-flex',
                                     alignItems: 'center',
-                                    gap: 8,
-                                    marginBottom: '1rem',
-                                    fontSize: '0.88rem',
+                                    gap: '0.65rem',
+                                    padding: '0.55rem 0.95rem',
+                                    background: bookingForOther ? 'var(--color-primary-soft, #FFF1F2)' : '#F8FAFC',
+                                    border: bookingForOther ? '1.5px solid #FECDD3' : '1px solid var(--color-border-subtle, #E2E8F0)',
+                                    borderRadius: '10px',
+                                    marginBottom: '1.25rem',
+                                    fontSize: '0.9rem',
                                     fontWeight: 600,
-                                    color: 'var(--color-text-secondary)',
+                                    color: bookingForOther ? 'var(--color-primary, #E11D48)' : 'var(--color-text-primary, #1E293B)',
                                     cursor: 'pointer',
+                                    transition: 'all 0.15s ease',
+                                    userSelect: 'none',
+                                    boxSizing: 'border-box',
                                 }}
                             >
                                 <input
                                     type="checkbox"
                                     checked={bookingForOther}
+                                    style={{
+                                        width: 18,
+                                        height: 18,
+                                        accentColor: 'var(--color-primary, #E11D48)',
+                                        cursor: 'pointer',
+                                        margin: 0,
+                                        padding: 0,
+                                        flexShrink: 0,
+                                    }}
                                     onChange={(e) => {
                                         const checked = e.target.checked;
                                         setBookingForOther(checked);
@@ -499,36 +549,34 @@ export default function BookingQuotePage() {
                                 </div>
                             </div>
 
-                            {paymentMethod === 'bank' && (
-                                <div style={{ paddingTop: '0.5rem' }}>
-                                    <label
-                                        htmlFor="bank-select"
-                                        style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.45rem' }}
-                                    >
-                                        Ngân hàng thanh toán
-                                    </label>
-                                    <select
-                                        id="bank-select"
-                                        value={selectedBankCode}
-                                        onChange={e => setSelectedBankCode(e.target.value)}
-                                        style={{
-                                            width: '100%',
-                                            padding: '0.7rem 0.9rem',
-                                            borderRadius: 10,
-                                            border: '1px solid var(--color-border-strong)',
-                                            background: 'var(--color-bg-surface)',
-                                            color: 'var(--color-text-primary)',
-                                            fontSize: '0.92rem',
-                                        }}
-                                    >
-                                        {banksList.map(bank => (
-                                            <option key={bank.code} value={bank.code}>
-                                                {bank.shortName} ({bank.code}) - {bank.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
+                            <div style={{ paddingTop: '0.5rem' }}>
+                                <label
+                                    htmlFor="bank-select"
+                                    style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.45rem' }}
+                                >
+                                    Ngân hàng thanh toán ({paymentMethod === 'cod' ? `chuyển khoản cọc 30%: ${formatVND(depositAmount)}` : `chuyển khoản toàn bộ 100%: ${formatVND(totalAmount)}`})
+                                </label>
+                                <select
+                                    id="bank-select"
+                                    value={selectedBankCode}
+                                    onChange={e => setSelectedBankCode(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.7rem 0.9rem',
+                                        borderRadius: 10,
+                                        border: '1px solid var(--color-border-strong)',
+                                        background: 'var(--color-bg-surface)',
+                                        color: 'var(--color-text-primary)',
+                                        fontSize: '0.92rem',
+                                    }}
+                                >
+                                    {banksList.map(bank => (
+                                        <option key={bank.code} value={bank.code}>
+                                            {bank.shortName} ({bank.code}) - {bank.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </Card>
                     </div>
 
@@ -628,6 +676,8 @@ export default function BookingQuotePage() {
                                             <DateRangePicker
                                                 label="Ngày nhận và trả phòng"
                                                 value={{ start: checkIn, end: checkOut }}
+                                                minDate={new Date().toISOString().split('T')[0]}
+                                                isDateDisabled={isDateDisabled}
                                                 onChange={range => {
                                                     setCheckIn(range.start);
                                                     setCheckOut(range.end);
@@ -751,11 +801,11 @@ export default function BookingQuotePage() {
                                     {paymentMethod === 'cod' ? (
                                         <div style={{ marginTop: 4, padding: '0.85rem 1rem', borderRadius: 12, background: 'linear-gradient(120deg, var(--color-warning-bg), var(--color-primary-soft))', border: '1px solid var(--color-warning)' }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                                                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--color-warning)' }}>Cần đặt cọc ngay (30%)</span>
+                                                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--color-warning)' }}>Cọc trước (30%)</span>
                                                 <strong style={{ fontSize: '1.18rem', color: 'var(--color-primary)', fontWeight: 800, whiteSpace: 'nowrap' }}>{formatVND(depositAmount)}</strong>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: '0.78rem', color: 'var(--color-warning)', marginTop: 7 }}>
-                                                <span>Còn lại khi nhận phòng (70%)</span><strong>{formatVND(remainingAtHotel)}</strong>
+                                                <span>Còn lại (70%)</span><strong>{formatVND(remainingAtHotel)}</strong>
                                             </div>
                                         </div>
                                     ) : (
@@ -775,9 +825,11 @@ export default function BookingQuotePage() {
                                         size="lg"
                                         icon={<CalendarCheck />}
                                         disabled={!quote.success || isAlreadyPaid}
-                                        style={{ width: '100%', height: 48, borderRadius: 14, fontSize: '1rem', fontWeight: 700, justifyContent: 'center' }}
+                                        style={{ width: '100%', height: 48, borderRadius: 14, fontSize: '0.98rem', fontWeight: 700, justifyContent: 'center' }}
                                     >
-                                        {paymentMethod === 'cod' ? 'Xác nhận đặt cọc 30%' : 'Xác nhận thanh toán'}
+                                        {paymentMethod === 'cod'
+                                            ? `Đặt cọc 30% (${formatVND(depositAmount)})`
+                                            : `Thanh toán (${formatVND(totalAmount)})`}
                                     </Button>
                                 </div>
                             </div>

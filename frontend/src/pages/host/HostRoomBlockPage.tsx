@@ -48,6 +48,29 @@ export default function HostRoomBlockPage() {
     refreshBlocks();
   }, [roomId]);
 
+  const isDateDisabled = (dateStr: string) => {
+    if (!room) return false;
+    const dStr = dateStr.substring(0, 10);
+    const allBookings = store.getAllBookings();
+    for (const b of allBookings) {
+      if (['CANCELLED', 'REJECTED'].includes((b.status || '').toUpperCase())) continue;
+      if (b.roomId && Number(b.roomId) === Number(room.id)) {
+        if (!b.checkIn || !b.checkOut) continue;
+        const bIn = b.checkIn.substring(0, 10);
+        const bOut = b.checkOut.substring(0, 10);
+        if (dStr >= bIn && dStr < bOut) return true;
+      }
+    }
+    const blocks = store.getRoomBlocks(room.id);
+    for (const bl of blocks) {
+      if (!bl.start || !bl.end) continue;
+      const bStart = bl.start.substring(0, 10);
+      const bEnd = bl.end.substring(0, 10);
+      if (dStr >= bStart && dStr <= bEnd) return true;
+    }
+    return false;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setConflictError('');
@@ -127,6 +150,8 @@ export default function HostRoomBlockPage() {
                   label="Khoảng ngày khóa phòng bảo trì"
                   required
                   value={{ start, end }}
+                  minDate={new Date().toISOString().split('T')[0]}
+                  isDateDisabled={isDateDisabled}
                   onChange={range => {
                     setStart(range.start);
                     setEnd(range.end);

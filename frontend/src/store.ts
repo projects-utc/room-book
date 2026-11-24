@@ -1,5 +1,5 @@
 // ODauDay Stay — ODDStore: Client-side Business Logic Engine (TypeScript)
-import { STORAGE_KEY, USER_KEY, formatVND } from './constants';
+import { STORAGE_KEY, USER_KEY, formatVND, getBookingPaymentInfo } from './constants';
 import { INITIAL_DATA, InitialDataState, User, Property, Room, RoomBlock, Booking, Review, Promotion, AuditLog } from './data';
 import { daysFromToday } from './dateUtils';
 
@@ -30,11 +30,21 @@ function loadData(): InitialDataState {
     // 1. Tự động đồng bộ bổ sung các phòng mới từ INITIAL_DATA nếu cache chưa có
     if (Array.isArray(INITIAL_DATA.rooms)) {
       INITIAL_DATA.rooms.forEach(initRoom => {
-        if (!cachedData!.rooms.some(r => r.id === initRoom.id)) {
+        const found = cachedData!.rooms.find(r => r.id === initRoom.id);
+        if (!found) {
           cachedData!.rooms.push(initRoom);
+          hasChanged = true;
+        } else if (found.status !== 'ACTIVE') {
+          found.status = 'ACTIVE';
           hasChanged = true;
         }
       });
+    }
+
+    // 2. Mở khóa các lịch bảo trì cũ để phòng luôn sẵn sàng đặt
+    if (Array.isArray(cachedData!.roomBlocks) && cachedData!.roomBlocks.length > 0) {
+      cachedData!.roomBlocks = [];
+      hasChanged = true;
     }
 
     // 2. Đồng bộ chuẩn rating, reviewsCount của properties từ INITIAL_DATA (xóa bỏ dữ liệu mock cũ gây giật giao diện)
@@ -343,6 +353,9 @@ export const ODDStore = {
     guestPhone?: string;
     guestEmail?: string;
     paymentMethod?: string;
+    paymentType?: 'DEPOSIT_30' | 'FULL_100';
+    paidAmount?: number;
+    remainingAmount?: number;
   }): { success: boolean; booking?: Booking; message?: string } {
     const quote = this.calculateQuote(payload.roomId, payload.checkIn, payload.checkOut, payload.guests);
     if (!quote.success) return { success: false, message: quote.message };
@@ -353,8 +366,13 @@ export const ODDStore = {
       return { success: false, message: 'Vui lòng đăng nhập hoặc đăng ký tài khoản để tiếp tục đặt phòng.' };
     }
     const code = 'ODD-' + new Date().getFullYear() + '-' + String(Math.floor(1000 + Math.random() * 9000));
+    const totalVal = quote.total!;
+    const paymentType = payload.paymentType || (payload.paymentMethod === 'CASH' ? 'DEPOSIT_30' : 'FULL_100');
+    const paidAmount = payload.paidAmount !== undefined ? payload.paidAmount : (paymentType === 'DEPOSIT_30' ? Math.round(totalVal * 0.3) : totalVal);
+    const remainingAmount = payload.remainingAmount !== undefined ? payload.remainingAmount : Math.max(0, totalVal - paidAmount);
 
     const newBooking: Booking = {
+      id: Date.now(),
       code,
       guestUsername: currentUser.username,
       guestName: payload.guestName || currentUser.fullName || 'Khách thuê',
@@ -371,7 +389,13 @@ export const ODDStore = {
       pricePerNight: quote.pricePerNight!,
       subtotal: quote.subtotal!,
       serviceFee: quote.serviceFee!,
-      total: quote.total!,
+      total: totalVal,
+      paidAmount,
+      paid_amount: paidAmount,
+      remainingAmount,
+      remaining_amount: remainingAmount,
+      paymentType,
+      payment_type: paymentType,
       status: 'PENDING',
       createdAt: new Date().toISOString().slice(0, 10),
       isReviewed: false,
@@ -400,16 +424,23 @@ export const ODDStore = {
       (booking as any).is_reviewed === 1 ||
       (Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === booking.code))
     );
-    const normalizedMethod = booking.paymentMethod || booking.payment_method || 'CASH';
+    const payInfo = getBookingPaymentInfo(booking);
+
     const normalizedBooking: Booking = {
       ...booking,
-      paymentMethod: normalizedMethod,
-      payment_method: normalizedMethod,
+      paymentMethod: payInfo.paymentMethod,
+      payment_method: payInfo.paymentMethod,
+      paymentType: payInfo.paymentType,
+      payment_type: payInfo.paymentType,
+      paidAmount: payInfo.paidAmount,
+      paid_amount: payInfo.paidAmount,
+      remainingAmount: payInfo.remainingAmount,
+      remaining_amount: payInfo.remainingAmount,
       isReviewed: normalizedReviewed,
       is_reviewed: normalizedReviewed
     };
     if (existsIdx === -1) {
-      data.bookings.push(normalizedBooking);
+      data.bookings.unshift(normalizedBooking);
     } else {
       data.bookings[existsIdx] = {
         ...data.bookings[existsIdx],
@@ -431,7 +462,20 @@ export const ODDStore = {
           (b as any).is_reviewed === 1 ||
           (Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === b.code))
         );
-        return { ...b, isReviewed, is_reviewed: isReviewed };
+        const payInfo = getBookingPaymentInfo(b);
+        return {
+          ...b,
+          paymentType: payInfo.paymentType,
+          payment_type: payInfo.paymentType,
+          paidAmount: payInfo.paidAmount,
+          paid_amount: payInfo.paidAmount,
+          remainingAmount: payInfo.remainingAmount,
+          remaining_amount: payInfo.remainingAmount,
+          paymentMethod: payInfo.paymentMethod,
+          payment_method: payInfo.paymentMethod,
+          isReviewed,
+          is_reviewed: isReviewed,
+        };
       })
       .sort((a, b) => {
         if (b.id && a.id && b.id !== a.id) return Number(b.id) - Number(a.id);
@@ -454,7 +498,20 @@ export const ODDStore = {
       (b as any).is_reviewed === 1 ||
       (Array.isArray(data.reviews) && data.reviews.some(r => r.bookingCode === b.code))
     );
-    return { ...b, isReviewed, is_reviewed: isReviewed };
+    const payInfo = getBookingPaymentInfo(b);
+    return {
+      ...b,
+      paymentType: payInfo.paymentType,
+      payment_type: payInfo.paymentType,
+      paidAmount: payInfo.paidAmount,
+      paid_amount: payInfo.paidAmount,
+      remainingAmount: payInfo.remainingAmount,
+      remaining_amount: payInfo.remainingAmount,
+      paymentMethod: payInfo.paymentMethod,
+      payment_method: payInfo.paymentMethod,
+      isReviewed,
+      is_reviewed: isReviewed,
+    };
   },
 
   cancelBooking(code: string): { success: boolean; message?: string } {
@@ -564,8 +621,15 @@ export const ODDStore = {
     return { success: true, property: newProp };
   },
 
-  deleteProperty(id: number): { success: boolean } {
+  deleteProperty(id: number): { success: boolean; message?: string } {
     const data = loadData();
+    const hasActiveBooking = (data.bookings || []).some(b =>
+      Number(b.propertyId) === Number(id) &&
+      ['PENDING', 'CONFIRMED', 'CHECKED_IN'].includes((b.status || '').toUpperCase())
+    );
+    if (hasActiveBooking) {
+      return { success: false, message: 'Không thể xóa cơ sở lưu trú đang có đơn đặt phòng hoạt động.' };
+    }
     data.properties = data.properties.filter(p => p.id !== id);
     saveData(data);
     authFetch(`/api/properties/${id}`, { method: 'DELETE' }).catch(() => { });
@@ -604,8 +668,15 @@ export const ODDStore = {
     return { success: true, room: newRoom };
   },
 
-  deleteRoom(id: number): { success: boolean } {
+  deleteRoom(id: number): { success: boolean; message?: string } {
     const data = loadData();
+    const hasActiveBooking = (data.bookings || []).some(b =>
+      Number(b.roomId) === Number(id) &&
+      ['PENDING', 'CONFIRMED', 'CHECKED_IN'].includes((b.status || '').toUpperCase())
+    );
+    if (hasActiveBooking) {
+      return { success: false, message: 'Không thể xóa hạng phòng đang có đơn đặt phòng hoạt động.' };
+    }
     data.rooms = data.rooms.filter(r => r.id !== id);
     saveData(data);
     authFetch(`/api/rooms/${id}`, { method: 'DELETE' }).catch(() => { });

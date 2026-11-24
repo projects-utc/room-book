@@ -5,7 +5,7 @@ import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb } from '../../components/UI';
 import { EmptyState } from '../../components/EmptyState';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
-import { formatVND, BADGE_CLASS, BADGE_LABEL } from '../../constants';
+import { formatVND, BADGE_CLASS, BADGE_LABEL, getBookingPaymentInfo } from '../../constants';
 import {
   CalendarCheck,
   CheckLg,
@@ -121,10 +121,10 @@ export default function HostBookingDetailPage() {
   }
 
   const status = booking.status;
-  const paymentMethod = booking.paymentMethod || booking.payment_method;
-  const paymentLabel = paymentMethod === 'BANK_TRANSFER' ? 'Chuyển khoản ngân hàng'
-    : paymentMethod === 'CASH' || paymentMethod === 'COD' ? 'Thu trực tiếp khi nhận phòng (COD)'
-    : paymentMethod || 'Chưa có thông tin';
+  const { isDeposit30, total: totalVal, paidAmount: paid, remainingAmount: remaining } = getBookingPaymentInfo(booking);
+  const paymentLabel = isDeposit30
+    ? 'Đặt cọc 30% (Chuyển khoản trực tuyến) · Thu 70% còn lại khi nhận phòng'
+    : (booking.paymentMethod === 'BANK_TRANSFER' || (booking as any).payment_method === 'BANK_TRANSFER' ? 'Chuyển khoản ngân hàng (Đã thanh toán 100%)' : 'Thanh toán trực tiếp');
 
   return (
       <div style={{ maxWidth: 1000, margin: '1.5rem auto', padding: '0 1rem' }}>
@@ -274,12 +274,38 @@ export default function HostBookingDetailPage() {
               </p>
 
               <div style={{ borderTop: '1px solid var(--line)', paddingTop: '0.75rem' }}>
-              <span className="muted" style={{ fontSize: '0.82rem' }}>
-                Tổng tiền thanh toán:
-              </span>
-                <p className="card-price" style={{ fontSize: '1.5rem', margin: '0.25rem 0 0' }}>
-                  {formatVND(booking.total ?? 0)}
-                </p>
+                {isDeposit30 ? (
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: 4 }}>
+                      <span>Tổng giá trị đơn:</span>
+                      <strong>{formatVND(totalVal)}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#059669', marginBottom: 8 }}>
+                      <span>✓ Đã cọc trước (30%):</span>
+                      <strong>-{formatVND(paid)}</strong>
+                    </div>
+                    <div style={{ background: '#FFF7ED', border: '1.5px solid #FED7AA', borderRadius: 10, padding: '0.65rem 0.85rem' }}>
+                      <span style={{ fontSize: '0.74rem', color: '#C2410C', fontWeight: 800, textTransform: 'uppercase', display: 'block' }}>
+                        Cần thu khi nhận phòng (70%):
+                      </span>
+                      <strong style={{ fontSize: '1.35rem', color: '#EA580C', fontWeight: 800, display: 'block', marginTop: 2 }}>
+                        {formatVND(remaining)}
+                      </strong>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <span className="muted" style={{ fontSize: '0.82rem' }}>
+                      Tổng tiền thanh toán (100%):
+                    </span>
+                    <p className="card-price" style={{ fontSize: '1.5rem', margin: '0.25rem 0 0' }}>
+                      {formatVND(totalVal)}
+                    </p>
+                    <span style={{ fontSize: '0.78rem', color: '#059669', fontWeight: 600 }}>
+                      ✓ Đã thanh toán toàn bộ qua ngân hàng
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 

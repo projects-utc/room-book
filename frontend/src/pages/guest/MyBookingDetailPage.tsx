@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { Breadcrumb } from '../../components';
 import { stayApi } from '../../api/stayApi';
-import { formatVND } from '../../constants';
+import { formatVND, getBookingPaymentInfo } from '../../constants';
 import { Booking } from '../../data';
 import {
   CalendarCheck,
@@ -44,9 +44,10 @@ export default function MyBookingDetailPage() {
     let active = true;
     stayApi.getBooking(bookingCode).then(res => {
       if (active && res.success && res.data) {
-        setBooking(res.data);
-        setCurrentStatus(res.data.status);
         store.syncBookingFromApi(res.data);
+        const normalized = store.getBooking(bookingCode) || res.data;
+        setBooking(normalized);
+        setCurrentStatus(res.data.status);
       }
     }).catch(() => {});
     return () => { active = false; };
@@ -55,6 +56,8 @@ export default function MyBookingDetailPage() {
   // Find real property
   const property = (booking ? store.getProperty(booking.propertyId) : null) || store.getAllProperties().find(p => p.name === booking?.propertyName) || store.getProperty(1);
   const propertyImg = property?.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80';
+
+  const { isDeposit30, total: totalVal, paidAmount: paid, remainingAmount: remaining } = getBookingPaymentInfo(booking);
 
   const handleCancel = async () => {
     if (!booking || booking.code !== bookingCode || !bookingCode || cancelInFlight.current) return;
@@ -236,7 +239,40 @@ export default function MyBookingDetailPage() {
           </div>
         </div>
 
-        <div>{getStatusBadge(currentStatus)}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+          {getStatusBadge(currentStatus)}
+          {isDeposit30 ? (
+            <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              padding: '6px 14px',
+              borderRadius: 999,
+              background: '#FFF7ED',
+              color: '#C2410C',
+              border: '1px solid #FFEDD5',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+            }}>
+              <CashCoin style={{ fontSize: '0.95rem' }} /> Đã cọc 30%
+            </span>
+          ) : (
+            <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              padding: '6px 14px',
+              borderRadius: 999,
+              background: '#ECFDF5',
+              color: '#047857',
+              border: '1px solid #D1FAE5',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+            }}>
+              <CheckCircleFill style={{ fontSize: '0.9rem' }} /> Đã thanh toán 100%
+            </span>
+          )}
+        </div>
       </div>
 
       {/* ── Status Banner Message ── */}
@@ -485,22 +521,49 @@ export default function MyBookingDetailPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.9rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-muted)' }}>
                 <span>Giá phòng ({booking?.nights} đêm)</span>
-                <strong style={{ color: 'var(--color-text-primary)' }}>{formatVND(booking?.subtotal || booking?.total || 1300000)}</strong>
+                <strong style={{ color: 'var(--color-text-primary)' }}>{formatVND(booking?.subtotal || totalVal || 1300000)}</strong>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-muted)' }}>
-                <span>Phí dịch vụ</span>
-                <strong style={{ color: 'var(--color-success)' }}>0₫ (Miễn phí)</strong>
+                <span>Phí dịch vụ &amp; thuế</span>
+                <strong style={{ color: 'var(--color-success)' }}>0₫ (Đã bao gồm)</strong>
               </div>
 
               <hr style={{ border: 'none', borderTop: '1px solid var(--color-border-subtle)', margin: '0.5rem 0' }} />
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Tổng thanh toán</span>
-                <strong style={{ fontSize: '1.4rem', color: 'var(--color-primary)', fontWeight: 800 }}>
-                  {formatVND(booking?.total || 1300000)}
+                <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>Tổng tiền phòng</span>
+                <strong style={{ fontSize: '1.2rem', color: 'var(--color-text-primary)', fontWeight: 800 }}>
+                  {formatVND(totalVal || 1300000)}
                 </strong>
               </div>
+
+              {isDeposit30 ? (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#059669', background: '#ECFDF5', padding: '0.55rem 0.85rem', borderRadius: 10, border: '1px solid #D1FAE5' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, fontSize: '0.88rem' }}>
+                      <CheckCircleFill style={{ fontSize: '0.9rem' }} /> Đã cọc (30%)
+                    </span>
+                    <strong style={{ fontWeight: 800, fontSize: '1.02rem' }}>-{formatVND(paid)}</strong>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FFF7ED', padding: '0.75rem 1rem', borderRadius: 12, border: '1.5px solid #FED7AA' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#C2410C', textTransform: 'uppercase' }}>
+                      Còn lại
+                    </span>
+                    <strong style={{ fontSize: '1.35rem', color: '#EA580C', fontWeight: 800 }}>
+                      {formatVND(remaining)}
+                    </strong>
+                  </div>
+                </>
+              ) : (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#047857', background: '#ECFDF5', padding: '0.65rem 0.85rem', borderRadius: 10, border: '1px solid #A7F3D0' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, fontSize: '0.88rem' }}>
+                    <CheckCircleFill style={{ fontSize: '0.9rem' }} /> Đã thanh toán (100%)
+                  </span>
+                  <strong style={{ fontWeight: 800, fontSize: '1.05rem' }}>{formatVND(totalVal)}</strong>
+                </div>
+              )}
             </div>
 
             {/* Phương thức thanh toán */}
@@ -512,16 +575,16 @@ export default function MyBookingDetailPage() {
               border: '1px solid var(--color-border-subtle)',
               fontSize: '0.84rem'
             }}>
-              {(booking?.paymentMethod === 'BANK_TRANSFER' || (booking as any)?.payment_method === 'BANK_TRANSFER') ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 2 }}>
-                  <CreditCard style={{ color: 'var(--color-primary)', fontSize: '1.1rem' }} /> Hình thức: Chuyển khoản ngân hàng (Thanh toán 100%)
+              {isDeposit30 ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#C2410C', fontWeight: 700, marginBottom: 2 }}>
+                  <CashCoin style={{ color: '#EA580C', fontSize: '1.1rem' }} /> Hình thức: Cọc 30%
                 </div>
               ) : (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-secondary)', fontWeight: 700, marginBottom: 2 }}>
-                  <CashCoin style={{ color: 'var(--color-primary)', fontSize: '1.1rem' }} /> Hình thức: Tiền mặt khi nhận phòng (Đã cọc 30% qua ngân hàng)
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#047857', fontWeight: 700, marginBottom: 2 }}>
+                  <CreditCard style={{ color: '#059669', fontSize: '1.1rem' }} /> Hình thức: Chuyển khoản (100%)
                 </div>
               )}
-              <span style={{ color: 'var(--color-text-muted)', fontSize: '0.78rem' }}>Mã đối soát hệ thống: #{bookingCode}</span>
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '0.78rem' }}>Mã đơn: #{bookingCode}</span>
             </div>
 
             {/* BẢO HIỂM CHUYẾN ĐI */}

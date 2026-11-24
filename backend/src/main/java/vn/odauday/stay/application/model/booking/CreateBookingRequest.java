@@ -44,6 +44,16 @@ public class CreateBookingRequest {
     @JsonAlias({"payment_method", "paymentMethod"})
     private String paymentMethod;
 
+    @Size(max = 50, message = "Hình thức thanh toán (cọc 30% / toàn bộ) tối đa 50 ký tự")
+    @JsonAlias({"payment_type", "paymentType"})
+    private String paymentType;
+
+    @JsonAlias({"paid_amount", "paidAmount"})
+    private Double paidAmount;
+
+    @JsonAlias({"remaining_amount", "remainingAmount"})
+    private Double remainingAmount;
+
     @Size(max = 50, message = "Mã giảm giá tối đa 50 ký tự")
     private String promoCode;
 }

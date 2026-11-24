@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
-import { formatVND } from '../../constants';
+import { formatVND, getBookingPaymentInfo } from '../../constants';
 import { Button, Badge } from '../../components';
 import { stayApi } from '../../api/stayApi';
 import { Booking } from '../../data';
@@ -20,6 +20,9 @@ import {
   ArrowRepeat,
   XCircle,
   BagCheck,
+  ChevronLeft,
+  ChevronRight,
+  CashCoin,
 } from 'react-bootstrap-icons';
 
 export default function MyBookingsPage() {
@@ -83,8 +86,17 @@ export default function MyBookingsPage() {
         (extraReviewedCodes && extraReviewedCodes.has(b.code)) ||
         reviewedCodes.has(b.code)
       );
+      const payInfo = getBookingPaymentInfo(b);
       return {
         ...b,
+        paymentType: payInfo.paymentType,
+        payment_type: payInfo.paymentType,
+        paidAmount: payInfo.paidAmount,
+        paid_amount: payInfo.paidAmount,
+        remainingAmount: payInfo.remainingAmount,
+        remaining_amount: payInfo.remainingAmount,
+        paymentMethod: payInfo.paymentMethod,
+        payment_method: payInfo.paymentMethod,
         isReviewed: isRev,
         is_reviewed: isRev,
       };
@@ -125,22 +137,29 @@ export default function MyBookingsPage() {
     if (activeTab === 'CANCELLED') return ['CANCELLED', 'REJECTED'].includes(b.status);
     return true;
   }).sort((a, b) => {
-    // 1. So sánh id giảm dần nếu có (đơn mới nhất luôn có ID cao nhất)
-    if (b.id && a.id && b.id !== a.id) return Number(b.id) - Number(a.id);
+    // 1. Ưu tiên đơn mới tạo thực tế lên trước dữ liệu demo mẫu (ODD-DEMO)
+    const aIsDemo = (a.code || '').includes('DEMO');
+    const bIsDemo = (b.code || '').includes('DEMO');
+    if (aIsDemo !== bIsDemo) return aIsDemo ? 1 : -1;
 
-    // 2. So sánh ngày tạo (createdAt) mới nhất lên đầu
+    // 2. So sánh ID giảm dần nếu có (đơn mới tạo trong DB luôn có ID lớn nhất)
+    if (b.id && a.id && b.id !== a.id) return Number(b.id) - Number(a.id);
+    if (a.id && !b.id && !bIsDemo) return -1;
+    if (b.id && !a.id && !aIsDemo) return 1;
+
+    // 3. So sánh ngày tạo (createdAt) mới nhất lên đầu
     const dateA = Date.parse(a.createdAt || '');
     const dateB = Date.parse(b.createdAt || '');
     if (!Number.isNaN(dateA) && !Number.isNaN(dateB) && dateB !== dateA) {
       return dateB - dateA;
     }
 
-    // 3. Ưu tiên đơn mới tạo thực tế lên trước dữ liệu demo (ODD-DEMO)
-    const aIsDemo = (a.code || '').includes('DEMO');
-    const bIsDemo = (b.code || '').includes('DEMO');
-    if (aIsDemo !== bIsDemo) return aIsDemo ? 1 : -1;
+    // 4. So sánh chuỗi ngày tạo nếu không parse được
+    if (a.createdAt && b.createdAt && a.createdAt !== b.createdAt) {
+      return b.createdAt.localeCompare(a.createdAt);
+    }
 
-    // 4. So sánh mã đơn giảm dần
+    // 5. So sánh mã đơn giảm dần
     return (b.code || '').localeCompare(a.code || '', undefined, { numeric: true });
   });
   const pageCount = Math.max(1, Math.ceil(filteredBookings.length / pageSize));
@@ -483,6 +502,9 @@ export default function MyBookingsPage() {
             const propertyImg = property?.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80';
             const city = property?.city || 'Hà Nội';
 
+            // Phân biệt rõ hình thức cọc 30% và thanh toán toàn bộ 100%
+            const { isDeposit30, paidAmount: paid, remainingAmount: remaining, total: totalVal } = getBookingPaymentInfo(b);
+
             return (
               <div
                 key={b.code}
@@ -560,8 +582,42 @@ export default function MyBookingsPage() {
                 <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.85rem' }}>
                   <div>
                     {/* Status Pill & Date created */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.6rem', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.6rem', flexWrap: 'wrap' }}>
                       {getStatusBadge(b.status)}
+
+                      {/* Huy hiệu nhận biết rõ phòng đã cọc 30% hay thanh toán 100% */}
+                      {isDeposit30 ? (
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          padding: '3px 9px',
+                          borderRadius: 999,
+                          background: '#FFF7ED',
+                          color: '#C2410C',
+                          border: '1px solid #FFEDD5',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                        }}>
+                          <CashCoin style={{ fontSize: '0.85rem' }} /> Đã cọc 30%
+                        </span>
+                      ) : (
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          padding: '3px 9px',
+                          borderRadius: 999,
+                          background: '#ECFDF5',
+                          color: '#047857',
+                          border: '1px solid #D1FAE5',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                        }}>
+                          <CheckCircleFill style={{ fontSize: '0.8rem' }} /> Đã thanh toán 100%
+                        </span>
+                      )}
+
                       <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
                         Đặt ngày {b.createdAt || 'Gần đây'}
                       </span>
@@ -642,15 +698,34 @@ export default function MyBookingsPage() {
                   textAlign: 'right'
                 }}>
                   <div>
-                    <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'block', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
-                      Tổng tiền thanh toán
-                    </span>
-                    <strong style={{ fontSize: '1.55rem', color: 'var(--color-primary)', fontWeight: 800, display: 'block', margin: '0.2rem 0 0.15rem' }}>
-                      {formatVND(b.total)}
-                    </strong>
-                    <span style={{ fontSize: '0.78rem', color: 'var(--color-success)', fontWeight: 600, display: 'block' }}>
-                      Miễn phí phí dịch vụ
-                    </span>
+                    {isDeposit30 ? (
+                      <div>
+                        <span style={{ fontSize: '0.74rem', color: '#EA580C', display: 'block', textTransform: 'uppercase', fontWeight: 800 }}>
+                          Còn lại (70%)
+                        </span>
+                        <strong style={{ fontSize: '1.4rem', color: '#EA580C', fontWeight: 800, display: 'block', margin: '0.15rem 0' }}>
+                          {formatVND(remaining)}
+                        </strong>
+                        <div style={{ fontSize: '0.76rem', color: '#059669', fontWeight: 600 }}>
+                          Đã cọc: {formatVND(paid)}
+                        </div>
+                        <div style={{ fontSize: '0.74rem', color: 'var(--color-text-muted)' }}>
+                          Tổng: {formatVND(b.total)}
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <span style={{ fontSize: '0.74rem', color: 'var(--color-text-muted)', display: 'block', textTransform: 'uppercase', fontWeight: 700 }}>
+                          Tổng thanh toán
+                        </span>
+                        <strong style={{ fontSize: '1.4rem', color: 'var(--color-primary)', fontWeight: 800, display: 'block', margin: '0.15rem 0' }}>
+                          {formatVND(b.total)}
+                        </strong>
+                        <span style={{ fontSize: '0.76rem', color: 'var(--color-success)', fontWeight: 600 }}>
+                          Đã thanh toán (100%)
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Action Button stack */}
@@ -772,7 +847,7 @@ export default function MyBookingsPage() {
       {pageCount > 1 && (
         <nav aria-label="Phân trang lịch sử đặt phòng" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: '2rem', flexWrap: 'wrap' }}>
           <button type="button" onClick={() => setCurrentPage(page => Math.max(1, page - 1))} disabled={currentPage === 1} aria-label="Trang trước" style={{ padding: '0.55rem 0.9rem', border: '1px solid var(--color-border-subtle)', borderRadius: 10, background: 'var(--color-bg-surface)', color: 'var(--color-text-primary)', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.5 : 1 }}>
-            Trước
+            <ChevronLeft style={{ fontSize: '0.85rem' }} />
           </button>
           {Array.from({ length: pageCount }, (_, index) => index + 1).map(page => (
             <button key={page} type="button" onClick={() => setCurrentPage(page)} aria-current={currentPage === page ? 'page' : undefined} style={{ minWidth: 40, height: 40, border: `1px solid ${currentPage === page ? 'var(--color-primary)' : 'var(--color-border-subtle)'}`, borderRadius: 10, background: currentPage === page ? 'var(--color-primary)' : 'var(--color-bg-surface)', color: currentPage === page ? '#fff' : 'var(--color-text-primary)', cursor: 'pointer', fontWeight: 700 }}>
@@ -780,7 +855,7 @@ export default function MyBookingsPage() {
             </button>
           ))}
           <button type="button" onClick={() => setCurrentPage(page => Math.min(pageCount, page + 1))} disabled={currentPage === pageCount} aria-label="Trang sau" style={{ padding: '0.55rem 0.9rem', border: '1px solid var(--color-border-subtle)', borderRadius: 10, background: 'var(--color-bg-surface)', color: 'var(--color-text-primary)', cursor: currentPage === pageCount ? 'not-allowed' : 'pointer', opacity: currentPage === pageCount ? 0.5 : 1 }}>
-            Sau
+            <ChevronRight style={{ fontSize: '0.85rem' }} />
           </button>
         </nav>
       )}

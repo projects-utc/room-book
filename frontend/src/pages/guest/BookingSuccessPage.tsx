@@ -146,7 +146,7 @@ export default function BookingSuccessPage() {
                                 marginTop: '0.4rem',
                             }}
                         >
-                            <span>Còn lại thanh toán tại quầy ({Math.round((remainingAmount / totalAmount) * 100)}%):</span>
+                            <span>Còn lại (70%):</span>
                             <strong>{formatVND(remainingAmount)}</strong>
                         </div>
                     )}
