@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../contexts/StoreContext';
 import { stayApi } from '../../api/stayApi';
-import { Breadcrumb, Button, Card, EmptyState, StatCard, formatDisplayDateVN, DateRangePicker, LoadingSpinner } from '../../components';
+import { Breadcrumb, Button, Card, EmptyState, StatCard, Badge, formatDisplayDateVN, DateRangePicker, LoadingSpinner } from '../../components';
 import { formatVND, BADGE_CLASS, BADGE_LABEL, getBookingPaymentInfo } from '../../constants';
 import {
   ArrowLeftRight, ArrowRight, CalendarCheck,
@@ -147,49 +147,80 @@ export default function HostBookingsPage() {
           <div className="booking-filter-grid">
             <div className="booking-search" role="search" aria-label="Tìm đơn đặt phòng">
               <Search aria-hidden="true" />
-              <input id="booking-search" type="search" className="booking-filter-control"
+              <input
+                id="booking-search"
+                type="search"
+                className="booking-filter-control search-raw-input"
                 aria-label="Tìm theo mã đơn, tên khách, số điện thoại, email, chỗ ở hoặc phòng"
-                placeholder="Tìm mã đơn, tên khách, số điện thoại"
-                value={filters.q} onChange={event => updateFilters({ q: event.target.value })}
-                autoComplete="off" spellCheck={false} />
-              {filters.q && <button type="button" className="booking-search-clear"
-                aria-label="Xóa từ khóa tìm kiếm" onClick={() => updateFilters({ q: '' })}>
-                <X aria-hidden="true" />
-              </button>}
+                placeholder="Tìm theo mã đơn, tên khách, số điện thoại, chỗ ở..."
+                value={filters.q}
+                onChange={event => updateFilters({ q: event.target.value })}
+                autoComplete="off"
+                spellCheck={false}
+              />
+              {filters.q && (
+                <button
+                  type="button"
+                  className="booking-search-clear"
+                  aria-label="Xóa từ khóa tìm kiếm"
+                  onClick={() => updateFilters({ q: '' })}
+                >
+                  <X aria-hidden="true" />
+                </button>
+              )}
             </div>
             <div className="booking-range-field">
               <DateRangePicker
-                label="Khoảng thời gian lưu trú"
                 value={{ start: filters.from, end: filters.to }}
                 onChange={({ start, end }) => updateFilters({ from: start, to: end })}
                 minDate=""
                 quickSelect={false}
               />
             </div>
-            <button type="button" className="booking-reset" onClick={clearFilters}
-              disabled={!hasActiveFilters}>
-              <ArrowCounterclockwise aria-hidden="true" /> Xóa bộ lọc
-            </button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="booking-reset-btn"
+              onClick={clearFilters}
+              disabled={!hasActiveFilters}
+              icon={<ArrowCounterclockwise />}
+            >
+              Xóa bộ lọc
+            </Button>
           </div>
 
-          {invalidDateRange && <p id="booking-date-help" className="booking-filter-help is-error" role="alert">
-            Ngày kết thúc cần bằng hoặc sau ngày bắt đầu.
-          </p>}
+          {invalidDateRange && (
+            <p id="booking-date-help" className="booking-filter-help is-error" role="alert">
+              Ngày kết thúc cần bằng hoặc sau ngày bắt đầu.
+            </p>
+          )}
         </section>
 
         <div className="booking-toolbar">
           <div className="booking-status-tabs" role="group" aria-label="Lọc theo trạng thái đơn">
-            {STATUS_FILTERS.map(tab => <button key={tab.id} type="button"
-              className={`booking-status-tab${filters.status === tab.id ? ' is-active' : ''}`}
-              aria-pressed={filters.status === tab.id} onClick={() => updateFilters({ status: tab.id })}>
-              {tab.label}<span>{statusCounts[tab.id]}</span>
-            </button>)}
+            {STATUS_FILTERS.map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`booking-status-tab${filters.status === tab.id ? ' is-active' : ''}`}
+                aria-pressed={filters.status === tab.id}
+                onClick={() => updateFilters({ status: tab.id })}
+              >
+                <span>{tab.label}</span>
+                <span className="booking-tab-count">{statusCounts[tab.id]}</span>
+              </button>
+            ))}
           </div>
           <div className="booking-page-size">
             <label htmlFor="booking-page-size">Hiển thị</label>
-            <select id="booking-page-size" value={pageSize}
+            <select
+              id="booking-page-size"
+              className="search-raw-input"
+              value={pageSize}
               aria-label="Số bản ghi mỗi trang"
-              onChange={event => updatePagination(1, Number(event.target.value))}>
+              onChange={event => updatePagination(1, Number(event.target.value))}
+            >
               {BOOKING_PAGE_SIZES.map(size => <option key={size} value={size}>{size}</option>)}
             </select>
             <span>/ trang</span>
@@ -271,17 +302,22 @@ export default function HostBookingsPage() {
                       <td>
                         {(() => {
                           const payInfo = getBookingPaymentInfo(booking);
+                          const statusVariant =
+                            booking.status === 'PENDING' ? 'warning' :
+                            booking.status === 'CONFIRMED' ? 'confirmed' :
+                            booking.status === 'CHECKED_IN' ? 'brand' :
+                            booking.status === 'COMPLETED' ? 'success' : 'danger';
                           return (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
-                              <span className={`badge ${BADGE_CLASS[booking.status] || 'badge-pending'}`}>
+                              <Badge variant={statusVariant} size="sm">
                                 {BADGE_LABEL[booking.status] || booking.status}
-                              </span>
+                              </Badge>
                               {payInfo.isDeposit30 ? (
-                                <span style={{ fontSize: '0.7rem', color: '#C2410C', background: '#FFF7ED', border: '1px solid #FFEDD5', padding: '2px 6px', borderRadius: 6, fontWeight: 700 }}>
+                                <span style={{ fontSize: '0.7rem', color: '#C2410C', background: '#FFF7ED', border: '1px solid #FFEDD5', padding: '2px 7px', borderRadius: 6, fontWeight: 700 }}>
                                   Đã cọc 30%
                                 </span>
                               ) : (
-                                <span style={{ fontSize: '0.7rem', color: '#047857', background: '#ECFDF5', border: '1px solid #D1FAE5', padding: '2px 6px', borderRadius: 6, fontWeight: 700 }}>
+                                <span style={{ fontSize: '0.7rem', color: '#047857', background: '#ECFDF5', border: '1px solid #D1FAE5', padding: '2px 7px', borderRadius: 6, fontWeight: 700 }}>
                                   Đã trả 100%
                                 </span>
                               )}
@@ -289,25 +325,61 @@ export default function HostBookingsPage() {
                           );
                         })()}
                       </td>
-                      <td><div className="booking-actions">
-                        {booking.status === 'PENDING' && <>
-                          <Button variant="primary" size="xs" icon={<CheckLg />}
-                            disabled={updatingCode !== null}
-                            onClick={() => handleUpdateStatus(booking.code, 'CONFIRMED')}>Duyệt đơn</Button>
-                          <Button variant="outline" size="xs" icon={<XCircle />}
-                            disabled={updatingCode !== null}
-                            onClick={() => handleUpdateStatus(booking.code, 'REJECTED')}>Từ chối</Button>
-                        </>}
-                        {booking.status === 'CONFIRMED' && <Button variant="outline" size="xs" icon={<KeyFill />}
-                          disabled={updatingCode !== null}
-                          onClick={() => handleUpdateStatus(booking.code, 'CHECKED_IN')}>Check-in</Button>}
-                        {booking.status === 'CHECKED_IN' && <Button variant="primary" size="xs" icon={<Check2All />}
-                          disabled={updatingCode !== null}
-                          onClick={() => handleUpdateStatus(booking.code, 'COMPLETED')}>Hoàn tất</Button>}
-                        <Link className="btn btn-outline btn-xs" to={`/host/bookings/${encodeURIComponent(booking.code)}`}>
-                          <Eye aria-hidden="true" /> Chi tiết
-                        </Link>
-                      </div></td>
+                      <td className="booking-actions-cell">
+                        <div className="booking-actions">
+                          {booking.status === 'PENDING' && (
+                            <>
+                              <button
+                                type="button"
+                                className="action-btn action-btn-approve"
+                                disabled={updatingCode !== null}
+                                onClick={() => handleUpdateStatus(booking.code, 'CONFIRMED')}
+                                title="Phê duyệt đơn đặt phòng"
+                              >
+                                <CheckLg /> Duyệt
+                              </button>
+                              <button
+                                type="button"
+                                className="action-btn action-btn-reject"
+                                disabled={updatingCode !== null}
+                                onClick={() => handleUpdateStatus(booking.code, 'REJECTED')}
+                                title="Từ chối đơn đặt phòng"
+                              >
+                                <XCircle /> Từ chối
+                              </button>
+                            </>
+                          )}
+                          {booking.status === 'CONFIRMED' && (
+                            <button
+                              type="button"
+                              className="action-btn action-btn-checkin"
+                              disabled={updatingCode !== null}
+                              onClick={() => handleUpdateStatus(booking.code, 'CHECKED_IN')}
+                              title="Xác nhận khách nhận phòng"
+                            >
+                              <KeyFill /> Check-in
+                            </button>
+                          )}
+                          {booking.status === 'CHECKED_IN' && (
+                            <button
+                              type="button"
+                              className="action-btn action-btn-complete"
+                              disabled={updatingCode !== null}
+                              onClick={() => handleUpdateStatus(booking.code, 'COMPLETED')}
+                              title="Hoàn tất kỳ lưu trú"
+                            >
+                              <Check2All /> Hoàn tất
+                            </button>
+                          )}
+                          <Link
+                            className="action-btn action-btn-view"
+                            to={`/host/bookings/${encodeURIComponent(booking.code)}`}
+                            title="Xem chi tiết đơn"
+                          >
+                            <Eye aria-hidden="true" /> Chi tiết
+                          </Link>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

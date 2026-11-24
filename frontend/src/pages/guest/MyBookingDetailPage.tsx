@@ -35,10 +35,6 @@ export default function MyBookingDetailPage() {
     }
   }, [currentUser, code, navigate]);
 
-  if (currentUser?.role === 'HOST' || currentUser?.role === 'ADMIN') {
-    return null;
-  }
-
   const bookingCode = code || '';
   const [booking, setBooking] = useState<Booking | null>(() => bookingCode ? store.getBooking(bookingCode) : null);
   const [currentStatus, setCurrentStatus] = useState<BookingStatus>(booking?.status || 'PENDING');
@@ -193,6 +189,10 @@ export default function MyBookingDetailPage() {
         return <span>{status}</span>;
     }
   };
+
+  if (currentUser?.role === 'HOST' || currentUser?.role === 'ADMIN') {
+    return null;
+  }
 
   return (
     <div style={{ maxWidth: 1760, margin: '2rem auto 5rem', padding: '0 clamp(1rem, 2.5vw, 2.5rem)' }}>

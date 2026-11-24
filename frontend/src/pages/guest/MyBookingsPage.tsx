@@ -66,10 +66,6 @@ export default function MyBookingsPage() {
     }
   }, [currentUser, navigate]);
 
-  if (currentUser?.role === 'HOST' || currentUser?.role === 'ADMIN') {
-    return null;
-  }
-
   const handleTabChange = (tab: 'UPCOMING' | 'COMPLETED' | 'CANCELLED' | 'ALL') => {
     setActiveTab(tab);
     setSearchParams(prev => {
@@ -300,6 +296,10 @@ export default function MyBookingsPage() {
   const completedCount = myBookings.filter(b => b.status === 'COMPLETED').length;
   const cancelledCount = myBookings.filter(b => ['CANCELLED', 'REJECTED'].includes(b.status)).length;
   const allCount = myBookings.length;
+
+  if (currentUser?.role === 'HOST' || currentUser?.role === 'ADMIN') {
+    return null;
+  }
 
   return (
     <div style={{ maxWidth: 1760, margin: '2rem auto 5rem', padding: '0 clamp(1rem, 2.5vw, 2.5rem)' }}>
