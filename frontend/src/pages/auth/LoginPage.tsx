@@ -60,7 +60,7 @@ export default function LoginPage() {
         if (fromUrl && !isAuthPage) {
           navigate(fromUrl, { replace: true });
         } else if (res.user?.role === 'HOST') {
-          navigate('/host/properties', { replace: true });
+          navigate('/host/bookings', { replace: true });
         } else if (res.user?.role === 'ADMIN') {
           navigate('/admin', { replace: true });
         } else {

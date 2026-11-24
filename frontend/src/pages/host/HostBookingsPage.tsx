@@ -233,6 +233,7 @@ export default function HostBookingsPage() {
                 <thead>
                   <tr>
                     <th scope="col">Mã đơn</th>
+                    <th scope="col">Ngày tạo</th>
                     <th scope="col">Khách đặt</th>
                     <th scope="col">Hạng phòng &amp; Chỗ ở</th>
                     <th scope="col">Thời gian lưu trú</th>
@@ -247,6 +248,7 @@ export default function HostBookingsPage() {
                       <td><Link className="booking-code" to={`/host/bookings/${encodeURIComponent(booking.code)}`}>
                         #{booking.code}
                       </Link></td>
+                      <td className="booking-created-at">{booking.createdAt ? formatDisplayDateVN(booking.createdAt) : '—'}</td>
                       <td><strong className="booking-cell-title">{booking.guestName}</strong>
                         <span className="booking-cell-subtitle">{booking.guestPhone}</span></td>
                       <td><strong className="booking-cell-title">{booking.roomName}</strong>
