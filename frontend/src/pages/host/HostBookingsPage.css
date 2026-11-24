@@ -69,9 +69,10 @@
 .host-bookings .booking-table th:first-child { border-radius: 8px 0 0 8px; }
 .host-bookings .booking-table th:last-child { border-radius: 0 8px 8px 0; }
 .host-bookings .booking-table td { padding: 0.85rem 0.75rem; font-size: 0.82rem; }
-.host-bookings .booking-table th:nth-child(2) { width: 17%; }
-.host-bookings .booking-table th:nth-child(3) { width: 19%; }
-.host-bookings .booking-table th:nth-child(4) { width: 15%; }
+.host-bookings .booking-table th:nth-child(3) { width: 16%; }
+.host-bookings .booking-table th:nth-child(4) { width: 18%; }
+.host-bookings .booking-table th:nth-child(5) { width: 15%; }
+.host-bookings .booking-created-at { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.78rem; }
 .host-bookings .booking-code { color: var(--ink); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
 .host-bookings .booking-code:hover { color: var(--brand-hover); text-decoration: underline; }
 .host-bookings .booking-cell-title { display: block; font-weight: 650; line-height: 1.55; }

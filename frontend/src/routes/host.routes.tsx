@@ -17,14 +17,14 @@ export function HostRoutes() {
       unauthorizedMessage="Bạn cần tài khoản Đối tác Chủ nhà (Host) để quản lý homestay."
     >
       <Routes>
-        <Route index element={<Navigate to="/host/properties" replace />} />
+        <Route index element={<Navigate to="/host/bookings" replace />} />
         <Route path="properties" element={<HostPropertiesPage />} />
         <Route path="rooms" element={<HostRoomsPage />} />
         <Route path="roomblock" element={<HostRoomBlockPage />} />
         <Route path="bookings" element={<HostBookingsPage />} />
         <Route path="bookings/:code" element={<HostBookingDetailPage />} />
         <Route path="revenue" element={<HostRevenuePage />} />
-        <Route path="*" element={<Navigate to="/host/properties" replace />} />
+        <Route path="*" element={<Navigate to="/host/bookings" replace />} />
       </Routes>
     </ProtectedRoute>
   );
