@@ -75,18 +75,18 @@ public class FeHostAdminPortalWebAutoTest extends BasePlaywrightAutoTest {
         String code = readJson(created).path("data").path("code").asText();
 
         loginViaUi("host.demo", "123");
-        page.navigate(feUrl() + "/host/bookings");
+        page.waitForFunction(
+                "() => window.location.pathname === '/host/bookings' && document.body.innerText.toUpperCase().includes('NGÀY TẠO')",
+                null,
+                new Page.WaitForFunctionOptions().setTimeout(15000)
+        );
         page.waitForSelector("#booking-search", new Page.WaitForSelectorOptions().setTimeout(15000));
         page.fill("#booking-search", code);
         Locator row = page.locator("tr", new Page.LocatorOptions().setHasText(code));
         row.waitFor(new Locator.WaitForOptions().setTimeout(15000));
 
         row.locator("button:has-text('Duyệt đơn')").click();
-        page.waitForFunction(
-                "(c) => document.body.innerText.includes(c) && document.body.innerText.includes('Đã xác nhận')",
-                code,
-                new Page.WaitForFunctionOptions().setTimeout(10000)
-        );
+        row.locator(".badge:has-text('Đã xác nhận')").waitFor(new Locator.WaitForOptions().setTimeout(10000));
 
         APIResponse updated = getApi("/api/bookings/" + code, guestToken);
         assertEquals(200, updated.status());
